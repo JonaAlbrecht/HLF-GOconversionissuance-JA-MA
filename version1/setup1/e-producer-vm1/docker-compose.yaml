@@ -1,4 +1,4 @@
-version: "2"
+version: "2.4"
 
 networks:
   test:
@@ -93,6 +93,17 @@ services:
       - ./:/etc/hyperledger/channel/
     networks:
       - test
+    extra_hosts:
+      - "orderer.example.com:34.125.58.24"
+      - "orderer2.example.com:34.125.58.24"
+      - "orderer3.example.com:34.125.58.24"
+      - "peer0.org1.example.com:34.16.190.121"
+      - "peer1.org1.example.com:34.16.190.121"
+      - "peer0.org2.example.com:34.125.148.23"
+      - "peer1.org2.example.com:34.125.148.23"
+      - "peer0.org3.example.com:34.125.118.226"
+      - "peer1.org3.example.com:34.125.118.226"
+    
 
   peer1.org1.example.com:
     container_name: peer1.org1.example.com
@@ -135,6 +146,17 @@ services:
       - ./:/etc/hyperledger/channel/
     networks:
       - test
+    extra_hosts:
+      - "orderer.example.com:34.125.58.24"
+      - "orderer2.example.com:34.125.58.24"
+      - "orderer3.example.com:34.125.58.24"
+      - "peer0.org1.example.com:34.16.190.121"
+      - "peer1.org1.example.com:34.16.190.121"
+      - "peer0.org2.example.com:34.125.148.23"
+      - "peer1.org2.example.com:34.125.148.23"
+      - "peer0.org3.example.com:34.125.118.226"
+      - "peer1.org3.example.com:34.125.118.226"
+    
 
   cli:
     container_name: cli
@@ -164,6 +186,16 @@ services:
       - /var/run/:/host/var/run/
       # - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
       - ./crypto-config/peerOrganizations/org1.example.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/org1.example.com/
-      - ./../vm2/crypto-config/peerOrganizations/org2.example.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/org2.example.com/
-      - ./../vm3/crypto-config/peerOrganizations/org3.example.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/org3.example.com/
-      - ./../vm4/crypto-config/ordererOrganizations/example.com/:/etc/hyperledger/channel/crypto-config/ordererOrganizations/example.com/
+      - ./../buyer-vm2/crypto-config/peerOrganizations/org2.example.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/org2.example.com/
+      - ./../issuer-vm3/crypto-config/peerOrganizations/org3.example.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/org3.example.com/
+      - ./../orderer-vm4/crypto-config/ordererOrganizations/example.com/:/etc/hyperledger/channel/crypto-config/ordererOrganizations/example.com/
+    extra_hosts:
+      - "orderer.example.com:34.125.58.24"
+      - "orderer2.example.com:34.125.58.24"
+      - "orderer3.example.com:34.125.58.24"
+      - "peer0.org1.example.com:34.16.190.121"
+      - "peer1.org1.example.com:34.16.190.121"
+      - "peer0.org2.example.com:34.125.148.23"
+      - "peer1.org2.example.com:34.125.148.23"
+      - "peer0.org3.example.com:34.125.118.226"
+      - "peer1.org3.example.com:34.125.118.226"

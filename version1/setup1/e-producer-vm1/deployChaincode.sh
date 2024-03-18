@@ -1,8 +1,8 @@
 export CORE_PEER_TLS_ENABLED=true
-export ORDERER_CA=${PWD}/../vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+export ORDERER_CA=${PWD}/../orderer-vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 export PEER0_ORG1_CA=${PWD}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
-export PEER0_ORG2_CA=${PWD}/../vm2/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
-export PEER0_ORG3_CA=${PWD}/../vm3/crypto-config/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
+export PEER0_ORG2_CA=${PWD}/../buyer-vm2/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+export PEER0_ORG3_CA=${PWD}/../issuer-vm3/crypto-config/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt
 export FABRIC_CFG_PATH=${PWD}/../../artifacts/channel/config/
 
 
@@ -46,11 +46,11 @@ presetup() {
     popd
     echo Finished vendoring Go dependencies
 }
-# presetup
+presetup
 
 CHANNEL_NAME="mychannel"
 CC_RUNTIME_LANGUAGE="golang"
-VERSION="1"
+VERSION="8"
 CC_SRC_PATH="./../../artifacts/src/github.com/fabcar/go"
 CC_NAME="fabcar"
 
@@ -62,7 +62,7 @@ packageChaincode() {
         --label ${CC_NAME}_${VERSION}
     echo "===================== Chaincode is packaged on peer0.org1 ===================== "
 }
-# packageChaincode
+packageChaincode
 
 installChaincode() {
     setGlobalsForPeer0Org1
@@ -71,7 +71,7 @@ installChaincode() {
 
 }
 
-# installChaincode
+installChaincode
 
 queryInstalled() {
     setGlobalsForPeer0Org1
@@ -82,13 +82,13 @@ queryInstalled() {
     echo "===================== Query installed successful on peer0.org1 on channel ===================== "
 }
 
-# queryInstalled
+queryInstalled
 
 approveForMyOrg1() {
     setGlobalsForPeer0Org1
     # set -x
-    # Replace localhost with your orderer's vm IP address
-    peer lifecycle chaincode approveformyorg -o localhost:7050 \
+    # Replace with current orderer VM IP address or change to localhost if deploying on single machine
+    peer lifecycle chaincode approveformyorg -o 34.125.58.24:7050 \
         --ordererTLSHostnameOverride orderer.example.com --tls \
         --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${VERSION} \
         --init-required --package-id ${PACKAGE_ID} \
@@ -99,8 +99,8 @@ approveForMyOrg1() {
 
 }
 
-# queryInstalled
-# approveForMyOrg1
+queryInstalled
+approveForMyOrg1
 
 checkCommitReadyness() {
     setGlobalsForPeer0Org1
@@ -110,7 +110,7 @@ checkCommitReadyness() {
     echo "===================== checking commit readyness from org 1 ===================== "
 }
 
-# checkCommitReadyness
+#checkCommitReadyness
 
 commitChaincodeDefination() {
     setGlobalsForPeer0Org1
@@ -123,7 +123,7 @@ commitChaincodeDefination() {
         --version ${VERSION} --sequence ${VERSION} --init-required
 }
 
-# commitChaincodeDefination
+#commitChaincodeDefination
 
 queryCommitted() {
     setGlobalsForPeer0Org1
@@ -131,7 +131,7 @@ queryCommitted() {
 
 }
 
-# queryCommitted
+#queryCommitted
 
 chaincodeInvokeInit() {
     setGlobalsForPeer0Org1

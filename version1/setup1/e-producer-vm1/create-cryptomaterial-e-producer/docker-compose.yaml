@@ -1,4 +1,4 @@
-version: '2.4'
+version: '2.2'
 #this brings up the fabric-ca for the electricity producer organisation using fabric-samples binary fabric-ca-server
 
 networks:
@@ -22,3 +22,13 @@ services:
     hostname: ca.org1.example.com
     networks:
       - test
+    extra_hosts:
+      - "orderer.example.com:34.125.58.24"
+      - "orderer2.example.com:34.125.58.24"
+      - "orderer3.example.com:34.125.58.24"
+      - "peer0.org1.example.com:34.16.190.121"
+      - "peer1.org1.example.com:34.16.190.121"
+      - "peer0.org2.example.com:34.125.148.23"
+      - "peer1.org2.example.com:34.125.148.23"
+      - "peer0.org3.example.com:34.125.118.226"
+      - "peer1.org3.example.com:34.125.118.226"

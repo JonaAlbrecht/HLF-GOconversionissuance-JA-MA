@@ -1,5 +1,5 @@
 export CORE_PEER_TLS_ENABLED=true
-export ORDERER_CA=${PWD}/../vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+export ORDERER_CA=${PWD}/../orderer-vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 export PEER0_ORG1_CA=${PWD}/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
 export FABRIC_CFG_PATH=${PWD}/../../artifacts/channel/config/
 
@@ -23,14 +23,15 @@ createChannel(){
     rm -rf ./channel-artifacts/*
     setGlobalsForPeer0Org1
     
-    # Replace localhost with your orderer's vm IP address
-    peer channel create -o localhost:7050 -c $CHANNEL_NAME \
+    #replace given IP address with IP address of the orderer vm
+    # If deploying on single machine, replac orderer's vm IP address with "localhost"
+    peer channel create -o 34.125.58.24:7050 -c $CHANNEL_NAME \
     --ordererTLSHostnameOverride orderer.example.com \
     -f ./../../artifacts/channel/${CHANNEL_NAME}.tx --outputBlock ./channel-artifacts/${CHANNEL_NAME}.block \
     --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
 }
 
-# createChannel
+createChannel
 
 joinChannel(){
     setGlobalsForPeer0Org1
@@ -41,19 +42,20 @@ joinChannel(){
     
 }
 
-# joinChannel
+joinChannel
 
 updateAnchorPeers(){
     setGlobalsForPeer0Org1
-    # Replace localhost with your orderer's vm IP address
-    peer channel update -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c $CHANNEL_NAME -f ./../../artifacts/channel/${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
+    #replace given IP address with IP address of the orderer vm
+    # If deploying on single machine, replac orderer's vm IP address with "localhost"
+    peer channel update -o 34.125.58.24:7050 --ordererTLSHostnameOverride orderer.example.com -c $CHANNEL_NAME -f ./../../artifacts/channel/${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
     
 }
 
-# updateAnchorPeers
+updateAnchorPeers
 
 # removeOldCrypto
 
-createChannel
-joinChannel
-updateAnchorPeers
+#createChannel
+#joinChannel
+#updateAnchorPeers

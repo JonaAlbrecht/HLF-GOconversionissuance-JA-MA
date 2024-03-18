@@ -1,4 +1,4 @@
-version: "2"
+version: "2.4"
 
 networks:
   test:
@@ -38,6 +38,16 @@ services:
       - ../../artifacts/channel/genesis.block:/var/hyperledger/orderer/genesis.block
       - ./crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/var/hyperledger/orderer/msp
       - ./crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls:/var/hyperledger/orderer/tls
+    extra_hosts:
+      - "orderer.example.com:34.125.58.24"
+      - "orderer2.example.com:34.125.58.24"
+      - "orderer3.example.com:34.125.58.24"
+      - "peer0.org1.example.com:34.16.190.121"
+      - "peer1.org1.example.com:34.16.190.121"
+      - "peer0.org2.example.com:34.125.148.23"
+      - "peer1.org2.example.com:34.125.148.23"
+      - "peer0.org3.example.com:34.125.118.226"
+      - "peer1.org3.example.com:34.125.118.226"
   
   orderer2.example.com:
     container_name: orderer2.example.com
@@ -73,6 +83,16 @@ services:
       - ../../artifacts/channel/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
       - ./crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/msp:/var/hyperledger/orderer/msp
       - ./crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/tls:/var/hyperledger/orderer/tls
+    extra_hosts:
+      - "orderer.example.com:34.125.58.24"
+      - "orderer2.example.com:34.125.58.24"
+      - "orderer3.example.com:34.125.58.24"
+      - "peer0.org1.example.com:34.16.190.121"
+      - "peer1.org1.example.com:34.16.190.121"
+      - "peer0.org2.example.com:34.125.148.23"
+      - "peer1.org2.example.com:34.125.148.23"
+      - "peer0.org3.example.com:34.125.118.226"
+      - "peer1.org3.example.com:34.125.118.226"
 
 
   orderer3.example.com:
@@ -109,3 +129,13 @@ services:
       - ../../artifacts/channel/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
       - ./crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/msp:/var/hyperledger/orderer/msp
       - ./crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/tls:/var/hyperledger/orderer/tls
+    extra_hosts:
+      - "orderer.example.com:34.125.58.24"
+      - "orderer2.example.com:34.125.58.24"
+      - "orderer3.example.com:34.125.58.24"
+      - "peer0.org1.example.com:34.16.190.121"
+      - "peer1.org1.example.com:34.16.190.121"
+      - "peer0.org2.example.com:34.125.148.23"
+      - "peer1.org2.example.com:34.125.148.23"
+      - "peer0.org3.example.com:34.125.118.226"
+      - "peer1.org3.example.com:34.125.118.226"
