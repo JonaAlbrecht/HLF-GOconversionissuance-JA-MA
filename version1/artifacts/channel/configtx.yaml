@@ -3,7 +3,7 @@ Organizations:
     - &OrdererOrg
         Name: OrdererOrg
         ID: OrdererMSP
-        MSPDir: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/example.com/msp
+        MSPDir: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/msp
 
         Policies:
             Readers:
@@ -16,78 +16,78 @@ Organizations:
                 Type: Signature
                 Rule: "OR('OrdererMSP.admin')"
 
-    - &Org1
-        Name: Org1MSP
-        ID: Org1MSP
+    - &buyer
+        Name: buyerMSP
+        ID: buyerMSP
 
-        MSPDir: ../../setup1/e-producer-vm1/crypto-config/peerOrganizations/org1.example.com/msp
+        MSPDir: ../../setup1/buyer-vm1/crypto-config/peerOrganizations/buyer.GOnetwork.com/msp
 
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('Org1MSP.admin', 'Org1MSP.peer', 'Org1MSP.client')"
+                Rule: "OR('buyerMSP.admin', 'buyerMSP.peer', 'buyerMSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('Org1MSP.admin', 'Org1MSP.client')"
+                Rule: "OR('buyerMSP.admin', 'buyerMSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('Org1MSP.admin')"
+                Rule: "OR('buyerMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('Org1MSP.peer')"
+                Rule: "OR('buyerMSP.peer')"
 
         AnchorPeers:
-            - Host: peer0.org1.example.com
+            - Host: peer0.buyer.GOnetwork.com
               Port: 7051
 
-    - &Org2
-        Name: Org2MSP
+    - &eproducer
+        Name: eproducerMSP
 
-        ID: Org2MSP
+        ID: eproducerMSP
 
-        MSPDir: ../../setup1/buyer-vm2/crypto-config/peerOrganizations/org2.example.com/msp
+        MSPDir: ../../setup1/eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/msp
 
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('Org2MSP.admin', 'Org2MSP.peer', 'Org2MSP.client')"
+                Rule: "OR('eproducerMSP.admin', 'eproducerMSP.peer', 'eproducerMSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('Org2MSP.admin', 'Org2MSP.client')"
+                Rule: "OR('eproducerMSP.admin', 'eproducerMSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('Org2MSP.admin')"
+                Rule: "OR('eproducerMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('Org2MSP.peer')"
+                Rule: "OR('eproducerMSP.peer')"
 
         AnchorPeers:
-            - Host: peer0.org2.example.com
+            - Host: peer0.eproducer.GOnetwork.com
               Port: 9051
 
-    - &Org3
-        Name: Org3MSP
+    - &issuer
+        Name: issuerMSP
 
-        ID: Org3MSP
+        ID: issuerMSP
 
-        MSPDir: ../../setup1/issuer-vm3/crypto-config/peerOrganizations/org3.example.com/msp
+        MSPDir: ../../setup1/issuer-vm3/crypto-config/peerOrganizations/issuer.GOnetwork.com/msp
 
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('Org3MSP.admin', 'Org3MSP.peer', 'Org3MSP.client')"
+                Rule: "OR('issuerMSP.admin', 'issuerMSP.peer', 'issuerMSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('Org3MSP.admin', 'Org3MSP.client')"
+                Rule: "OR('issuerMSP.admin', 'issuerMSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('Org3MSP.admin')"
+                Rule: "OR('issuerMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('Org3MSP.peer')"
+                Rule: "OR('issuerMSP.peer')"
 
         AnchorPeers:
-            - Host: peer0.org3.example.com
+            - Host: peer0.issuer.GOnetwork.com
               Port: 11051
 
 Capabilities:
@@ -130,12 +130,12 @@ Orderer: &OrdererDefaults
 
     EtcdRaft:
         Consenters:
-        - Host: orderer.example.com
+        - Host: orderer.GOnetwork.com
           Port: 7050
-          ClientTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
-          ServerTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+          ClientTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/tls/server.crt
+          ServerTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/tls/server.crt
     Addresses:
-        - orderer.example.com:7050
+        - orderer.GOnetwork.com:7050
 
     BatchTimeout: 2s
     BatchSize:
@@ -181,9 +181,9 @@ Profiles:
         Application:
             <<: *ApplicationDefaults
             Organizations:
-                - *Org1
-                - *Org2
-                - *Org3
+                - *buyer
+                - *eproducer
+                - *issuer
             Capabilities:
                 <<: *ApplicationCapabilities
 
@@ -196,22 +196,22 @@ Profiles:
             OrdererType: etcdraft
             EtcdRaft:
                 Consenters:
-                - Host: orderer.example.com
+                - Host: orderer.GOnetwork.com
                   Port: 7050
-                  ClientTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
-                  ServerTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
-                - Host: orderer2.example.com
+                  ClientTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/tls/server.crt
+                  ServerTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/tls/server.crt
+                - Host: orderer2.GOnetwork.com
                   Port: 8050
-                  ClientTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.crt
-                  ServerTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.crt
-                - Host: orderer3.example.com
+                  ClientTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/tls/server.crt
+                  ServerTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/tls/server.crt
+                - Host: orderer3.GOnetwork.com
                   Port: 9050
-                  ClientTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.crt
-                  ServerTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.crt
+                  ClientTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/tls/server.crt
+                  ServerTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/tls/server.crt
             Addresses:
-                - orderer.example.com:7050
-                - orderer2.example.com:8050
-                - orderer3.example.com:9050
+                - orderer.GOnetwork.com:7050
+                - orderer2.GOnetwork.com:8050
+                - orderer3.GOnetwork.com:9050
 
             Organizations:
             - *OrdererOrg
@@ -220,6 +220,6 @@ Profiles:
         Consortiums:
             SampleConsortium:
                 Organizations:
-                - *Org1
-                - *Org2
-                - *Org3
+                - *buyer
+                - *eproducer
+                - *issuer

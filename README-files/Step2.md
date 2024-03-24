@@ -73,10 +73,21 @@ Run without any flag to install all docker images, binaries and the samples repo
 **The [Fabric Documentation](https://hyperledger-fabric.readthedocs.io/en/latest/index.html) provides excellent tutorials on how to use the fabric-samples.**
 
 
+# Clone the GO conversion issuance repo
+
+Lets clone the repo. Either, make a fork of the repo and then download or download the repo directly. You need to have git installed. Go to the repo and copy the http address
+
+```git clone http address```
+
 
 # Creating the other VMs 
 
+To save time, we will create the other VMs by using just cloning the boot disk as the current VM, that way all the steps up to now will be copied. In a production environment, this wouldnt be advisable. It would be worse, however, if we created all cryptomaterials for all organisations on a single machine and then cloned the disk. 
 
+1. In Google Cloud /Compute Engine navigate to the section called disks (Laufwerke). Click the 3 little dots, click on clone disk, name it VM2. 
+2. In the VM instances section, click on create new VM instance and mirror setup for VM1. Under Bootdisk click on 'change' , navigate to existing disks and select disk of VM2  ![alt text](image-2.png). 
+3. Under firewall settings make sure to enable HTTP and HTTPS server as well as adding the custom firewall setting. 
+4. Repeat this for VM3 and VM4 
 
 
 

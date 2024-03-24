@@ -1,7 +1,7 @@
 
 OrdererOrgs:
   - Name: Orderer
-    Domain: example.com
+    Domain: GOnetwork.com
     EnableNodeOUs: true
 
     Specs:
@@ -19,8 +19,8 @@ OrdererOrgs:
             - "127.0.0.1"
 
 PeerOrgs:
-  - Name: Org1
-    Domain: org1.example.com
+  - Name: buyer
+    Domain: buyer.GOnetwork.com
     EnableNodeOUs: true
 
     Template:
@@ -31,8 +31,8 @@ PeerOrgs:
     Users:
       Count: 1
 
-  - Name: Org2
-    Domain: org2.example.com
+  - Name: eproducer
+    Domain: eproducer.GOnetwork.com
     EnableNodeOUs: true
 
     Template:
@@ -43,8 +43,8 @@ PeerOrgs:
     Users:
       Count: 1
 
-  - Name: Org3
-    Domain: org3.example.com
+  - Name: issuer
+    Domain: issuer.GOnetwork.com
     EnableNodeOUs: true
 
     Template:

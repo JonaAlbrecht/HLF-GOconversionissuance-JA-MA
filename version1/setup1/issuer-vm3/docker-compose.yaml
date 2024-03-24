@@ -4,24 +4,24 @@ networks:
   test:
 
 services:
-  # ca-org3:
+  # ca-issuer:
   #   image: hyperledger/fabric-ca
   #   environment:
   #     - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-  #     - FABRIC_CA_SERVER_CA_NAME=ca.org3.example.com
-  #     - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org3.example.com-cert.pem
+  #     - FABRIC_CA_SERVER_CA_NAME=ca.issuer.GOnetwork.com
+  #     - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.issuer.GOnetwork.com-cert.pem
   #     - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/priv_sk
   #     - FABRIC_CA_SERVER_TLS_ENABLED=true
-  #     - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-tls/tlsca.org3.example.com-cert.pem
+  #     - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-tls/tlsca.issuer.GOnetwork.com-cert.pem
   #     - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-tls/priv_sk
   #   ports:
   #     - "9054:7054"
   #   command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
   #   volumes:
-  #     - ../../artifacts/channel/crypto-config/peerOrganizations/org3.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
-  #     - ../../artifacts/channel/crypto-config/peerOrganizations/org3.example.com/tlsca/:/etc/hyperledger/fabric-ca-server-tls
-  #   container_name: ca.org3.example.com
-  #   hostname: ca.org3.example.com
+  #     - ../../artifacts/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/ca/:/etc/hyperledger/fabric-ca-server-config
+  #     - ../../artifacts/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/tlsca/:/etc/hyperledger/fabric-ca-server-tls
+  #   container_name: ca.issuer.GOnetwork.com
+  #   hostname: ca.issuer.GOnetwork.com
   #   networks:
   #     - test
 
@@ -47,27 +47,27 @@ services:
     networks:
       - test
 
-  peer0.org3.example.com:
-    container_name: peer0.org3.example.com
+  peer0.issuer.GOnetwork.com:
+    container_name: peer0.issuer.GOnetwork.com
     extends:
       file: base.yaml
       service: peer-base
     environment:
       - FABRIC_LOGGING_SPEC=DEBUG
       - ORDERER_GENERAL_LOGLEVEL=DEBUG
-      - CORE_PEER_LOCALMSPID=Org3MSP
+      - CORE_PEER_LOCALMSPID=issuerMSP
 
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_test
 
-      - CORE_PEER_ID=peer0.org3.example.com
-      - CORE_PEER_ADDRESS=peer0.org3.example.com:11051
+      - CORE_PEER_ID=peer0.issuer.GOnetwork.com
+      - CORE_PEER_ADDRESS=peer0.issuer.GOnetwork.com:11051
       - CORE_PEER_LISTENADDRESS=0.0.0.0:11051
-      # - CORE_PEER_CHAINCODEADDRESS=peer0.org3.example.com:7052
+      # - CORE_PEER_CHAINCODEADDRESS=peer0.issuer.GOnetwork.com:7052
       # - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
       # Peer used to bootstrap gossip within organisation
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org3.example.com:12051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.issuer.GOnetwork.com:12051
       # Exposed for discovery Service
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org3.example.com:11051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.issuer.GOnetwork.com:11051
 
       # - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9440
 
@@ -86,43 +86,33 @@ services:
     ports:
       - 11051:11051
     volumes:
-      - ./crypto-config/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/msp:/etc/hyperledger/crypto/peer/msp
-      - ./crypto-config/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls:/etc/hyperledger/crypto/peer/tls
+      - ./crypto-config/peerOrganizations/issuer.GOnetwork.com/peers/peer0.issuer.GOnetwork.com/msp:/etc/hyperledger/crypto/peer/msp
+      - ./crypto-config/peerOrganizations/issuer.GOnetwork.com/peers/peer0.issuer.GOnetwork.com/tls:/etc/hyperledger/crypto/peer/tls
       - /var/run/:/host/var/run/
       - ./:/etc/hyperledger/channel/
     networks:
       - test
-    extra_hosts:
-      - "orderer.example.com:34.125.58.24"
-      - "orderer2.example.com:34.125.58.24"
-      - "orderer3.example.com:34.125.58.24"
-      - "peer0.org1.example.com:34.16.190.121"
-      - "peer1.org1.example.com:34.16.190.121"
-      - "peer0.org2.example.com:34.125.148.23"
-      - "peer1.org2.example.com:34.125.148.23"
-      - "peer0.org3.example.com:34.125.118.226"
-      - "peer1.org3.example.com:34.125.118.226"
 
-  peer1.org3.example.com:
-    container_name: peer1.org3.example.com
+  peer1.issuer.GOnetwork.com:
+    container_name: peer1.issuer.GOnetwork.com
     extends:
       file: base.yaml
       service: peer-base
     environment:
       - FABRIC_LOGGING_SPEC=DEBUG
       - ORDERER_GENERAL_LOGLEVEL=debug
-      - CORE_PEER_LOCALMSPID=Org3MSP
+      - CORE_PEER_LOCALMSPID=issuerMSP
 
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_test
 
-      - CORE_PEER_ID=peer1.org3.example.com
-      - CORE_PEER_ADDRESS=peer1.org3.example.com:12051
+      - CORE_PEER_ID=peer1.issuer.GOnetwork.com
+      - CORE_PEER_ADDRESS=peer1.issuer.GOnetwork.com:12051
       - CORE_PEER_LISTENADDRESS=0.0.0.0:12051
-      # - CORE_PEER_CHAINCODEADDRESS=peer1.org1.example.com:8052
+      # - CORE_PEER_CHAINCODEADDRESS=peer1.issuer.GOnetwork.com:8052
       # - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:8052
       # Exposed for discovery Service
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org3.example.com:12051
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org3.example.com:12051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.issuer.GOnetwork.com:12051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.issuer.GOnetwork.com:12051
 
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb5:5984
@@ -136,21 +126,9 @@ services:
     ports:
       - 12051:12051
     volumes:
-      - ./crypto-config/peerOrganizations/org3.example.com/peers/peer1.org3.example.com/msp:/etc/hyperledger/crypto/peer/msp
-      - ./crypto-config/peerOrganizations/org3.example.com/peers/peer1.org3.example.com/tls:/etc/hyperledger/crypto/peer/tls
+      - ./crypto-config/peerOrganizations/issuer.GOnetwork.com/peers/peer1.issuer.GOnetwork.com/msp:/etc/hyperledger/crypto/peer/msp
+      - ./crypto-config/peerOrganizations/issuer.GOnetwork.com/peers/peer1.issuer.GOnetwork.com/tls:/etc/hyperledger/crypto/peer/tls
       - /var/run/:/host/var/run/
       - ./:/etc/hyperledger/channel/
     networks:
       - test
-    extra_hosts:
-      - "orderer.example.com:34.125.58.24"
-      - "orderer2.example.com:34.125.58.24"
-      - "orderer3.example.com:34.125.58.24"
-      - "peer0.org1.example.com:34.16.190.121"
-      - "peer1.org1.example.com:34.16.190.121"
-      - "peer0.org2.example.com:34.125.148.23"
-      - "peer1.org2.example.com:34.125.148.23"
-      - "peer0.org3.example.com:34.125.118.226"
-      - "peer1.org3.example.com:34.125.118.226"
-  
-    

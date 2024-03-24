@@ -9,6 +9,10 @@
 [Installing Prerequisites and Fabric Binaries](README-files/Step2.md)
 
 **Step 3**
+[Install the crypto materials](README-files/Step3.md)
+
+**Step 4**
+
 
 
 
