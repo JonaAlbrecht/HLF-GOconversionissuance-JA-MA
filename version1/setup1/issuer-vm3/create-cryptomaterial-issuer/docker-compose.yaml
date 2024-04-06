@@ -1,9 +1,9 @@
-version: '2.2'
+version: "2.4"
 
 #this brings up the root certificate authority hosted by the issuing body
 #it uses the hyperledger fabric-ca docker image and the fabric-samples binary/executable fabric-ca-server
 #this project decided to employ a single root certificate authority because identity provision and issuance as well as the initial
-#audit of production devices will remain with the issuing body  
+#audit of production devices will remain with the issuing body
 
 networks:
   test:

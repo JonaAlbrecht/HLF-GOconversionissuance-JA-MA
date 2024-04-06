@@ -15,16 +15,16 @@ createcertificatesForBuyer() {
   echo 'NodeOUs:
   Enable: true
   ClientOUIdentifier:
-    Certificate: cacerts/localhost-10054-ca-buyer-GOnetwork-com.pem
+    Certificate: cacerts/localhost-10054-ca-issuer-GOnetwork-com.pem
     OrganizationalUnitIdentifier: client
   PeerOUIdentifier:
-    Certificate: cacerts/localhost-10054-ca-buyer-GOnetwork-com.pem
+    Certificate: cacerts/localhost-10054-ca-issuer-GOnetwork-com.pem
     OrganizationalUnitIdentifier: peer
   AdminOUIdentifier:
-    Certificate: cacerts/localhost-10054-ca-buyer-GOnetwork-com.pem
+    Certificate: cacerts/localhost-10054-ca-issuer-GOnetwork-com.pem
     OrganizationalUnitIdentifier: admin
   OrdererOUIdentifier:
-    Certificate: cacerts/localhost-10054-ca-buyer-GOnetwork-com.pem
+    Certificate: cacerts/localhost-10054-ca-issuer-GOnetwork-com.pem
     OrganizationalUnitIdentifier: orderer' >${PWD}/../crypto-config/peerOrganizations/buyer.GOnetwork.com/msp/config.yaml
 
   echo

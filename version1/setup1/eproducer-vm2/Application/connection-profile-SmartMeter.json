@@ -1,0 +1,58 @@
+{
+  "name": "eproducer-SmartMeter",
+  "version": "1.0.0",
+  "client": {
+    "organization": "eproducer",
+    "connection": {
+      "timeout": {
+        "peer": {
+          "endorser": "300"
+        }
+      }
+    }
+  },
+  "organizations": {
+    "eproducer": {
+      "mspid": "eproducerMSP",
+      "peers": [
+        "e-peer0.eproducer.GOnetwork.com",
+        "e-peer1.eproducer.GOnetwork.com"
+      ],
+      "certificateAuthorities": ["ca.issuer.GOnetwork.com"]
+    }
+  },
+  "peers": {
+    "e-peer0.eproducer.GOnetwork.com": {
+      "url": "grpcs://localhost:9051",
+      "tlsCACerts": {
+        "pem": "-----BEGIN CERTIFICATE-----\nMIICFjCCAb2gAwIBAgIUfhUkhFBlsRX3pcrYVYo4G1V/ypYwCgYIKoZIzj0EAwIw\naDELMAkGA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRQwEgYDVQQK\nEwtIeXBlcmxlZGdlcjEPMA0GA1UECxMGRmFicmljMRkwFwYDVQQDExBmYWJyaWMt\nY2Etc2VydmVyMB4XDTI0MDMyNDExMDAwMFoXDTM5MDMyMTExMDAwMFowaDELMAkG\nA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRQwEgYDVQQKEwtIeXBl\ncmxlZGdlcjEPMA0GA1UECxMGRmFicmljMRkwFwYDVQQDExBmYWJyaWMtY2Etc2Vy\ndmVyMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE7nP2GAET71yr8qnxuF+lvaCC\n9Jt21BpbWbhH9e2vM2YvRN7gVCpbxZ0vI3jTyQXxf0gN5enbLV5AlrmWgHv3L6NF\nMEMwDgYDVR0PAQH/BAQDAgEGMBIGA1UdEwEB/wQIMAYBAf8CAQEwHQYDVR0OBBYE\nFIiy30qW/nuUERWfZ00C932hZnXXMAoGCCqGSM49BAMCA0cAMEQCICbWt0MvaKYy\nkb81kyYoUIIjDb7BS7M+JVKbyUlxm/4HAiBHGf2f28sCqey8Gl8lyDqeS+XOXFrq\nWJr1BsegJSFKMA==\n-----END CERTIFICATE-----\n"
+      },
+      "grpcOptions": {
+        "ssl-target-name-override": "e-peer0.eproducer.GOnetwork.com",
+        "hostnameOverride": "e-peer0.eproducer.GOnetwork.com"
+      }
+    },
+    "i-peer0.issuer.GOnetwork.com": {
+      "url": "grpcs://localhost:11051",
+      "tlsCACerts": {
+        "pem": "-----BEGIN CERTIFICATE-----\nMIICFjCCAb2gAwIBAgIUfhUkhFBlsRX3pcrYVYo4G1V/ypYwCgYIKoZIzj0EAwIw\naDELMAkGA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRQwEgYDVQQK\nEwtIeXBlcmxlZGdlcjEPMA0GA1UECxMGRmFicmljMRkwFwYDVQQDExBmYWJyaWMt\nY2Etc2VydmVyMB4XDTI0MDMyNDExMDAwMFoXDTM5MDMyMTExMDAwMFowaDELMAkG\nA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRQwEgYDVQQKEwtIeXBl\ncmxlZGdlcjEPMA0GA1UECxMGRmFicmljMRkwFwYDVQQDExBmYWJyaWMtY2Etc2Vy\ndmVyMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE7nP2GAET71yr8qnxuF+lvaCC\n9Jt21BpbWbhH9e2vM2YvRN7gVCpbxZ0vI3jTyQXxf0gN5enbLV5AlrmWgHv3L6NF\nMEMwDgYDVR0PAQH/BAQDAgEGMBIGA1UdEwEB/wQIMAYBAf8CAQEwHQYDVR0OBBYE\nFIiy30qW/nuUERWfZ00C932hZnXXMAoGCCqGSM49BAMCA0cAMEQCICbWt0MvaKYy\nkb81kyYoUIIjDb7BS7M+JVKbyUlxm/4HAiBHGf2f28sCqey8Gl8lyDqeS+XOXFrq\nWJr1BsegJSFKMA==\n-----END CERTIFICATE-----\n"
+      },
+      "grpcOptions": {
+        "ssl-target-name-override": "i-peer0.issuer.GOnetwork.com",
+        "hostnameOverride": "i-peer0.issuer.GOnetwork.com"
+      }
+    }
+  },
+  "certificateAuthorities": {
+    "ca.issuer.GOnetwork.com": {
+      "url": "https://localhost:10054",
+      "caName": "ca.issuer.GOnetwork.com",
+      "tlsCACerts": {
+        "pem": "-----BEGIN CERTIFICATE-----\nMIICiDCCAi+gAwIBAgIUPo9tBmcG+BVbgiImuX8YcqZlZrYwCgYIKoZIzj0EAwIw\naDELMAkGA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRQwEgYDVQQK\nEwtIeXBlcmxlZGdlcjEPMA0GA1UECxMGRmFicmljMRkwFwYDVQQDExBmYWJyaWMt\nY2Etc2VydmVyMB4XDTI0MDMyNDExMDAwMFoXDTI1MDMyNDExMDAwMFowbzELMAkG\nA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRQwEgYDVQQKEwtIeXBl\ncmxlZGdlcjEPMA0GA1UECxMGRmFicmljMSAwHgYDVQQDExdjYS5pc3N1ZXIuR09u\nZXR3b3JrLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJdRtCTgZuwDSzGh\nUncKXx7speJm5iq6pg81QGzN2MRarSvCSZatWOGBjW18nyg4oDDFeV/V5SS8EBRn\nr3FG2N2jga8wgawwDgYDVR0PAQH/BAQDAgOoMB0GA1UdJQQWMBQGCCsGAQUFBwMB\nBggrBgEFBQcDAjAMBgNVHRMBAf8EAjAAMB0GA1UdDgQWBBRNIAgEtf2Mp2G4adet\nw5JW3qjatTAfBgNVHSMEGDAWgBSIst9Klv57lBEVn2dNAvd9oWZ11zAtBgNVHREE\nJjAkghdjYS5pc3N1ZXIuR09uZXR3b3JrLmNvbYIJbG9jYWxob3N0MAoGCCqGSM49\nBAMCA0cAMEQCIGeULZ53Gewp1qjCLojZK1UnWGPrqPVOPCw5Eu9JRVcNAiB6z3uq\nwIVJovU5e70vsAwgZ7tjKXv3KQgBYZpIDaVYzA==\n-----END CERTIFICATE-----\n"
+      },
+      "httpOptions": {
+        "verify": false
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+    "name": "first-network-${ORG}",
+    "version": "1.0.0",
+    "client": {
+        "organization": "${ORG}",
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300"
+                }
+            }
+        }
+    },
+    "organizations": {
+        "${ORG}": {
+            "mspid": "${ORG}MSP",
+            "peers": [
+                "peer0.${ORG}.GOnetwork.com",
+                "peer1.${ORG}.GOnetwork.com"
+            ],
+            "certificateAuthorities": [
+                "ca.${ORG}.GOnetwork.com"
+            ]
+        }
+    },
+    "peers": {
+        "peer0.${ORG}.GOnetwork.com": {
+            "url": "grpcs://peer0.buyer.GOnetwork.com:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "peer0.${ORG}.GOnetwork.com",
+                "hostnameOverride": "peer0.${ORG}.GOnetwork.com"
+            }
+        },
+	"peer1.${ORG}.GOnetwork.com": {
+            "url": "grpcs://peer1.buyer.GOnetwork.com:${P0PORT1}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM1}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "peer1.${ORG}.GOnetwork.com",
+                "hostnameOverride": "peer1.${ORG}.GOnetwork.com"
+            }
+        }
+
+	
+    },
+    "certificateAuthorities": {
+        "ca.${ORG}.GOnetwork.com": {
+            "url": "https://ca.buyer.GOnetwork.com:${CAPORT}",
+            "caName": "ca.${ORG}.GOnetwork.com",
+            "tlsCACerts": {
+                "pem": "${CAPEM}"
+            },
+            "httpOptions": {
+                "verify": false
+            }
+        }
+    }
+}

@@ -1,4 +1,3 @@
-
 OrdererOrgs:
   - Name: Orderer
     Domain: GOnetwork.com
@@ -7,16 +6,20 @@ OrdererOrgs:
     Specs:
       - Hostname: orderer
         SANS:
-            - "localhost"
-            - "127.0.0.1"
+          - "localhost"
+          - "127.0.0.1"
       - Hostname: orderer2
         SANS:
           - "localhost"
           - "127.0.0.1"
       - Hostname: orderer3
         SANS:
-            - "localhost"
-            - "127.0.0.1"
+          - "localhost"
+          - "127.0.0.1"
+      - Hostname: orderer4
+        SANS:
+          - "localhost"
+          - "127.0.0.1"
 
 PeerOrgs:
   - Name: buyer
@@ -54,3 +57,15 @@ PeerOrgs:
 
     Users:
       Count: 1
+
+  - Name: hproducer
+    Domain: hproducer.GOnetwork.com
+    EnableNodeOUs: true
+
+    Template:
+      Count: 2
+      SANS:
+        - "localhost"
+
+    Users:
+      Count: 2

@@ -31,11 +31,11 @@ function yaml_ccp {
 
 ORG=buyer
 P0PORT=7051
-CAPORT=7054
+CAPORT=10054
 P0PORT1=8051
-PEERPEM=../../crypto-config/peerOrganizations/buyer.GOnetwork.com/peers/peer0.buyer.GOnetwork.com/tls/tlscacerts/tls-localhost-7054-ca-buyer-GOnetwork-com.pem
-PEERPEM1=../../crypto-config/peerOrganizations/buyer.GOnetwork.com/peers/peer1.buyer.GOnetwork.com/tls/tlscacerts/tls-localhost-7054-ca-buyer-GOnetwork-com.pem
+PEERPEM=../../crypto-config/peerOrganizations/buyer.GOnetwork.com/b-peers/b-peer0.buyer.GOnetwork.com/tls/tlscacerts/tls-localhost-10054-ca-issuer-GOnetwork-com.pem
+PEERPEM1=../../crypto-config/peerOrganizations/buyer.GOnetwork.com/b-peers/b-peer1.buyer.GOnetwork.com/tls/tlscacerts/tls-localhost-10054-ca-issuer-GOnetwork-com.pem
 CAPEM=../../crypto-config/peerOrganizations/buyer.GOnetwork.com/msp/tlscacerts/ca.crt
 
-echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM $PEERPEM1 $P0PORT1)" > connection-buyer.json
+echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM $PEERPEM1 $P0PORT1)" > connection-${ORG}.json
 #echo "$(yaml_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > organizations/peerOrganizations/buyer.GOnetwork.com/connection-buyer.yaml

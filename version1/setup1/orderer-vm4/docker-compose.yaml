@@ -38,7 +38,7 @@ services:
       - ../../artifacts/channel/genesis.block:/var/hyperledger/orderer/genesis.block
       - ./crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/msp:/var/hyperledger/orderer/msp
       - ./crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/tls:/var/hyperledger/orderer/tls
-  
+
   orderer2.GOnetwork.com:
     container_name: orderer2.GOnetwork.com
     image: hyperledger/fabric-orderer:2.1
@@ -72,8 +72,7 @@ services:
     volumes:
       - ../../artifacts/channel/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
       - ./crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/msp:/var/hyperledger/orderer/msp
-      - ./crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/tls:/var/hyperledger/orderer/tlsGOnetwork
-
+      - ./crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/tls:/var/hyperledger/orderer/tls
 
   orderer3.GOnetwork.com:
     container_name: orderer3.GOnetwork.com
@@ -109,3 +108,38 @@ services:
       - ../../artifacts/channel/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
       - ./crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/msp:/var/hyperledger/orderer/msp
       - ./crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/tls:/var/hyperledger/orderer/tls
+
+  orderer4.GOnetwork.com:
+    container_name: orderer4.GOnetwork.com
+    image: hyperledger/fabric-orderer:2.1
+    dns_search: .
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_KAFKA_VERBOSE=true
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_METRICS_PROVIDER=prometheus
+      - ORDERER_OPERATIONS_LISTENADDRESS=0.0.0.0:8443
+      - ORDERER_GENERAL_LISTENPORT=10050
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderers
+    command: orderer
+    ports:
+      - 10050:10050
+      - 8446:8443
+    networks:
+      - test
+    volumes:
+      - ../../artifacts/channel/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+      - ./crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/msp:/var/hyperledger/orderer/msp
+      - ./crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls:/var/hyperledger/orderer/tls

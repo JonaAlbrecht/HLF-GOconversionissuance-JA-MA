@@ -1,6 +1,6 @@
 export CORE_PEER_TLS_ENABLED=true
-export ORDERER_CA=${PWD}/../orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
-export PEER0_EPRODUCER_CA=${PWD}/crypto-config/peerOrganizations/eproducer.GOnetwork.com/peers/peer0.eproducer.GOnetwork.com/tls/ca.crt
+export ORDERER_CA=${PWD}/../orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
+export PEER0_EPRODUCER_CA=${PWD}/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer0.eproducer.GOnetwork.com/tls/ca.crt
 export FABRIC_CFG_PATH=${PWD}/../../artifacts/channel/config/
 
 export CHANNEL_NAME=mychannel
@@ -26,8 +26,8 @@ fetchChannelBlock() {
     setGlobalsForPeer0eproducer
     #replace given IP address with IP address of the orderer vm
     # If deploying on single machine, replace orderer's vm IP address with "localhost"
-    peer channel fetch 0 ./channel-artifacts/$CHANNEL_NAME.block -o 34.125.58.24:7050 \
-        --ordererTLSHostnameOverride orderer.GOnetwork.com \
+    peer channel fetch 0 ./channel-artifacts/$CHANNEL_NAME.block -o localhost:8050 \
+        --ordererTLSHostnameOverride orderer2.GOnetwork.com \
         -c $CHANNEL_NAME --tls --cafile $ORDERER_CA
 }
 
@@ -48,7 +48,7 @@ updateAnchorPeers() {
     setGlobalsForPeer0eproducer
     #replace given IP address with IP address of the orderer vm
     # If deploying on single machine, replace orderer's vm IP address with "localhost"
-    peer channel update -o 34.125.58.24:7050 --ordererTLSHostnameOverride orderer.GOnetwork.com \
+    peer channel update -o localhost:8050 --ordererTLSHostnameOverride orderer2.GOnetwork.com \
         -c $CHANNEL_NAME -f ./../../artifacts/channel/${CORE_PEER_LOCALMSPID}anchors.tx \
         --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
 

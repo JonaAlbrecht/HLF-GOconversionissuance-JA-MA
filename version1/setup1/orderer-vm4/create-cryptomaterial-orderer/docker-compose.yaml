@@ -1,4 +1,4 @@
-version: '2.4'
+version: "2.4"
 
 #this brings up the fabric-ca for the orderer organisation using fabric-samples binary fabric-ca-server
 
@@ -6,7 +6,6 @@ networks:
   test:
 
 services:
-
   ca_orderer:
     image: hyperledger/fabric-ca
     environment:

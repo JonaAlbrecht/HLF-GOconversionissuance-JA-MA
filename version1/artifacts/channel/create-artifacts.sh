@@ -13,7 +13,6 @@ cryptogen generate --config=./crypto-config.yaml --output=./crypto-config/
 # System channel
 SYS_CHANNEL="sys-channel"
 
-# channel name defaults to "mychannel"
 CHANNEL_NAME="mychannel"
 
 echo $CHANNEL_NAME
@@ -33,3 +32,6 @@ configtxgen -profile BasicChannel -configPath . -outputAnchorPeersUpdate ./eprod
 
 echo "#######    Generating anchor peer update for issuerMSP  ##########"
 configtxgen -profile BasicChannel -configPath . -outputAnchorPeersUpdate ./issuerMSPanchors.tx -channelID $CHANNEL_NAME -asOrg issuerMSP
+
+echo "#######    Generating anchor peer update for hproducerMSP  ##########"
+configtxgen -profile BasicChannel -configPath . -outputAnchorPeersUpdate ./hproducerMSPanchors.tx -channelID $CHANNEL_NAME -asOrg hproducerMSP

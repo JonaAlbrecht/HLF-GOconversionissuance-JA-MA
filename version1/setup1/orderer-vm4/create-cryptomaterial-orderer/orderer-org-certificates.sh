@@ -1,4 +1,5 @@
 #this creates the crypto material for the orderer organisation using fabric-samples binary "fabric-ca-client"
+#the orderer gets enrolled with its own certificate authority
 
 createCertificateForOrderer() {
   echo
@@ -27,7 +28,7 @@ createCertificateForOrderer() {
 
   echo
   echo "Register orderer"
-  echo
+  echo 
 
   fabric-ca-client register --caname ca-orderer --id.name orderer --id.secret ordererpw --id.type orderer --tls.certfiles ${PWD}/fabric-ca/ordererOrg/tls-cert.pem
 
@@ -42,6 +43,12 @@ createCertificateForOrderer() {
   echo
 
   fabric-ca-client register --caname ca-orderer --id.name orderer3 --id.secret ordererpw --id.type orderer --tls.certfiles ${PWD}/fabric-ca/ordererOrg/tls-cert.pem
+
+  echo
+  echo "Register orderer3"
+  echo
+
+  fabric-ca-client register --caname ca-orderer --id.name orderer4 --id.secret ordererpw --id.type orderer --tls.certfiles ${PWD}/fabric-ca/ordererOrg/tls-cert.pem
 
   echo
   echo "Register the orderer admin"
@@ -131,6 +138,31 @@ createCertificateForOrderer() {
 
   mkdir ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/msp/tlscacerts
   cp ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/tls/tlscacerts/* ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
+  # ---------------------------------------------------------------------------
+
+#  Orderer 4
+  mkdir -p ../crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com
+
+  echo
+  echo "## Generate the orderer4 msp"
+  echo
+
+  fabric-ca-client enroll -u https://orderer4:ordererpw@localhost:9054 --caname ca-orderer -M ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/msp --csr.hosts orderer4.GOnetwork.com --csr.hosts localhost --tls.certfiles ${PWD}/fabric-ca/ordererOrg/tls-cert.pem
+
+  cp ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/msp/config.yaml ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/msp/config.yaml
+
+  echo
+  echo "## Generate the orderer4-tls certificates"
+  echo
+
+  fabric-ca-client enroll -u https://orderer4:ordererpw@localhost:9054 --caname ca-orderer -M ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls --enrollment.profile tls --csr.hosts orderer4.GOnetwork.com --csr.hosts localhost --tls.certfiles ${PWD}/fabric-ca/ordererOrg/tls-cert.pem
+
+  cp ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls/tlscacerts/* ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls/ca.crt
+  cp ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls/signcerts/* ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls/server.crt
+  cp ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls/keystore/* ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls/server.key
+
+  mkdir ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/msp/tlscacerts
+  cp ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls/tlscacerts/* ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
   # ---------------------------------------------------------------------------
 
   mkdir -p ../crypto-config/ordererOrganizations/GOnetwork.com/users

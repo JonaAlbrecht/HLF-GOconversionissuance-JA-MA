@@ -1,0 +1,5 @@
+FROM ubuntu:latest
+COPY test.sh /bin/my_bash
+COPY root /var/spool/cron/crontabs/root
+RUN chmod +x /bin/my_bash
+CMD crond -l 2 -f

@@ -2,78 +2,80 @@
 
 ## On virtual machine 1
 
-cd into ../HLF-GOconversionissuance-JA-MA/version1/setup1/e-producer-vm1/create-cryptomaterial-e-producer
+cd into ../HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3/create-cryptomaterial-issuer
 
-Inside is a docker-compose.yaml and a bash script. 
+Inside is a docker-compose.yaml and a bash script.
 
-First we run the docker-compose file: 
+First we run the docker-compose file:
 
-```docker-compose up -d```
+`docker-compose up -d`
 
-This will create a docker container for the certificate authority (named ca.org1.example.com) of the electricity producer organisation. The CA will be listening on port7054. The public/private key of the CA are found under /fabric-ca/org1/msp/keystore/. We can check that the docker container is up using 
+This will create a docker container for the certificate authority (named ca.issuer.GOnetwork.com) of the issuing body. It will also create the crypto-material of the issuing body (folder called fabric-ca inside create-cryptomaterial-issuer) including the root certificate used to create all other identities in the network. The CA will be listening on port 7054. The public/private key of the CA are found under /fabric-ca/org1/msp/keystore/. We can check that the docker container is up using
 
-```docker ps```
+`docker ps`
 
-If docker-compose up returns an error "permission denied while trying to connect to the Docker daemon socket" you need to run the following commands to enable permission for non-root users: 
+If docker-compose up returns an error "permission denied while trying to connect to the Docker daemon socket" you need to run the following commands to enable permission for non-root users:
 
-```sudo groupadd docker```
+`sudo groupadd docker`
 
-```sudo usermod -aG docker $USER```
+`sudo usermod -aG docker $USER`
 
-```newgrp docker```
+`newgrp docker`
 
-And then rerun docker-compose. If the problem still persists you can try ```reboot```
+And then rerun docker-compose. If the problem still persists you can try `reboot`
 
-**Then we run the bash script ./e-producer-org-certificates.sh** 
+If you are re-running the project and you would like to delete the fabric-ca folder, you need to set permissions before deletion: `sudo chmod ugo+rwx /home/yourusername/HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3/create-cryptomaterial-issuer/fabric-ca`
 
-```./e-producer-org-certificates.sh```
+**Then we run the bash script ./e-producer-org-certificates.sh**
 
-The bash script creates the cryptomaterial for all users and peers in the electricity producer organisation using the binary 'fabric-ca-client' from the fabric-samples. The script is similar to Fabric's crypogen tool, it will:
-1. makes directories (crypto-config) for all the cryptomaterial
-2. enrolls ca.org1.example.com as the admin for this organisation providing the tls-cert.pem certificate
+`./issuer-org-certificates.sh`
+
+The bash script creates the cryptomaterial for all users and peers in the issuing body organisation using the binary 'fabric-ca-client' from the fabric-samples. The script is similar to Fabric's crypogen tool, it will:
+
+1. make directories (crypto-config) for all the cryptomaterial
+2. enrolls ca.issuer.GOnetwork.com as the admin for this organisation providing the tls-cert.pem certificate
 3. prints node organisation units into ../msp/config.yaml
 4. uses fabric-ca-client binary to register peer0, peer1, user1 and admin user with the enrolled ca
-5. generates msp and tls certificates for peer0, peer1, user1 and admin user 
+5. generates msp and tls certificates for peer0, peer1, user1 and admin user
 
-## On virtual machine 2
+## Cryptomaterial for buyer org
 
-Navigate to ../HLF-GOconversionissuance-JA-MA/version1/setup1/buyer-vm2/create-cryptomaterial-buyer
+`cd ../../buyer-vm1/create-cryptomaterial-buyer`
 
-Run the docker-compose file for vm2
+The cryptomaterial for the buyer organisation is created using the root certificates of the issuing body ca, i.e. in a real-world scenario, the certificates cannot be issued without this certificate. For the buyer, we enroll: an admin, 2 peers and one client which will later be used to run the client-side application for interacting with the network. Run the shell script:
 
-```docker-compose up -d```
+`./buyer-org-certificates.sh`
 
-Run the bash script 
+## Cryptomaterial for e-producer
 
-```./buyer-org-certificates.sh```
+`cd ../../eproducer-vm2/create-cryptomaterial-eproducer`
 
-## On Virtual machine 3
+The cryptomaterial for the electricity producer organisation is created using the root certificates of the issuing body ca, i.e. in a real-world scenario, the certificates cannot be issued without this certificate. For the eproducer, we enroll: an admin, 2 peers and one Smart Meter. To the Smart Meter certificate we add several attributes (see line 45 of the bash script) which will be used to authenticate input data sent by the Smart Meter to the smart contract.
 
-Navigate to ../HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3/create-cryptomaterial-issuer
+`./create-cryptomaterial-eproducer.sh`
 
-Run the docker-compose file for vm2
+To see the attributes we enrolled, cd into the relevant folder in crypto-config:
 
-```docker-compose up -d```
+`cd /home/jonalinux/HLF-GOconversionissuance-JA-MA/version1/setup1/eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/SmartMeter/SmartMeter1@eproducer.GOnetwork.com/msp/signcerts`
 
-Run the bash script 
+And then run: `keytool -printcert -file cert.pem`
+to check the attributes registered with the certificate.
 
-```./issuer-org-certificates.sh```
+## Cryptomaterial for h-producer
 
+`cd ../../hproducer-vm5/create-cryptomaterial-hproducer`
 
-# On Virtual machine 4
+The cryptomaterial for the hydrogen producer organisation is created using the root certificates of the issuing body ca. For the hydrogen producer, we enroll: an admin, 2 peers and one Output Meter. To the Output Meter certificate we add several attributes (see line 45 of the bash script) which will be used to authenticate input data sent by the Smart Meter to the smart contract.
 
-Navigate to ../HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/create-cryptomaterial-orderer
+`./create-cryptomaterial-hproducer.sh`
 
-Run the docker-compose file for vm2
+To see the attributes we enrolled, cd into the relevant folder in crypto-config:
 
-```docker-compose up -d```
+`cd /home/jonalinux/HLF-GOconversionissuance-JA-MA/version1/setup1/eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/SmartMeter/SmartMeter1@eproducer.GOnetwork.com/msp/signcerts`
 
-Run the bash script 
-
-```./orderer-org-certificates.sh```
-
-
+And then run: `keytool -printcert -file cert.pem`
+to check the attributes registered with the certificate.
 
 ## Create Channel Artifacts
 
-We have to create the Genesis block and channel.tx file of the Blockchain before we join the different vms in the docker swarm network. Therefore, on each VM, we have to navigate into the orderer-vm4/create-cryptomaterial-orderer folder, run the docker container and create the cryptomaterial. 
+We have to create the Genesis block and channel.tx file of the Blockchain before we join the different vms in the docker swarm network. Therefore, on each VM, we have to navigate into the orderer-vm4/create-cryptomaterial-orderer folder, run the docker container and create the cryptomaterial.
