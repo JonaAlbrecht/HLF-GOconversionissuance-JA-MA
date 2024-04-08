@@ -13,7 +13,7 @@ echo $CHANNEL_NAME
 
 # Generate System Genesis block using the configtxgen tool with flags:
 # -profile from the configtx.yaml file to use for genesis block
-# -configPath path to the configtx.yaml file and the basic configuration files of the HLF framework in the config folder (copyrighted by IBM)
+# -configPath path to the configtx.yaml file
 # -outputBlock path to write the genesis block to
 configtxgen -profile OrdererGenesis -configPath . -channelID $SYS_CHANNEL  -outputBlock ./genesis.block
 

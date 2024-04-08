@@ -12,6 +12,7 @@
 [Install the crypto materials](README-files/Step3.md)
 
 **Step 4**
+[Bring up the channel and commit the chaincode](README-files/Step4.md)
 
 **Step 6**
 [Install the Metering devices](README-files/Step6.md)

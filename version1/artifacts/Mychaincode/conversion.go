@@ -828,7 +828,7 @@ func (s *SmartContract) claimRenewableattributesHydrogen(ctx contractapi.Transac
 	//claiming renewable attributes of Hydrogen by individual GOs. also should implement a claim by quantity function for both energy carriers. 
 	type ClaimHydrogenTransientInput struct {
 		collection string `json:"collection"`
-		hGOID string `json:hGOID`
+		hGOID string `json:"hGOID"`
 	}
 
 	transientMap, err := ctx.GetStub().GetTransient()
