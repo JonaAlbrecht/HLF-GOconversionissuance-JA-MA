@@ -33,7 +33,7 @@ Organizations:
         Rule: "OR('buyerMSP.admin')"
       Endorsement:
         Type: Signature
-        Rule: "AND('buyerMSP.peer', 'issuerMSP.peer')"
+        Rule: "OR('buyerMSP.peer', 'issuerMSP.peer')"
 
     AnchorPeers:
       - Host: b-peer0.buyer.GOnetwork.com
@@ -58,7 +58,7 @@ Organizations:
         Rule: "OR('eproducerMSP.admin')"
       Endorsement:
         Type: Signature
-        Rule: "AND('eproducerMSP.peer', 'isserMSP.peer')"
+        Rule: "OR('eproducerMSP.peer', 'issuerMSP.peer')"
 
     AnchorPeers:
       - Host: e-peer0.eproducer.GOnetwork.com
@@ -108,7 +108,7 @@ Organizations:
         Rule: "OR('hproducerMSP.admin')"
       Endorsement:
         Type: Signature
-        Rule: "AND('hproducerMSP.peer', 'issuerMSP.peer')"
+        Rule: "OR('hproducerMSP.peer', 'issuerMSP.peer')"
 
     AnchorPeers:
       - Host: h-peer0.hproducer.GOnetwork.com

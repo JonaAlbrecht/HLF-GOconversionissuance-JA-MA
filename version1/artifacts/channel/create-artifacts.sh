@@ -1,13 +1,7 @@
 
-chmod -R 0755 ./crypto-config
-# Delete existing artifacts
-rm -rf ./crypto-config
+# Delete existing artifacts --> if this has been forgotten
 rm genesis.block mychannel.tx
 rm -rf ../../channel-artifacts/*
-
-#Generate Crypto artifacts for organizations
-cryptogen generate --config=./crypto-config.yaml --output=./crypto-config/
-
 
 
 # System channel
@@ -17,11 +11,14 @@ CHANNEL_NAME="mychannel"
 
 echo $CHANNEL_NAME
 
-# Generate System Genesis block
+# Generate System Genesis block using the configtxgen tool with flags:
+# -profile from the configtx.yaml file to use for genesis block
+# -configPath path to the configtx.yaml file and the basic configuration files of the HLF framework in the config folder (copyrighted by IBM)
+# -outputBlock path to write the genesis block to
 configtxgen -profile OrdererGenesis -configPath . -channelID $SYS_CHANNEL  -outputBlock ./genesis.block
 
 
-# Generate channel configuration block
+# Generate channel configuration block, anchor peers with flags:
 configtxgen -profile BasicChannel -configPath . -outputCreateChannelTx ./mychannel.tx -channelID $CHANNEL_NAME
 
 echo "#######    Generating anchor peer update for buyerMSP  ##########"

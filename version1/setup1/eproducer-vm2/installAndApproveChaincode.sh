@@ -2,6 +2,7 @@ export CORE_PEER_TLS_ENABLED=true
 export ORDERER_CA=${PWD}/../orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
 export PEER0_EPRODUCER_CA=${PWD}/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer0.eproducer.GOnetwork.com/tls/ca.crt
 export FABRIC_CFG_PATH=${PWD}/../../artifacts/channel/config/
+export COLLECTION_CONFIGPATH=${PWD}/../../artifacts/private-data-collections/collection-config.json
 
 export CHANNEL_NAME=mychannel
 
@@ -23,7 +24,7 @@ setGlobalsForPeer1eproducer() {
 
 presetup() {
     echo Vendoring Go dependencies ...
-    pushd ./../../artifacts/src/github.com/fabcar/go
+    pushd ./../../artifacts/Mychaincode
     GO111MODULE=on go mod vendor
     popd
     echo Finished vendoring Go dependencies
@@ -33,8 +34,8 @@ presetup() {
 CHANNEL_NAME="mychannel"
 CC_RUNTIME_LANGUAGE="golang"
 VERSION="1"
-CC_SRC_PATH="./../../artifacts/src/github.com/fabcar/go"
-CC_NAME="fabcar"
+CC_SRC_PATH="./../../artifacts/Mychaincode"
+CC_NAME="conversion"
 
 packageChaincode() {
     rm -rf ${CC_NAME}.tar.gz
@@ -75,7 +76,7 @@ approveForeproducer() {
         --ordererTLSHostnameOverride orderer.eproducer.com --tls $CORE_PEER_TLS_ENABLED \
         --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} \
         --version ${VERSION} --init-required --package-id ${PACKAGE_ID} \
-        --sequence ${VERSION}
+        --sequence ${VERSION} --collections-config ${COLLECTION_CONFIGPATH}
 
     echo "===================== chaincode approved from eproducer ===================== "
 }
@@ -87,7 +88,8 @@ checkCommitReadyness() {
     setGlobalsForPeer0eproducer
     peer lifecycle chaincode checkcommitreadiness --channelID $CHANNEL_NAME \
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_EPRODUCER_CA \
-        --name ${CC_NAME} --version ${VERSION} --sequence ${VERSION} --output json --init-required
+        --name ${CC_NAME} --version ${VERSION} --sequence ${VERSION} --output json --init-required \
+        --collections-config ${COLLECTION_CONFIGPATH}
     echo "===================== checking commit readyness from eproducer ===================== "
 }
 

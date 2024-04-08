@@ -1,12 +1,12 @@
-version: "2.4"
+version: "3.8"
 
 networks:
   test:
 
 services:
   smartmeter:
-    container_name: SmartMeter
-    image: smartmeter:latest
+    container_name: tests
+    image: cron:latest
     tty: true
     environment:
       - GOPATH=/opt/gopath
@@ -28,8 +28,8 @@ services:
       - test
     volumes:
       - /var/run/:/host/var/run/
-      - ./../crypto-config/peerOrganizations/eproducer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/eproducer.GOnetwork.com/
-      - ./../../buyer-vm1/crypto-config/peerOrganizations/buyer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/buyer.GOnetwork.com/
-      - ./../../issuer-vm3/crypto-config/peerOrganizations/issuer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/
-      - ./../../orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/:/etc/hyperledger/channel/crypto-config/ordererOrganizations/GOnetwork.com/
-      - ./../../hproducer-vm5/crypto-config/peerOrganizations/hproducer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com
+      - ./../../crypto-config/peerOrganizations/eproducer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/eproducer.GOnetwork.com/
+      - ./../../../buyer-vm1/crypto-config/peerOrganizations/buyer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/buyer.GOnetwork.com/
+      - ./../../../issuer-vm3/crypto-config/peerOrganizations/issuer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/
+      - ./../../../orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/:/etc/hyperledger/channel/crypto-config/ordererOrganizations/GOnetwork.com/
+      - ./../../../hproducer-vm5/crypto-config/peerOrganizations/hproducer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com

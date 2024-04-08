@@ -5,6 +5,7 @@ export PEER0_EPRODUCER_CA=${PWD}/../eproducer-vm2/crypto-config/peerOrganization
 export PEER0_BUYER_CA=${PWD}/../buyer-vm1/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-peers/b-peer0.issuer.GOnetwork.com/tls/ca.crt
 export PEER0_HPRODUCER_CA=${PWD}/../hproducer-vm5/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/ca.crt
 export FABRIC_CFG_PATH=${PWD}/../../artifacts/channel/config/
+export COLLECTION_CONFIGPATH=${PWD}/../../artifacts/private-data-collections/collection-config.json
 
 
 export CHANNEL_NAME=mychannel
@@ -42,7 +43,7 @@ setGlobalsForPeer1issuer() {
 
 presetup() {
     echo Vendoring Go dependencies ...
-    pushd ./../../artifacts/src/github.com/fabcar/go
+    pushd ./../../artifacts/Mychaincode
     GO111MODULE=on go mod vendor
     popd
     echo Finished vendoring Go dependencies
@@ -52,8 +53,8 @@ presetup
 CHANNEL_NAME="mychannel"
 CC_RUNTIME_LANGUAGE="golang"
 VERSION="1"
-CC_SRC_PATH="./../../artifacts/src/github.com/fabcar/go"
-CC_NAME="fabcar"
+CC_SRC_PATH="./../../artifacts/Mychaincode"
+CC_NAME="conversion" 
 
 packageChaincode() {
     rm -rf ${CC_NAME}.tar.gz
@@ -93,7 +94,7 @@ approveForissuer() {
         --ordererTLSHostnameOverride orderer.GOnetwork.com --tls \
         --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${VERSION} \
         --init-required --package-id ${PACKAGE_ID} \
-        --sequence ${VERSION} --signature-policy "AND('issuer.member')"
+        --sequence ${VERSION} --collections-config ${COLLECTION_CONFIGPATH}
     # set +x
 
     echo "===================== chaincode approved from issuer ===================== "
@@ -107,7 +108,8 @@ checkCommitReadyness() {
     setGlobalsForPeer0issuer
     peer lifecycle chaincode checkcommitreadiness \
         --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${VERSION} \
-        --sequence ${VERSION} --output json --init-required
+        --sequence ${VERSION} --output json --init-required \
+        --collections-config ${COLLECTION_CONFIGPATH}
     echo "===================== checking commit readyness from issuer ===================== "
 }
 
@@ -122,7 +124,8 @@ commitChaincodeDefinition() {
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_EPRODUCER_CA \
         --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_BUYER_CA \
         --peerAddresses localhost:13051 --tlsRootCertFiles $PEER0_HPRODUCER_CA \
-        --version ${VERSION} --sequence ${VERSION} --init-required
+        --version ${VERSION} --sequence ${VERSION} --init-required \
+        --collections-config ${COLLECTION_CONFIGPATH}
 }
 
 #commitChaincodeDefinition
@@ -155,7 +158,7 @@ chaincodeInvokeInit() {
 chaincodeInvoke() {
     setGlobalsForPeer0issuer
 
-    ## Create Car
+    ## Create electricityGO
     peer chaincode invoke -o localhost:9050 \
         --ordererTLSHostnameOverride orderer3.GOnetwork.com \
         --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \
@@ -164,7 +167,7 @@ chaincodeInvoke() {
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_EPRODUCER_CA   \
         --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_ISSUER_CA \
         --peerAddresses localhost:13051 --tlsRootCertFiles $PEER0_HPRODUCER_CA \
-        -c '{"function": "createCar","Args":["Car-ABCDEEE", "Audi", "R8", "Red", "Sandip"]}'
+        -c '{"function": "createElectricityGO","Args":[]}'
 
     ## Init ledger
     # peer chaincode invoke -o localhost:7050 \

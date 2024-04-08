@@ -2,7 +2,7 @@
 
 ---
 
-**Step 1:** 
+**Step 1:**
 [Configuring and connecting to the virtual machines](README-files/Step1.md)
 
 **Step 2**
@@ -13,6 +13,5 @@
 
 **Step 4**
 
-
-
-
+**Step 6**
+[Install the Metering devices](README-files/Step6.md)

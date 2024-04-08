@@ -42,8 +42,8 @@ createCertificateForhproducer() {
   echo "Register OutputMeter"
   echo
 
-# this creates the Output Meter "measuring" the output electrolysis process x509 certificate with the attributes "trusted device = true, maxOutput = 10 kilos of hydrogen per hour; kwhperkilo:40, i.e. the kilowatthours input needed per kilo hydrogen ouptut, conversion efficiency of 0.8 and the technology type, set to PEM electrolyser"
-  fabric-ca-client register --caname ca.issuer.GOnetwork.com --id.name OutputMeter1 --id.secret OutputMeter1pw --id.type client --id.attrs 'hydrogentrustedDevice=true:ecert,maxOutput=10:ecert,kwhperkilo=40:ecert,conversionEfficiency=0.8:ecert,technologyType=PEMelectrolyser:ecert,emissionIntensity=20:ecert' --tls.certfiles ${PWD}/../../issuer-vm3/create-cryptomaterial-issuer/fabric-ca/issuer/tls-cert.pem
+# this creates the Output Meter "measuring" the output electrolysis process x509 certificate with the attributes "trusted device = true, maxOutput = 10000 kilos of hydrogen per hour; kwhperkilo: varies between 50, i.e. the kilowatthours input needed per kilo hydrogen ouptut, conversion efficiency of 0.8 and the technology type, set to PEM electrolyser"
+  fabric-ca-client register --caname ca.issuer.GOnetwork.com --id.name OutputMeter1 --id.secret OutputMeter1pw --id.type client --id.attrs 'hydrogentrustedDevice=true:ecert,maxOutput=100:ecert,kwhperkilo=50:ecert,conversionEfficiency=0.8:ecert,technologyType=PEMelectrolyser:ecert,emissionIntensity=20:ecert' --tls.certfiles ${PWD}/../../issuer-vm3/create-cryptomaterial-issuer/fabric-ca/issuer/tls-cert.pem
 
   echo
   echo "Register the org admins"

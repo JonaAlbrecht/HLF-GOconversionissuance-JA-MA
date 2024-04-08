@@ -2,13 +2,14 @@ export CORE_PEER_TLS_ENABLED=true
 export ORDERER_CA=${PWD}/../orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
 export PEER0_HPRODUCER_CA=${PWD}/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/ca.crt
 export FABRIC_CFG_PATH=${PWD}/../../artifacts/channel/config/
+export COLLECTION_CONFIGPATH=${PWD}/../../artifacts/private-data-collections/collection-config.json
 
 export CHANNEL_NAME=mychannel
 
 setGlobalsForPeer0hproducer() {
     export CORE_PEER_LOCALMSPID="hproducerMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_HPRODUCER_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/Admin@eproducer.GOnetwork.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/Admin@hproducer.GOnetwork.com/msp
     export CORE_PEER_ADDRESS=localhost:9051
 
 }
@@ -16,14 +17,14 @@ setGlobalsForPeer0hproducer() {
 setGlobalsForPeer1hproducer() {
     export CORE_PEER_LOCALMSPID="hproducerMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_EPRODUCER_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/hproducer.GOnetwork.com/SmartMeter/Admin@eproducer.GOnetwork.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/Admin@hproducer.GOnetwork.com/msp
     export CORE_PEER_ADDRESS=localhost:10051
 
 }
 
 presetup() {
     echo Vendoring Go dependencies ...
-    pushd ./../../artifacts/src/github.com/fabcar/go
+    pushd ./../../artifacts/Mychaincode
     GO111MODULE=on go mod vendor
     popd
     echo Finished vendoring Go dependencies
@@ -33,8 +34,8 @@ presetup() {
 CHANNEL_NAME="mychannel"
 CC_RUNTIME_LANGUAGE="golang"
 VERSION="1"
-CC_SRC_PATH="./../../artifacts/src/github.com/fabcar/go"
-CC_NAME="fabcar"
+CC_SRC_PATH="./../../artifacts/Mychaincode"
+CC_NAME="conversion"
 
 packageChaincode() {
     rm -rf ${CC_NAME}.tar.gz
@@ -70,12 +71,12 @@ queryInstalled() {
 approveForhproducer() {
     setGlobalsForPeer0hproducer
 
-    # Replace localhost with your orderer's vm IP address
+    # If deploying on several VMs, replace localhost with your orderer's vm IP address
     peer lifecycle chaincode approveformyorg -o localhost:7050 \
         --ordererTLSHostnameOverride orderer4.GOnetwork.com --tls $CORE_PEER_TLS_ENABLED \
         --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} \
         --version ${VERSION} --init-required --package-id ${PACKAGE_ID} \
-        --sequence ${VERSION}
+        --sequence ${VERSION} --collections-config ${COLLECTION_CONFIGPATH}
 
     echo "===================== chaincode approved from hproducer ===================== "
 }
@@ -87,7 +88,8 @@ checkCommitReadyness() {
     setGlobalsForPeer0hproducer
     peer lifecycle chaincode checkcommitreadiness --channelID $CHANNEL_NAME \
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_HPRODUCER_CA \
-        --name ${CC_NAME} --version ${VERSION} --sequence ${VERSION} --output json --init-required
+        --name ${CC_NAME} --version ${VERSION} --sequence ${VERSION} --output json --init-required \
+        --collections-config ${COLLECTION_CONFIGPATH}
     echo "===================== checking commit readyness from eproducer ===================== "
 }
 
