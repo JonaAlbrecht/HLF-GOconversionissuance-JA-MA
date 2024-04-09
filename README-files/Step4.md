@@ -1,36 +1,38 @@
-# Bring up the channel and commit the chaincode
+# 6. Installing the metering devices
 
-## Bring up the channel
+At this stage, we have to bring up the Metering device docker containers for the eproducer and hproducer organisation.
+The Metering devices are simulated as their own docker containers. To this end, a custom docker image was built, using the docker fabric-tools image as its base.
 
-First, cd into the issuer-vm3 folder:
+The Smart Meter docker containers uses a cron job to periodically (every minute) execute a bash-script that invokes the chaincode and randomizes a production output around the audited production device information specified in the certificate issued by the Issuing Body.
 
-`cd /home/yourusername/HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3`
+## Installing the Electricity Smart Meter
 
-We need to run the createChannel.sh bash script to create the channel. It is the Issuing Body which creates the Channel.
-The Script sets a number of environment variables and then uses the fabric commands 'peer channel create', 'peer channel join' and 'peer channel update' that are part of the fabric-binaries we downloaded at the beginning
+cd into the SmartMeter-config folder:
 
-`./createChannel.sh`
+`cd /home/jonalinux/HLF-GOconversionissuance-JA-MA/version1/setup1/eproducer-vm2/SmartMeter-config`
 
-If you would like to look at the commands step by step (e.g. just execute peer channel create first) comment out the invocations of the bash functions 'joinChannel' and 'updateAnchorPeers' with the #
+Sometimes, bash scripts have the wrong execute permissions, so to be safe run:
 
-Now, lets join all other organisations to the channel:
+`sudo chmod 777 -R *`
 
-`cd ../buyer-vm1`
+Build the custom image
 
-`./joinChannel.sh`
+`docker build -t smartmeter .`
 
-`cd ../eproducer-vm2`
+Bring up a container using the custom image with docker-compose using the -daemon flag to make it a background process
 
-`./joinChannel.sh`
+`docker-compose up -d`
 
-`cd ../hproducer-vm5`
+## Installing the Hydrogen Smart Meter
 
-`./joinChannel.sh`
+cd into the OutputMeter-config folder:
 
-## Deploy the chaincode
+`cd /home/jonalinux/HLF-GOconversionissuance-JA-MA/version1/setup1/hproducer-vm5/OutputMeter-config`
 
-Next, lets deploy the chaincode from the issuing body directory. It is the issuing body that deploys the chaincode but approval from all organisations is needed.
+Sometimes, bash scripts have the wrong execute permissions, so to be safe run:
 
-`cd ../issuer-vm3`
+`sudo chmod 777 -R *`
 
-`./deployChaincode.sh`
+build the custom image for the OutputMeter using
+
+`docker build -t outputmeter .`

@@ -1,5 +1,5 @@
 export CORE_PEER_TLS_ENABLED=true
-export ORDERER_CA=${PWD}/../orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
+export ORDERER_CA=${PWD}/../orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
 export PEER0_ISSUER_CA=${PWD}/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer0.issuer.GOnetwork.com/tls/ca.crt
 export PEER0_EPRODUCER_CA=${PWD}/../eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer0.eproducer.GOnetwork.com/tls/ca.crt
 export PEER0_BUYER_CA=${PWD}/../buyer-vm1/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-peers/b-peer0.buyer.GOnetwork.com/tls/ca.crt
@@ -91,7 +91,7 @@ approveForissuer() {
     # set -x
     # Replace with current orderer VM IP address or change to localhost if deploying on single machine
     peer lifecycle chaincode approveformyorg -o localhost:9050 \
-        --ordererTLSHostnameOverride orderer.GOnetwork.com --tls \
+        --ordererTLSHostnameOverride orderer3.GOnetwork.com --tls \
         --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${VERSION} \
         --init-required --package-id ${PACKAGE_ID} \
         --sequence ${VERSION} --collections-config ${COLLECTION_CONFIGPATH}
@@ -101,7 +101,7 @@ approveForissuer() {
 
 }
 
-queryInstalled
+#queryInstalled
 approveForissuer
 
 checkCommitReadyness() {
@@ -113,7 +113,7 @@ checkCommitReadyness() {
     echo "===================== checking commit readyness from issuer ===================== "
 }
 
-checkCommitReadyness
+#checkCommitReadyness
 
 commitChaincodeDefinition() {
     setGlobalsForPeer0issuer
@@ -153,12 +153,11 @@ chaincodeInvokeInit() {
 
  # --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_ISSUER_CA \
 
-# chaincodeInvokeInit
+#chaincodeInvokeInit
 
 chaincodeInvoke() {
     setGlobalsForPeer0issuer
 
-    ## Create electricityGO
     peer chaincode invoke -o localhost:9050 \
         --ordererTLSHostnameOverride orderer3.GOnetwork.com \
         --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \
@@ -181,32 +180,13 @@ chaincodeInvoke() {
 
 }
 
-# chaincodeInvoke
+#chaincodeInvoke
 
 chaincodeQuery() {
     setGlobalsForPeer0issuer
 
-    # Query Car by Id
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "queryCar","Args":["CAR0"]}'
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "getcurrenteGOsList","Args":["eGO1", "eGO50"]}'
  
 }
 
-# chaincodeQuery
-
-# Run this function if you add any new dependency in chaincode
-# presetup
-
-# packageChaincode
-# installChaincode
-# queryInstalled
-# approveForbuyer
-# checkCommitReadyness
-# approveForeproducer
-# checkCommitReadyness
-# commitChaincodeDefinition
-# queryCommitted
-# chaincodeInvokeInit
-# sleep 5
-# chaincodeInvoke
-# sleep 3
-# chaincodeQuery
+#chaincodeQuery

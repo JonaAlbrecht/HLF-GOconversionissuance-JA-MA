@@ -1,6 +1,6 @@
 export CORE_PEER_TLS_ENABLED=true
 export ORDERER_CA=${PWD}/../orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
-export PEER0_ISSUER_CA=${PWD}/crypto-config/peerOrganizations/issuer.GOnetwork.com/b-peers/b-peer0.issuer.GOnetwork.com/tls/ca.crt
+export PEER0_BUYER_CA=${PWD}/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-peers/b-peer0.buyer.GOnetwork.com/tls/ca.crt
 export FABRIC_CFG_PATH=${PWD}/../../artifacts/channel/config/
 export COLLECTION_CONFIGPATH=${PWD}/../../artifacts/private-data-collections/collection-config.json
 
@@ -9,16 +9,16 @@ export CHANNEL_NAME=mychannel
 
 setGlobalsForPeer0buyer() {
     export CORE_PEER_LOCALMSPID="buyerMSP"
-    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ISSUER_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/issuer.GOnetwork.com/b-users/Admin@issuer.GOnetwork.com/msp
+    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_BUYER_CA
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/Admin@buyer.GOnetwork.com/msp
     export CORE_PEER_ADDRESS=localhost:7051
 
 }
 
 setGlobalsForPeer1buyer() {
     export CORE_PEER_LOCALMSPID="buyerMSP"
-    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ISSUER_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/issuer.GOnetwork.com/b-users/Admin@issuer.GOnetwork.com/msp
+    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_BUYER_CA
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/Admin@buyer.GOnetwork.com/msp
     export CORE_PEER_ADDRESS=localhost:8051
 
 }
@@ -44,9 +44,9 @@ packageChaincode() {
     peer lifecycle chaincode package ${CC_NAME}.tar.gz \
         --path ${CC_SRC_PATH} --lang ${CC_RUNTIME_LANGUAGE} \
         --label ${CC_NAME}_${VERSION}
-    echo "===================== Chaincode is packaged on b-peer0.issuer ===================== "
+    echo "===================== Chaincode is packaged on b-peer0.buyer ===================== "
 }
-# packageChaincode
+packageChaincode
 
 installChaincode() {
     setGlobalsForPeer0buyer
@@ -55,7 +55,7 @@ installChaincode() {
 
 }
 
-# installChaincode
+installChaincode
 
 queryInstalled() {
     setGlobalsForPeer0buyer
@@ -67,7 +67,7 @@ queryInstalled() {
     echo "===================== Query installed successful on b-peer0.buyer on channel ===================== "
 }
 
-# queryInstalled
+queryInstalled
 
 
 #at this step, the signature-policy flag is set to AND(buyer, issuer) such that every transaction 
@@ -85,16 +85,16 @@ approveForbuyer() {
     echo "===================== chaincode approved from buyer ===================== "
 }
 # queryInstalled
-# approveForbuyer
+approveForbuyer
 
 checkCommitReadyness() {
 
     setGlobalsForPeer0buyer
     peer lifecycle chaincode checkcommitreadiness --channelID $CHANNEL_NAME \
-        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ISSUER_CA \
+        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_BUYER_CA \
         --name ${CC_NAME} --version ${VERSION} --sequence ${VERSION} --output json --init-required \
         --collections-config ${COLLECTION_CONFIGPATH}
-    echo "===================== checking commit readyness from issuer ===================== "
+    echo "===================== checking commit readyness from buyer ===================== "
 }
 
-# checkCommitReadyness
+checkCommitReadyness

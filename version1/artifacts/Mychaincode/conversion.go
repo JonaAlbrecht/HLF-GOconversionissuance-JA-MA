@@ -1307,17 +1307,6 @@ func constructhGOFromIterator(resultsIterator shim.StateQueryIteratorInterface) 
 	return hGOs, nil
 }
 
-func main() {
-	chaincode, err := contractapi.NewChaincode(new(SmartContract))
-	if err != nil {
-		log.Panicf("Error create transfer asset chaincode: %v", err)
-	}
-
-	if err := chaincode.Start(); err != nil {
-		log.Panicf("Error starting asset chaincode: %v", err)
-	}
-}
-
 func (c *Count) Incr() {
     c.mx.Lock()
     c.count++
@@ -1349,4 +1338,15 @@ func eCancelcounter() float64 {
 func hCancelcounter() float64 {
 	hCancellations.Incr()
 	return hCancellations.count
+}
+
+func main() {
+	chaincode, err := contractapi.NewChaincode(new(SmartContract))
+	if err != nil {
+		log.Panicf("Error create transfer asset chaincode: %v", err)
+	}
+
+	if err := chaincode.Start(); err != nil {
+		log.Panicf("Error starting asset chaincode: %v", err)
+	}
 }

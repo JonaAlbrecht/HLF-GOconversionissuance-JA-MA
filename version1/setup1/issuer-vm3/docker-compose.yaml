@@ -6,7 +6,7 @@ networks:
 services:
   couchdb4:
     container_name: couchdb4
-    image: hyperledger/fabric-couchdb
+    image: hyperledger/fabric-couchdb:latest
     environment:
       - COUCHDB_USER=
       - COUCHDB_PASSWORD=
@@ -17,7 +17,7 @@ services:
 
   couchdb5:
     container_name: couchdb5
-    image: hyperledger/fabric-couchdb
+    image: hyperledger/fabric-couchdb:latest
     environment:
       - COUCHDB_USER=
       - COUCHDB_PASSWORD=

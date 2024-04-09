@@ -1,5 +1,5 @@
 export CORE_PEER_TLS_ENABLED=true
-export ORDERER_CA=${PWD}/../orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
+export ORDERER_CA=${PWD}/../orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
 export PEER0_EPRODUCER_CA=${PWD}/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer0.eproducer.GOnetwork.com/tls/ca.crt
 export FABRIC_CFG_PATH=${PWD}/../../artifacts/channel/config/
 export COLLECTION_CONFIGPATH=${PWD}/../../artifacts/private-data-collections/collection-config.json
@@ -22,6 +22,8 @@ setGlobalsForPeer1eproducer() {
 
 }
 
+#presetup not necessary if deploying on single machine. GO dependencies are already vendored by running deployChaincode script
+#if deploying on multi-host uncomment the presetup invocation below
 presetup() {
     echo Vendoring Go dependencies ...
     pushd ./../../artifacts/Mychaincode
@@ -45,7 +47,7 @@ packageChaincode() {
         --label ${CC_NAME}_${VERSION}
     echo "===================== Chaincode is packaged on e-peer0.eproducer ===================== "
 }
-# packageChaincode
+packageChaincode
 
 installChaincode() {
     setGlobalsForPeer0eproducer
@@ -54,7 +56,7 @@ installChaincode() {
 
 }
 
-# installChaincode
+installChaincode
 
 queryInstalled() {
     setGlobalsForPeer0eproducer
@@ -66,14 +68,14 @@ queryInstalled() {
     echo "===================== Query installed successful on e-peer0.eproducer on channel ===================== "
 }
 
-# queryInstalled
+queryInstalled
 
 approveForeproducer() {
     setGlobalsForPeer0eproducer
 
     # Replace localhost with your orderer's vm IP address
-    peer lifecycle chaincode approveformyorg -o localhost:7050 \
-        --ordererTLSHostnameOverride orderer.eproducer.com --tls $CORE_PEER_TLS_ENABLED \
+    peer lifecycle chaincode approveformyorg -o localhost:8050 \
+        --ordererTLSHostnameOverride orderer2.GOnetwork.com --tls $CORE_PEER_TLS_ENABLED \
         --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} \
         --version ${VERSION} --init-required --package-id ${PACKAGE_ID} \
         --sequence ${VERSION} --collections-config ${COLLECTION_CONFIGPATH}
@@ -81,7 +83,7 @@ approveForeproducer() {
     echo "===================== chaincode approved from eproducer ===================== "
 }
 # queryInstalled
-# approveForeproducer
+approveForeproducer
 
 checkCommitReadyness() {
 
@@ -93,4 +95,4 @@ checkCommitReadyness() {
     echo "===================== checking commit readyness from eproducer ===================== "
 }
 
-# checkCommitReadyness
+checkCommitReadyness

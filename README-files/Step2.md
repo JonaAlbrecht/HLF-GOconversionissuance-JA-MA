@@ -1,91 +1,159 @@
-## 2. Installing all Prequisites, Fabric-Sample, Binaries and Docker Images
+# Create all the crypto material
 
-Im using docker version 25.0.4, docker-compose version 1.26.2, go 1.22.1, npm 10.2.4, python 2.7.18
+## On virtual machine 1
 
-Open the remote connection to VM1 in VS code (in the bottom left it should say: "SSH:vm1"). And open a terminal. We now need to install all the prerequisites on the VM.
+cd into /home/yourusername/go/src/HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3/create-cryptomaterial-issuer
 
-`sudo apt-get install curl`
-`sudo apt-get install nodejs`
-`sudo apt-get install npm`
-`sudo apt-get install python`
+Inside is a docker-compose.yaml and a bash script.
 
-**Docker**
+**First we run the docker-compose file:**
 
-Im using the "install using the apt repository" method from the [Docker documentation](https://docs.docker.com/engine/install/ubuntu/) to install docker
+`docker-compose up -d`
 
-`sudo apt-get update`
-`sudo apt-get install ca-certificates curl`
-`sudo install -m 0755 -d /etc/apt/keyrings`
+This will create a docker container for the certificate authority (named ca.issuer.GOnetwork.com) of the issuing body. By Certificate Authority (CA), I am referring to the CA concept from the Hyperledger framework, given that the term is also used in the guarantee of origin space. The docker-compose up command will also create the crypto-material of the issuing body including the root certificate. After running docker-compose, this cryptomaterial can be found in ../create-cryptomaterial-issuer/fabric-ca as well as in the docker container. The CA container will be listening on port 7054. The public/private key of the CA are found under ../create-cryptomaterial-issuer/fabric-ca/org1/msp/keystore/. We use the -d flag (d referring to detached) such that our docker container runs in the background (as a daemon), similar to a server and doesnt obstruct our bash terminal execution.
 
-`sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc`
+We can check that the docker container is up using
 
-`sudo chmod a+r /etc/apt/keyrings/docker.asc`
+`docker ps`
 
-```
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-```
+If docker-compose up returns an error "permission denied while trying to connect to the Docker daemon socket" you need to run the following commands to enable permission for non-root users:
 
-`sudo apt-get update`
+`sudo groupadd docker`
 
-`sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin`
+`sudo usermod -aG docker $USER`
 
-`docker --version`
-`docker-compose --version`
+`newgrp docker`
 
-**Golang Installation**
+And then rerun docker-compose. If the problem still persists you can try `reboot`
 
-We cant follow the normal [installation method](https://go.dev/doc/install) of downloading the tar ball onto our machine bc we are in VM. This command downloads the appropriate tar ball onto the VM and installs it:
+If you are re-running the project and you would like to delete the fabric-ca folder, you need to set permissions before deletion: `sudo chmod ugo+rwx /home/yourusername/go/src/HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3/create-cryptomaterial-issuer/fabric-ca`
 
-`wget -c https://go.dev/dl/go1.22.1.linux-amd64.tar.gz -O - | tar -xz`
+**Then we run the bash script ./issuer-org-certificates.sh**
 
-Move go into usr/local with following command such that our path points at the correct place. Otherwise you can also change the GOPATH below to /home/username/go
+`./issuer-org-certificates.sh`
 
-`sudo mv go/ /usr/local`
+The bash script creates the cryptomaterial for all users and peers in the issuing body organisation using the binary 'fabric-ca-client' from the fabric-samples. The script is similar to Fabric's crypogen tool, it will:
 
-Now add the following lines into the .bashrc file (/home/username/.bashrc) which configures the terminal.
+1. make directories (crypto-config) for all the cryptomaterial
+2. enroll ca.issuer.GOnetwork.com as the certificate authority for this organisation providing the tls-cert.pem certificate
+3. prints node organisation units into ../msp/config.yaml
+4. uses fabric-ca-client binary to register peer0, peer1, user and admin user with the enrolled ca
+5. generates msp and tls certificates for peer0, peer1, user and admin user
 
-`export GOPATH=/usr/local/go*`
+## Cryptomaterial for buyer org
 
-`export PATH=$PATH:$GOPATH/bin`
+From the current directory (../issuer-vm3/create-cryptomaterial-issuer) cd to the buyer directory using:
 
-Since we will need this as well, also add this line to .bashrc:
+`cd ../../buyer-vm1/create-cryptomaterial-buyer`
 
-`export PATH="/home/yourusername/fabric-samples/bin:$PATH"*`
+The cryptomaterial for the buyer organisation is created using the root certificates of the issuing body ca. In a real-world scenario, the issuing body would generate this cryptomaterial and then send it to the buyer organisation via TLS-secured communication. Here, we are deploying on a single virtual machine. For the buyer, we enroll: an admin, 2 peers and one client which will later be used to run the client-side Nodejs application for interacting with the network. Run the shell script:
 
-**Fabric-Samples repo, Binaries and Docker Images**
+`./buyer-org-certificates.sh`
 
-I follow the installation process in the [Fabric Documentation](https://hyperledger-fabric.readthedocs.io/en/latest/install.html).
+## Cryptomaterial for e-producer
 
-Get the install script:
+`cd ../../eproducer-vm2/create-cryptomaterial-eproducer`
 
-`curl -sSLO https://raw.githubusercontent.com/hyperledger/fabric/main/scripts/install-fabric.sh && chmod +x install-fabric.sh`
+The cryptomaterial for the electricity producer organisation is created using the root certificates of the Issuing Body CA. In a real-world scenario, the issuing body would generate this cryptomaterial and then send it to the electricity producer organisation via TLS-secured communication. For the eproducer, we enroll: an admin, 2 peers and one Smart Meter. To the Smart Meter certificate we add several attributes (see line 45 of the bash script) which will be used to authenticate input data sent by the Smart Meter to the smart contract (attribute-based access control functions implemented using the pkg/cid/ClientIdentity Golang library from Hyperledger Fabric). Run the bash script:
 
-Run without any flag to install all docker images, binaries and the samples repository:
+`./create-cryptomaterial-eproducer.sh`
 
-`./install-fabric.sh`
+To see the attributes we enrolled, cd into the relevant folder in crypto-config:
 
-**The [Fabric Documentation](https://hyperledger-fabric.readthedocs.io/en/latest/index.html) provides excellent tutorials on how to use the fabric-samples.**
+`cd /home/yourusername/go/src/HLF-GOconversionissuance-JA-MA/version1/setup1/eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/SmartMeter/SmartMeter1@eproducer.GOnetwork.com/msp/signcerts`
 
-# Download google-chrome for Linux Ubuntu VM
+And then run: `keytool -printcert -file cert.pem`
+to check the attributes registered with the certificate.
 
-If you are running a Linux VM on a Windows machine, you will need to download the google chrome browser to access the applications (i.e. CouchDB and the client application) under this [LINK](https://linuxize.com/post/how-to-install-google-chrome-web-browser-on-ubuntu-20-04/). Open the google browser from the command line with `google-chrome-stable`.
+## Cryptomaterial for h-producer
 
-When running applications, do not click on the little pop-up in the bottom-left "Your application is running on port X" to open the application. Instead open a new terminal window, open google chrome and then type in http://localhost:PORTNUMBER
+`cd /home/yourusername/HLF-GOconversionissuance-JA-MA/version1/setup1/hproducer-vm5/create-cryptomaterial-hproducer`
 
-# Clone the GO conversion issuance repo
+The cryptomaterial for the hydrogen producer organisation is created using the root certificates of the Issuing Body CA. For the hydrogen producer, we enroll: an admin, 2 peers and one Output Meter. To the Output Meter certificate we add several attributes (see line 45 of the bash script) which will be used to authenticate input data sent by the Smart Meter to the smart contract. Run the bash script:
 
-Lets clone the repo. Either, make a fork of the repo and then download or download the repo directly. You need to have git installed. Go to the repo and copy the http address
+`./create-cryptomaterial-hproducer.sh`
 
-`git clone http address`
+To see the attributes we enrolled, cd into the relevant folder in crypto-config:
 
-# Creating the other VMs
+`cd /home/yourusername/go/src/HLF-GOconversionissuance-JA-MA/version1/setup1/hproducer-vm5/crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/OutputMeter1@hproducer.GOnetwork.com/msp/signcerts`
 
-To save time, we will create the other VMs by using just cloning the boot disk as the current VM, that way all the steps up to now will be copied. In a production environment, this wouldnt be advisable. It would be worse, however, if we created all cryptomaterials for all organisations on a single machine and then cloned the disk.
+And then run: `keytool -printcert -file cert.pem`
+to check the attributes registered with the certificate.
 
-1. In Google Cloud /Compute Engine navigate to the section called disks (Laufwerke). Click the 3 little dots, click on clone disk, name it VM2.
-2. In the VM instances section, click on create new VM instance and mirror setup for VM1. Under Bootdisk click on 'change' , navigate to existing disks and select disk of VM2 ![alt text](image-2.png).
-3. Under firewall settings make sure to enable HTTP and HTTPS server as well as adding the custom firewall setting.
-4. Repeat this for VM3, VM4 and VM5
+## Cryptomaterial Orderer
+
+`cd /home/yourusername/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/create-cryptomaterial-orderer`
+
+The orderer organisation has its own Certificate Authority. This is to signalize that the orderer organization is independent even from the Issuing Bodies and truly under the control of the Blockchain consortium. The effect on decentralisation is minimal and the orderer cryptomaterial could just as much have been generated with the Issuing Body CA, however, different from the cryptomaterial of other organisations it doesnt NEED to.
+
+We run:
+
+`docker-compose up -d`
+
+And then execute the bash script:
+
+`./orderer-org-certificates.sh`
+
+## Create Channel Artifacts
+
+Next lets create the Channel Artifacts
+
+`cd ../../../artifacts/channel`
+
+**Run the bash script**
+
+This will:
+
+1. Generate the System Genesis block using the configtxgen tool with the orderergenesis profile from the configtx.yaml file and output a genesis.block file
+2. Generate the channel configuration block and set the anchor peers (Peer 0) for each organisation
+
+`./create-artifacts.sh`
+
+## Bring up the peer and couchDB containers
+
+`cd ../../setup1/issuer-vm3`
+
+`docker-compose up -d`
+
+The first time it is run, this command will pull the fabric Docker images from the Docker hub (fabric-couchdb, fabric-peer)
+
+`cd ../buyer-vm1`
+
+`docker-compose up -d`
+
+`cd ../eproducer-vm2`
+
+`docker-compose up -d`
+
+`cd ../hproducer-vm5`
+
+`docker-compose up -d`
+
+`cd ../orderer-vm4`
+
+`docker-compose up -d`
+
+This last command is going to pull the fabric-orderer Docker image from Docker hub.
+
+**Looking at some of the ports**
+
+Open a new terminal and open a google-chrome instance with `google-chrome-stable` (this is necessary assuming you are using a WSL Ubuntu VM on Windows). If your native system is linux, it might suffice to just open google chrome.
+
+You can only look at ports running couchDB, a peer node port will not return anything (try it out by typing e.g. http://localhost:7051)
+To look at CouchDB, type into the google search bar http://localhost:6984 to look at couchdb1 instance from buyer organisation
+Or http://localhost:12984 to look at couchdb7 instance from hproducer organisation
+
+**Troubleshooting**
+
+`docker ps` should show you 23 docker containers. Run `docker ps -a` and see in the "Status" column whether any docker containers have status "exited with...". If that is so, try bringing up the specific docker container again with `docker container restart CONTAINER_ID`
+
+Try bringing down the entire network, removing all containers and then restart from the beginning of the step 'Bring up the peer and couchDB containers'
+
+`docker stop $(docker ps -a -q)`and then
+`docker remove $(docker ps -a -q)` and maybe even:
+`docker image prune`
+
+You can also try removing the Docker images entirely:
+
+`docker image ls` and then copy the image name into:
+`docker rmi IMAGE_NAME`

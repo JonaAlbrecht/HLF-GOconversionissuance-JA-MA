@@ -9,16 +9,16 @@ export CHANNEL_NAME=mychannel
 setGlobalsForPeer0hproducer() {
     export CORE_PEER_LOCALMSPID="hproducerMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_HPRODUCER_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/Admin@hproducer.GOnetwork.com/msp
-    export CORE_PEER_ADDRESS=localhost:9051
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/oAdmin@hproducer.GOnetwork.com/msp
+    export CORE_PEER_ADDRESS=localhost:13051
 
 }
 
 setGlobalsForPeer1hproducer() {
     export CORE_PEER_LOCALMSPID="hproducerMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_EPRODUCER_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/Admin@hproducer.GOnetwork.com/msp
-    export CORE_PEER_ADDRESS=localhost:10051
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/oAdmin@hproducer.GOnetwork.com/msp
+    export CORE_PEER_ADDRESS=localhost:14051
 
 }
 
@@ -45,7 +45,7 @@ packageChaincode() {
         --label ${CC_NAME}_${VERSION}
     echo "===================== Chaincode is packaged on h-peer0.hproducer ===================== "
 }
-# packageChaincode
+#packageChaincode
 
 installChaincode() {
     setGlobalsForPeer0hproducer
@@ -54,7 +54,7 @@ installChaincode() {
 
 }
 
-# installChaincode
+#installChaincode
 
 queryInstalled() {
     setGlobalsForPeer0hproducer
@@ -66,13 +66,13 @@ queryInstalled() {
     echo "===================== Query installed successful on h-peer0.hproducer on channel ===================== "
 }
 
-# queryInstalled
+queryInstalled
 
 approveForhproducer() {
     setGlobalsForPeer0hproducer
 
     # If deploying on several VMs, replace localhost with your orderer's vm IP address
-    peer lifecycle chaincode approveformyorg -o localhost:7050 \
+    peer lifecycle chaincode approveformyorg -o localhost:10050 \
         --ordererTLSHostnameOverride orderer4.GOnetwork.com --tls $CORE_PEER_TLS_ENABLED \
         --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} \
         --version ${VERSION} --init-required --package-id ${PACKAGE_ID} \
@@ -81,16 +81,16 @@ approveForhproducer() {
     echo "===================== chaincode approved from hproducer ===================== "
 }
 # queryInstalled
-# approveForeproducer
+approveForhproducer
 
 checkCommitReadyness() {
 
     setGlobalsForPeer0hproducer
     peer lifecycle chaincode checkcommitreadiness --channelID $CHANNEL_NAME \
-        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_HPRODUCER_CA \
+        --peerAddresses localhost:13051 --tlsRootCertFiles $PEER0_HPRODUCER_CA \
         --name ${CC_NAME} --version ${VERSION} --sequence ${VERSION} --output json --init-required \
         --collections-config ${COLLECTION_CONFIGPATH}
-    echo "===================== checking commit readyness from eproducer ===================== "
+    echo "===================== checking commit readyness from hproducer ===================== "
 }
 
-# checkCommitReadyness
+checkCommitReadyness

@@ -1,6 +1,6 @@
 module HLF-GOconversionissuance-JA-MA/version1/artifacts/Mychaincode
 
-go 1.22.2
+go 1.21.6
 
 require (
 	github.com/hyperledger/fabric-chaincode-go v0.0.0-20240124143825-7dec3c7e7d45

@@ -6,7 +6,7 @@ networks:
 services:
   orderer.GOnetwork.com:
     container_name: orderer.GOnetwork.com
-    image: hyperledger/fabric-orderer:2.1
+    image: hyperledger/fabric-orderer:latest
     dns_search: .
     environment:
       - ORDERER_GENERAL_LOGLEVEL=info
@@ -41,7 +41,7 @@ services:
 
   orderer2.GOnetwork.com:
     container_name: orderer2.GOnetwork.com
-    image: hyperledger/fabric-orderer:2.1
+    image: hyperledger/fabric-orderer:latest
     dns_search: .
     environment:
       - ORDERER_GENERAL_LOGLEVEL=debug
@@ -76,7 +76,7 @@ services:
 
   orderer3.GOnetwork.com:
     container_name: orderer3.GOnetwork.com
-    image: hyperledger/fabric-orderer:2.1
+    image: hyperledger/fabric-orderer:latest
     dns_search: .
     environment:
       - ORDERER_GENERAL_LOGLEVEL=debug
@@ -111,7 +111,7 @@ services:
 
   orderer4.GOnetwork.com:
     container_name: orderer4.GOnetwork.com
-    image: hyperledger/fabric-orderer:2.1
+    image: hyperledger/fabric-orderer:latest
     dns_search: .
     environment:
       - ORDERER_GENERAL_LOGLEVEL=debug
