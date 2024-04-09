@@ -108,7 +108,7 @@ Organizations:
         Rule: "OR('hproducerMSP.admin')"
       Endorsement:
         Type: Signature
-        Rule: "OR('hproducerMSP.peer', 'issuerMSP.peer')"
+        Rule: "OR('hproducerMSP.peer')"
 
     AnchorPeers:
       - Host: h-peer0.hproducer.GOnetwork.com

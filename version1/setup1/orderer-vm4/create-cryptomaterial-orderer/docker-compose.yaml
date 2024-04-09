@@ -1,4 +1,4 @@
-version: "2.4"
+version: "3.8"
 
 #this brings up the fabric-ca for the orderer organisation using fabric-samples binary fabric-ca-server
 

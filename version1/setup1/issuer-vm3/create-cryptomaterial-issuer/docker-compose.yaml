@@ -1,4 +1,4 @@
-version: "2.4"
+version: "3.8"
 
 #this brings up the root certificate authority hosted by the issuing body
 #it uses the hyperledger fabric-ca docker image and the fabric-samples binary/executable fabric-ca-server
