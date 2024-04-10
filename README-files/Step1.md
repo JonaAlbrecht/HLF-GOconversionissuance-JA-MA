@@ -1,4 +1,4 @@
-## 2. Installing all Prequisites, Fabric-Sample, Binaries and Docker Images
+## 1. Installing all Prequisites, Fabric-Sample, Binaries and Docker Images
 
 Im using docker version 25.0.4, docker-compose version 1.26.2, go 1.22.1, npm 10.2.4, python 2.7.18
 
@@ -7,7 +7,6 @@ Open a terminal on your WSL:Ubuntu connection. We now need to install all the pr
 `sudo apt-get install curl`
 `sudo apt-get install nodejs`
 `sudo apt-get install npm`
-`sudo apt-get install python`
 
 **Docker**
 
@@ -41,17 +40,25 @@ We cant follow the normal [installation method](https://go.dev/doc/install) of d
 
 `wget -c https://go.dev/dl/go1.22.1.linux-amd64.tar.gz -O - | tar -xz`
 
-We need to set the GOPATH to the Go-Folder. To do this, find your .bashrc file, which configures the terminal. It should be in your general workspace (/home/yourusername/.bashrc)
+You can install go into /usr/local (recommended) or into /home/yourusername/
 
-Copy the following lines into the .bashrc file:
+We need to set the GOPATH to the Go-Folder. Put the following lines into both your .bashrc and your .profile file, which configure the terminal.
 
-`export GOPATH=/home/yourusername/go`
+`sudo nano ~/.profile`
 
-`export PATH=$PATH:/home/yourusername/go/bin`
+and then add the below lines into the ~/.profile file.
+
+`export GOPATH=usr/local/go`
+
+`export PATH=$PATH:/usr/local/go/bin`
 
 Since later on we will need this as well, also add this line to .bashrc:
 
-`export PATH="/home/yourusername/go/src/fabric/fabric-samples/bin:$PATH"`
+`export PATH="/usr/local/go/src/github.com/fabric/fabric-samples/bin:$PATH"`
+
+And then add the above lines into the ~/.bashrc file:
+
+`sudo nano ~/.bashrc`
 
 As you can see, we will be installing the fabric samples and the fabric binaries into the go folder and we will also download the git repo into the go folder. This is because the Smart Contract written in GO initializes correctly (initializes its relative dependencies) only if it is inside the GOPATH.
 
@@ -59,7 +66,7 @@ As you can see, we will be installing the fabric samples and the fabric binaries
 
 I follow the installation process in the [Fabric Documentation](https://hyperledger-fabric.readthedocs.io/en/latest/install.html).
 
-cd into the go/src folder: `cd /home/yourusername/go/src` and make a directory fabric `mkdir fabric`. Then: `cd fabric`
+cd into the go/src folder: `cd /usr/local/go/src` and make a directory github.com `mkdir github.com` and then make a directory fabric `mkdir fabric`. Then: `cd fabric`
 
 From within this folder, get the install script by running:
 
@@ -79,6 +86,6 @@ When running applications, do not click on the little pop-up in the bottom-left 
 
 # Clone the GO conversion issuance repo
 
-Lets clone the repo into /home/yourusername/go/src. Either, make a fork of the repo and then download or download the repo directly. You need to have git installed. Go to the repo and copy the http address. From /home/yourusername/go/src run:
+Lets clone the repo into /home/yourusername/go/src. Either, make a fork of the repo and then download or download the repo directly. You need to have git installed. Go to the repo and copy the http address. From /usr/local/go/src/github.com run:
 
-`git clone http address`
+`git clone https://github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA.git`

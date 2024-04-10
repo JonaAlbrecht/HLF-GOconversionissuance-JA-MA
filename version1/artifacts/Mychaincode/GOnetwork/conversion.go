@@ -1,4 +1,4 @@
-package main
+package GOnetwork
 
 import (
 	"bytes"
@@ -66,7 +66,7 @@ type greenHydrogenGObacklogprivatedetails struct {
 }
 
 type CancellationstatementElectricity struct {
-	eCancellationkey string `json:"eCancellationkey"`
+	ECancellationkey string `json:"eCancellationkey"`
 	CancellationTime string `json:"CancellationTime"`
 	OwnerID string `json:"OwnerID"`
 	AmountMWh float64 `json:"AmountMWh"`
@@ -75,7 +75,7 @@ type CancellationstatementElectricity struct {
 }
 
 type CancellationstatementHydrogen struct {
-	hCancellationkey string `json:"hCancellationkey"`
+	HCancellationkey string `json:"hCancellationkey"`
 	CancellationTime string `json:"CancellationTime"`
 	OwnerID string `json:"OwnerID"`
 	Kilosproduced float64 `json:"Kilosproduced"`
@@ -746,8 +746,8 @@ func (s *SmartContract) issuehGO(ctx contractapi.TransactionContextInterface) er
 
 func (s *SmartContract) claimRenewableattributesElectricity(ctx contractapi.TransactionContextInterface) error {
 	type ClaimRenewablesTransientInput struct {
-		collection string `json:"collection"`
-		eGOID string `json:"eGOID"`
+		Collection string `json:"collection"`
+		EGOID string `json:"eGOID"`
 	}
 
 	transientMap, err := ctx.GetStub().GetTransient()
@@ -767,20 +767,20 @@ func (s *SmartContract) claimRenewableattributesElectricity(ctx contractapi.Tran
 	if err != nil {
 		return fmt.Errorf("failed to decode JSON input with error: %v", err)
 	}
-	if ClaimRenewablesInput.collection == "" {
+	if ClaimRenewablesInput.Collection == "" {
 		return fmt.Errorf("claim renewables must specify a collection")
 	}
-	if ClaimRenewablesInput.eGOID == "" {
+	if ClaimRenewablesInput.EGOID == "" {
 		return fmt.Errorf("claim renewables must specify an electricity GO ID")
 	}
 
-	log.Printf("Reading private details of eGO with ID %v from collection %v", ClaimRenewablesInput.eGOID, ClaimRenewablesInput.collection)
-	eGOprivateJSON, err := ctx.GetStub().GetPrivateData(ClaimRenewablesInput.collection, ClaimRenewablesInput.eGOID)
+	log.Printf("Reading private details of eGO with ID %v from collection %v", ClaimRenewablesInput.EGOID, ClaimRenewablesInput.Collection)
+	eGOprivateJSON, err := ctx.GetStub().GetPrivateData(ClaimRenewablesInput.Collection, ClaimRenewablesInput.EGOID)
 	if err != nil {
 		return fmt.Errorf("failed to read asset details: %v", err)
 	}
 	if eGOprivateJSON == nil {
-		log.Printf("Private details for eGO %v do not exist in collection %v", ClaimRenewablesInput.eGOID, ClaimRenewablesInput.collection)
+		log.Printf("Private details for eGO %v do not exist in collection %v", ClaimRenewablesInput.EGOID, ClaimRenewablesInput.Collection)
 		return fmt.Errorf("No electricity GO with that ID exists")
 	}
 	var eGOprivate *ElectricityGOprivatedetails
@@ -794,7 +794,7 @@ func (s *SmartContract) claimRenewableattributesElectricity(ctx contractapi.Tran
 	creationtime3 := now3.String()
 
 	eCancellationStatement := CancellationstatementElectricity{
-		eCancellationkey: eCancellationkey,
+		ECancellationkey: eCancellationkey,
 		CancellationTime: creationtime3,
 		OwnerID: eGOprivate.OwnerID,
 		AmountMWh: eGOprivate.AmountMWh,
@@ -802,11 +802,11 @@ func (s *SmartContract) claimRenewableattributesElectricity(ctx contractapi.Tran
 		ElectricityProductionMethod: eGOprivate.ElectricityProductionMethod,
 	}
 	//deleting the electricity GO
-	err = ctx.GetStub().DelState(ClaimRenewablesInput.eGOID)
+	err = ctx.GetStub().DelState(ClaimRenewablesInput.EGOID)
 	if err != nil {
 		return fmt.Errorf("error deleting electricity GO from public data:%v", err)
 	}
-	err = ctx.GetStub().DelPrivateData(ClaimRenewablesInput.collection, ClaimRenewablesInput.eGOID)
+	err = ctx.GetStub().DelPrivateData(ClaimRenewablesInput.Collection, ClaimRenewablesInput.EGOID)
 	if err != nil {
 		return fmt.Errorf("error deleting electricity GO from private collection:%v", err)
 	}
@@ -817,7 +817,7 @@ func (s *SmartContract) claimRenewableattributesElectricity(ctx contractapi.Tran
 		return fmt.Errorf("failed to marshal cancellation Statement")
 	}
 
-	err = ctx.GetStub().PutPrivateData(ClaimRenewablesInput.collection, eCancellationStatement.eCancellationkey, eCancellationStatementasBytes) 
+	err = ctx.GetStub().PutPrivateData(ClaimRenewablesInput.Collection, eCancellationStatement.ECancellationkey, eCancellationStatementasBytes) 
 	if err != nil {
 		return fmt.Errorf("failed to put cancellation statement into collection: %v", err)
 	}
@@ -827,8 +827,8 @@ func (s *SmartContract) claimRenewableattributesElectricity(ctx contractapi.Tran
 func (s *SmartContract) claimRenewableattributesHydrogen(ctx contractapi.TransactionContextInterface) error {
 	//claiming renewable attributes of Hydrogen by individual GOs. also should implement a claim by quantity function for both energy carriers. 
 	type ClaimHydrogenTransientInput struct {
-		collection string `json:"collection"`
-		hGOID string `json:"hGOID"`
+		Collection string `json:"collection"`
+		HGOID string `json:"hGOID"`
 	}
 
 	transientMap, err := ctx.GetStub().GetTransient()
@@ -848,20 +848,20 @@ func (s *SmartContract) claimRenewableattributesHydrogen(ctx contractapi.Transac
 	if err != nil {
 		return fmt.Errorf("failed to decode JSON input with error: %v", err)
 	}
-	if ClaimHydrogenInput.collection == "" {
+	if ClaimHydrogenInput.Collection == "" {
 		return fmt.Errorf("claim Hydrogen invokation must specify a collection")
 	}
-	if ClaimHydrogenInput.hGOID == "" {
+	if ClaimHydrogenInput.HGOID == "" {
 		return fmt.Errorf("claim Hydrogen invokation must specify a hGOID")
 	}
 
-	log.Printf("Reading private details of eGO with ID %v from collection %v", ClaimHydrogenInput.hGOID, ClaimHydrogenInput.collection)
-	hGOprivateJSON, err := ctx.GetStub().GetPrivateData(ClaimHydrogenInput.collection, ClaimHydrogenInput.hGOID)
+	log.Printf("Reading private details of eGO with ID %v from collection %v", ClaimHydrogenInput.HGOID, ClaimHydrogenInput.Collection)
+	hGOprivateJSON, err := ctx.GetStub().GetPrivateData(ClaimHydrogenInput.Collection, ClaimHydrogenInput.HGOID)
 	if err != nil {
 		return fmt.Errorf("failed to read asset details: %v", err)
 	}
 	if hGOprivateJSON == nil {
-		log.Printf("Private details for eGO %v do not exist in collection %v", ClaimHydrogenInput.hGOID, ClaimHydrogenInput.collection)
+		log.Printf("Private details for eGO %v do not exist in collection %v", ClaimHydrogenInput.HGOID, ClaimHydrogenInput.Collection)
 		return fmt.Errorf("No electricity GO with that ID exists")
 	}
 	var hGOprivate *greenHydrogenGOprivatedetails
@@ -875,7 +875,7 @@ func (s *SmartContract) claimRenewableattributesHydrogen(ctx contractapi.Transac
 	creationtime4 := now4.String()
 
 	hCancellationStatement := CancellationstatementHydrogen{
-		hCancellationkey: hCancellationkey,
+		HCancellationkey: hCancellationkey,
 		CancellationTime: creationtime4,
 		OwnerID: hGOprivate.OwnerID,
 		Kilosproduced: hGOprivate.Kilosproduced,
@@ -887,11 +887,11 @@ func (s *SmartContract) claimRenewableattributesHydrogen(ctx contractapi.Transac
 	}
 
 	//deleting the hydrogen GO
-	err = ctx.GetStub().DelState(ClaimHydrogenInput.hGOID)
+	err = ctx.GetStub().DelState(ClaimHydrogenInput.HGOID)
 	if err != nil {
 		return fmt.Errorf("error deleting hydrogen GO from public data:%v", err)
 	}
-	err = ctx.GetStub().DelPrivateData(ClaimHydrogenInput.collection, ClaimHydrogenInput.hGOID)
+	err = ctx.GetStub().DelPrivateData(ClaimHydrogenInput.Collection, ClaimHydrogenInput.HGOID)
 	if err != nil {
 		return fmt.Errorf("error deleting hydrogen GO from private collection:%v", err)
 	}
@@ -902,7 +902,7 @@ func (s *SmartContract) claimRenewableattributesHydrogen(ctx contractapi.Transac
 		return fmt.Errorf("failed to marshal cancellation Statement")
 	}
 
-	err = ctx.GetStub().PutPrivateData(ClaimHydrogenInput.collection, hCancellationStatement.hCancellationkey, hCancellationStatementasBytes) 
+	err = ctx.GetStub().PutPrivateData(ClaimHydrogenInput.Collection, hCancellationStatement.HCancellationkey, hCancellationStatementasBytes) 
 	if err != nil {
 		return fmt.Errorf("failed to put cancellation statement into collection: %v", err)
 	}
@@ -1338,15 +1338,4 @@ func eCancelcounter() float64 {
 func hCancelcounter() float64 {
 	hCancellations.Incr()
 	return hCancellations.count
-}
-
-func main() {
-	chaincode, err := contractapi.NewChaincode(new(SmartContract))
-	if err != nil {
-		log.Panicf("Error create transfer asset chaincode: %v", err)
-	}
-
-	if err := chaincode.Start(); err != nil {
-		log.Panicf("Error starting asset chaincode: %v", err)
-	}
 }
