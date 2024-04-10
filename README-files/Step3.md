@@ -4,7 +4,7 @@
 
 First, cd into the issuer-vm3 folder:
 
-`cd /home/yourusername/HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3`
+`cd /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3`
 
 We need to run the createChannel.sh bash script to create the channel. It is the Issuing Body which creates the Channel.
 The Script sets a number of environment variables and then uses the fabric commands 'peer channel create', 'peer channel join' and 'peer channel update' that are part of the fabric-binaries we downloaded at the beginning

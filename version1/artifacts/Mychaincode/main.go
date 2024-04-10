@@ -3,11 +3,12 @@ package main
 import (
 	"log"
 
+	"github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/artifacts/Mychaincode/GOnetwork"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
 func main() {
-	chaincode, err := contractapi.NewChaincode(new(SmartContract))
+	chaincode, err := contractapi.NewChaincode(&GOnetwork.SmartContract{})
 	if err != nil {
 		log.Panicf("Error create transfer asset chaincode: %v", err)
 	}

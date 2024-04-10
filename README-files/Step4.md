@@ -9,7 +9,7 @@ The Smart Meter docker containers uses a cron job to periodically (every minute)
 
 cd into the SmartMeter-config folder:
 
-`cd /home/jonalinux/HLF-GOconversionissuance-JA-MA/version1/setup1/eproducer-vm2/SmartMeter-config`
+`cd /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/eproducer-vm2/SmartMeter-config`
 
 Sometimes, bash scripts have the wrong execute permissions, so to be safe run:
 
@@ -27,7 +27,7 @@ Bring up a container using the custom image with docker-compose using the -daemo
 
 cd into the OutputMeter-config folder:
 
-`cd /home/jonalinux/HLF-GOconversionissuance-JA-MA/version1/setup1/hproducer-vm5/OutputMeter-config`
+`cd /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/hproducer-vm5/OutputMeter-config`
 
 Sometimes, bash scripts have the wrong execute permissions, so to be safe run:
 

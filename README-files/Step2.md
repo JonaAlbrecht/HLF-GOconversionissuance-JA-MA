@@ -1,8 +1,6 @@
-# Create all the crypto material
+## Create all the crypto material
 
-## On virtual machine 1
-
-cd into /home/yourusername/go/src/HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3/create-cryptomaterial-issuer
+cd into /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3/create-cryptomaterial-issuer
 
 Inside is a docker-compose.yaml and a bash script.
 
@@ -26,7 +24,7 @@ If docker-compose up returns an error "permission denied while trying to connect
 
 And then rerun docker-compose. If the problem still persists you can try `reboot`
 
-If you are re-running the project and you would like to delete the fabric-ca folder, you need to set permissions before deletion: `sudo chmod ugo+rwx /home/yourusername/go/src/HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3/create-cryptomaterial-issuer/fabric-ca`
+If you are re-running the project and you would like to delete the fabric-ca folder, you need to set permissions before deletion: `sudo chmod ugo+rwx /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3/create-cryptomaterial-issuer/fabric-ca`
 
 **Then we run the bash script ./issuer-org-certificates.sh**
 
@@ -60,14 +58,14 @@ The cryptomaterial for the electricity producer organisation is created using th
 
 To see the attributes we enrolled, cd into the relevant folder in crypto-config:
 
-`cd /home/yourusername/go/src/HLF-GOconversionissuance-JA-MA/version1/setup1/eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/SmartMeter/SmartMeter1@eproducer.GOnetwork.com/msp/signcerts`
+`cd /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/SmartMeter/SmartMeter1@eproducer.GOnetwork.com/msp/signcerts`
 
 And then run: `keytool -printcert -file cert.pem`
 to check the attributes registered with the certificate.
 
 ## Cryptomaterial for h-producer
 
-`cd /home/yourusername/HLF-GOconversionissuance-JA-MA/version1/setup1/hproducer-vm5/create-cryptomaterial-hproducer`
+`cd /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/hproducer-vm5/create-cryptomaterial-hproducer`
 
 The cryptomaterial for the hydrogen producer organisation is created using the root certificates of the Issuing Body CA. For the hydrogen producer, we enroll: an admin, 2 peers and one Output Meter. To the Output Meter certificate we add several attributes (see line 45 of the bash script) which will be used to authenticate input data sent by the Smart Meter to the smart contract. Run the bash script:
 
@@ -75,14 +73,14 @@ The cryptomaterial for the hydrogen producer organisation is created using the r
 
 To see the attributes we enrolled, cd into the relevant folder in crypto-config:
 
-`cd /home/yourusername/go/src/HLF-GOconversionissuance-JA-MA/version1/setup1/hproducer-vm5/crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/OutputMeter1@hproducer.GOnetwork.com/msp/signcerts`
+`cd /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/hproducer-vm5/crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/OutputMeter1@hproducer.GOnetwork.com/msp/signcerts`
 
 And then run: `keytool -printcert -file cert.pem`
 to check the attributes registered with the certificate.
 
 ## Cryptomaterial Orderer
 
-`cd /home/yourusername/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/create-cryptomaterial-orderer`
+`cd /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/create-cryptomaterial-orderer`
 
 The orderer organisation has its own Certificate Authority. This is to signalize that the orderer organization is independent even from the Issuing Bodies and truly under the control of the Blockchain consortium. The effect on decentralisation is minimal and the orderer cryptomaterial could just as much have been generated with the Issuing Body CA, however, different from the cryptomaterial of other organisations it doesnt NEED to.
 

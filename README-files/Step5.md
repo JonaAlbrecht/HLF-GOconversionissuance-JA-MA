@@ -1,4 +1,4 @@
-## 1. Configuring and connecting to the virtual machines
+## Configuring and connecting to the virtual machines
 
 **Skip this step if deploying only on local machine**
 
