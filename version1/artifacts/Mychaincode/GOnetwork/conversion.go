@@ -34,7 +34,7 @@ type ElectricityGOprivatedetails struct {
 	ElectricityProductionMethod string `json:"ElectricityProductionMethod"`
 }
 
-type greenHydrogenGO struct {
+type GreenHydrogenGO struct {
 	AssetID string `json:"AssetID"`
 	CreationDateTime string `json:"CreationDateTime"`
 	GOType string `json:"GOType"`
@@ -95,12 +95,12 @@ func NewCount() *Count {
 	return &Count{mx: new(sync.Mutex), count: 0}
 }
 
-var eGOcount = NewCount()
+var EGOcount = NewCount()
 var hGOcount = NewCount()
-var eCancellations = NewCount()
+var ECancellations = NewCount()
 var hCancellations = NewCount()
 
-func (s *SmartContract) createElectricityGO(ctx contractapi.TransactionContextInterface) error {
+func (s *SmartContract) CreateElectricityGO(ctx contractapi.TransactionContextInterface) error {
 	
 	type eGOTransientInput struct {
 		AmountMWh float64 `json:"AmountMWh"`
@@ -252,7 +252,7 @@ func (s *SmartContract) createElectricityGO(ctx contractapi.TransactionContextIn
 }
 
 
-func (s *SmartContract) addHydrogentoBacklog(ctx contractapi.TransactionContextInterface) error {
+func (s *SmartContract) AddHydrogentoBacklog(ctx contractapi.TransactionContextInterface) error {
 	
 	type hGObacklogTransientInput struct {
 		Kilosproduced float64 `json:"Kilosproduced"`
@@ -475,7 +475,7 @@ func (s *SmartContract) addHydrogentoBacklog(ctx contractapi.TransactionContextI
 	return nil
 }
 
-func (s *SmartContract) transfereGOtohproducer(ctx contractapi.TransactionContextInterface, neededAmount float64) error {
+func (s *SmartContract) TransfereGOtohproducer(ctx contractapi.TransactionContextInterface, neededAmount float64) error {
 
 	//ABAC:
 	err := ctx.GetClientIdentity().AssertAttributeValue("electricitytrustedUser", "true")
@@ -579,7 +579,7 @@ func (s *SmartContract) transfereGOtohproducer(ctx contractapi.TransactionContex
 //cancelling the correct amount, 
 //reading the remaining amount of MWhs and emissions back into the collection
 //issuing a cancellation statement for the cancelled MWh
-func (s *SmartContract) issuehGO(ctx contractapi.TransactionContextInterface) error {
+func (s *SmartContract) IssuehGO(ctx contractapi.TransactionContextInterface) error {
 	//ABAC:
 	err := ctx.GetClientIdentity().AssertAttributeValue("hydrogentrustedUser", "true")
 	if err != nil {
@@ -630,7 +630,7 @@ func (s *SmartContract) issuehGO(ctx contractapi.TransactionContextInterface) er
 		resultshproducer = append(resultshproducer, availableeGOhproducer)
 	}
 	//transcribing of 
-	var hydrogenGO greenHydrogenGO
+	var hydrogenGO GreenHydrogenGO
 	var hydrogenGOprivate greenHydrogenGOprivatedetails
 	var tobedeleted []string
 	
@@ -744,7 +744,7 @@ func (s *SmartContract) issuehGO(ctx contractapi.TransactionContextInterface) er
 	return nil
 }
 
-func (s *SmartContract) claimRenewableattributesElectricity(ctx contractapi.TransactionContextInterface) error {
+func (s *SmartContract) ClaimRenewableattributesElectricity(ctx contractapi.TransactionContextInterface) error {
 	type ClaimRenewablesTransientInput struct {
 		Collection string `json:"collection"`
 		EGOID string `json:"eGOID"`
@@ -781,14 +781,14 @@ func (s *SmartContract) claimRenewableattributesElectricity(ctx contractapi.Tran
 	}
 	if eGOprivateJSON == nil {
 		log.Printf("Private details for eGO %v do not exist in collection %v", ClaimRenewablesInput.EGOID, ClaimRenewablesInput.Collection)
-		return fmt.Errorf("No electricity GO with that ID exists")
+		return fmt.Errorf("no electricity GO with that ID exists")
 	}
 	var eGOprivate *ElectricityGOprivatedetails
 	err = json.Unmarshal(eGOprivateJSON, &eGOprivate)
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal JSON: %v", err)
 	}
-	currentCancelKeyCount := eCancelcounter()
+	currentCancelKeyCount := ECancelcounter()
 	eCancellationkey := "eCancel"+strconv.Itoa(int(currentCancelKeyCount))
 	now3 := time.Now()
 	creationtime3 := now3.String()
@@ -824,7 +824,7 @@ func (s *SmartContract) claimRenewableattributesElectricity(ctx contractapi.Tran
 	return nil
 }
 
-func (s *SmartContract) claimRenewableattributesHydrogen(ctx contractapi.TransactionContextInterface) error {
+func (s *SmartContract) ClaimRenewableattributesHydrogen(ctx contractapi.TransactionContextInterface) error {
 	//claiming renewable attributes of Hydrogen by individual GOs. also should implement a claim by quantity function for both energy carriers. 
 	type ClaimHydrogenTransientInput struct {
 		Collection string `json:"collection"`
@@ -862,7 +862,7 @@ func (s *SmartContract) claimRenewableattributesHydrogen(ctx contractapi.Transac
 	}
 	if hGOprivateJSON == nil {
 		log.Printf("Private details for eGO %v do not exist in collection %v", ClaimHydrogenInput.HGOID, ClaimHydrogenInput.Collection)
-		return fmt.Errorf("No electricity GO with that ID exists")
+		return fmt.Errorf("no electricity GO with that ID exists")
 	}
 	var hGOprivate *greenHydrogenGOprivatedetails
 	err = json.Unmarshal(hGOprivateJSON, &hGOprivate)
@@ -909,25 +909,25 @@ func (s *SmartContract) claimRenewableattributesHydrogen(ctx contractapi.Transac
 	return nil
 }
 
-func (s *SmartContract) getcurrenteGOsList(ctx contractapi.TransactionContextInterface, startKey, endKey string) ([]*ElectricityGO, error) {
+func (s *SmartContract) GetcurrenteGOsList(ctx contractapi.TransactionContextInterface, startKey, endKey string) ([]*ElectricityGO, error) {
 	resultsIterator, err := ctx.GetStub().GetStateByRange(startKey, endKey)
 	if err != nil {
 		return nil, err
 	}
 	defer resultsIterator.Close()
-	return constructeGOFromIterator(resultsIterator)
+	return ConstructeGOFromIterator(resultsIterator)
 }
 
-func (s *SmartContract) getcurrenthGOsList(ctx contractapi.TransactionContextInterface, startKey, endKey string) ([]*greenHydrogenGO, error) {
+func (s *SmartContract) GetcurrenthGOsList(ctx contractapi.TransactionContextInterface, startKey, endKey string) ([]*GreenHydrogenGO, error) {
 	resultsIterator, err := ctx.GetStub().GetStateByRange(startKey, endKey)
 	if err != nil {
 		return nil, err
 	}
 	defer resultsIterator.Close()
-	return constructhGOFromIterator(resultsIterator)
+	return ConstructhGOFromIterator(resultsIterator)
 }
 
-func (s *SmartContract) readPubliceGO(ctx contractapi.TransactionContextInterface, eGOID string) (*ElectricityGO, error) {
+func (s *SmartContract) ReadPubliceGO(ctx contractapi.TransactionContextInterface, eGOID string) (*ElectricityGO, error) {
 	eGOJSON, err := ctx.GetStub().GetState(eGOID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read public eGO information:%v", err)
@@ -944,7 +944,7 @@ func (s *SmartContract) readPubliceGO(ctx contractapi.TransactionContextInterfac
 	return eGO, nil
 }
 
-func (s *SmartContract) readPublichGO(ctx contractapi.TransactionContextInterface, hGOID string) (*greenHydrogenGO, error) {
+func (s *SmartContract) ReadPublichGO(ctx contractapi.TransactionContextInterface, hGOID string) (*GreenHydrogenGO, error) {
 	hGOJSON, err := ctx.GetStub().GetState(hGOID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read public hGO information:%v", err)
@@ -953,14 +953,14 @@ func (s *SmartContract) readPublichGO(ctx contractapi.TransactionContextInterfac
 		log.Printf("%v does not exist", hGOID)
 		return nil, nil
 	}
-	var hGO *greenHydrogenGO
+	var hGO *GreenHydrogenGO
 	err = json.Unmarshal(hGOJSON, &hGO)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal hGO:%v", err)
 	}
 	return hGO, nil
 }
-func (s *SmartContract) readPrivatefromCollectioneGO(ctx contractapi.TransactionContextInterface, collection string, eGOID string) (*ElectricityGOprivatedetails, error) {
+func (s *SmartContract) ReadPrivatefromCollectioneGO(ctx contractapi.TransactionContextInterface, collection string, eGOID string) (*ElectricityGOprivatedetails, error) {
 	log.Printf("Reading private details of eGO with ID %v from collection %v", eGOID, collection)
 	eGOprivateJSON, err := ctx.GetStub().GetPrivateData(collection, eGOID)
 	if err != nil {
@@ -978,7 +978,7 @@ func (s *SmartContract) readPrivatefromCollectioneGO(ctx contractapi.Transaction
 	return eGOprivate, nil
 }
 
-func (s *SmartContract) readPrivatefromCollectionhGO(ctx contractapi.TransactionContextInterface, collection string, hGOID string) (*greenHydrogenGOprivatedetails, error) {
+func (s *SmartContract) ReadPrivatefromCollectionhGO(ctx contractapi.TransactionContextInterface, collection string, hGOID string) (*greenHydrogenGOprivatedetails, error) {
 	log.Printf("Reading private details of hGO with ID %v from collection %v", hGOID, collection)
 	hGOprivateJSON, err := ctx.GetStub().GetPrivateData(collection, hGOID)
 	if err != nil {
@@ -996,7 +996,7 @@ func (s *SmartContract) readPrivatefromCollectionhGO(ctx contractapi.Transaction
 	return hGOprivate, nil
 }
 
-func (s *SmartContract) transfereGOtobuyer(ctx contractapi.TransactionContextInterface, neededAmount float64) error {
+func (s *SmartContract) TransfereGOtobuyer(ctx contractapi.TransactionContextInterface, neededAmount float64) error {
 
 	//ABAC:
 	err := ctx.GetClientIdentity().AssertAttributeValue("electricitytrustedUser", "true")
@@ -1105,7 +1105,7 @@ func getClientOrgID(ctx contractapi.TransactionContextInterface) (string, error)
 	return clientOrgID, nil
 }
 
-func getPeerOrgID(ctx contractapi.TransactionContextInterface) (string, error) {
+func GetPeerOrgID(ctx contractapi.TransactionContextInterface) (string, error) {
 	peerOrgID, err := ctx.GetClientIdentity().GetMSPID()
 	if err != nil {
 		return "", fmt.Errorf("failed getting peer's orgID: %v", err)
@@ -1193,7 +1193,7 @@ func getkwhperkilo(ctx contractapi.TransactionContextInterface) (string, error) 
 	return kwhperkilo, nil
 }
 
-func getConversionEfficiency(ctx contractapi.TransactionContextInterface) (string, error) {
+func GetConversionEfficiency(ctx contractapi.TransactionContextInterface) (string, error) {
 	conversionEfficiency, found, err := ctx.GetClientIdentity().GetAttributeValue("conversionEfficiency")
 	if err != nil {
 		return "", fmt.Errorf("failed getting conversionEfficiency: %v", err)
@@ -1204,7 +1204,7 @@ func getConversionEfficiency(ctx contractapi.TransactionContextInterface) (strin
 	return conversionEfficiency, nil
 }
 
-func setGOEndorsementpolicy(ctx contractapi.TransactionContextInterface, assetID string, orgsToEndorse []string) error {
+func SetGOEndorsementpolicy(ctx contractapi.TransactionContextInterface, assetID string, orgsToEndorse []string) error {
 	endorsementPolicy, err := statebased.NewStateEP(nil)
 	if err != nil {
 		return err
@@ -1271,7 +1271,7 @@ func (s *SmartContract) VerifyeGO(ctx contractapi.TransactionContextInterface, e
 	return true, nil
 }
 
-func constructeGOFromIterator(resultsIterator shim.StateQueryIteratorInterface) ([]*ElectricityGO, error) {
+func ConstructeGOFromIterator(resultsIterator shim.StateQueryIteratorInterface) ([]*ElectricityGO, error) {
 	var eGOs []*ElectricityGO
 	for resultsIterator.HasNext() {
 		queryResult, err := resultsIterator.Next()
@@ -1289,14 +1289,14 @@ func constructeGOFromIterator(resultsIterator shim.StateQueryIteratorInterface) 
 	return eGOs, nil
 }
 
-func constructhGOFromIterator(resultsIterator shim.StateQueryIteratorInterface) ([]*greenHydrogenGO, error) {
-	var hGOs []*greenHydrogenGO
+func ConstructhGOFromIterator(resultsIterator shim.StateQueryIteratorInterface) ([]*GreenHydrogenGO, error) {
+	var hGOs []*GreenHydrogenGO
 	for resultsIterator.HasNext() {
 		queryResult, err := resultsIterator.Next()
 		if err != nil {
 			return nil, err
 		}
-		var hGO greenHydrogenGO
+		var hGO GreenHydrogenGO
 		err = json.Unmarshal(queryResult.Value, &hGO)
 		if err != nil {
 			return nil, err
@@ -1321,8 +1321,8 @@ func (c *Count) Count() float64 {
 }
 
 func eGOcounter() float64 {
-	eGOcount.Incr()
-	return eGOcount.count
+	EGOcount.Incr()
+	return EGOcount.count
 }
 
 func hGOcounter() float64 {
@@ -1330,9 +1330,9 @@ func hGOcounter() float64 {
 	return hGOcount.count
 }
 
-func eCancelcounter() float64 {
-	eCancellations.Incr()
-	return eCancellations.count
+func ECancelcounter() float64 {
+	ECancellations.Incr()
+	return ECancellations.count
 }
 
 func hCancelcounter() float64 {

@@ -48,7 +48,7 @@ presetup() {
     popd
     echo Finished vendoring Go dependencies
 }
-presetup
+#presetup
 
 CHANNEL_NAME="mychannel"
 CC_RUNTIME_LANGUAGE="golang"
@@ -64,7 +64,7 @@ packageChaincode() {
         --label ${CC_NAME}_${VERSION}
     echo "===================== Chaincode is packaged on i-peer0.issuer ===================== "
 }
-packageChaincode
+#packageChaincode
 
 installChaincode() {
     setGlobalsForPeer0issuer
@@ -73,7 +73,7 @@ installChaincode() {
 
 }
 
-installChaincode
+#installChaincode
 
 queryInstalled() {
     setGlobalsForPeer0issuer
@@ -84,7 +84,7 @@ queryInstalled() {
     echo "===================== Query installed successful on i-peer0.issuer on channel ===================== "
 }
 
-queryInstalled
+#queryInstalled
 
 approveForissuer() {
     setGlobalsForPeer0issuer
@@ -102,7 +102,7 @@ approveForissuer() {
 }
 
 #queryInstalled
-approveForissuer
+#approveForissuer
 
 checkCommitReadyness() {
     setGlobalsForPeer0issuer
@@ -162,25 +162,14 @@ chaincodeInvoke() {
         --ordererTLSHostnameOverride orderer3.GOnetwork.com \
         --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \
         -C $CHANNEL_NAME -n ${CC_NAME} \
-        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_BUYER_CA \
-        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_EPRODUCER_CA   \
-        --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_ISSUER_CA \
-        --peerAddresses localhost:13051 --tlsRootCertFiles $PEER0_HPRODUCER_CA \
-        -c '{"function": "createElectricityGO","Args":[]}'
+        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_EPRODUCER_CA \
+        -c '{"function": "readPubliceGO","Args":["eGO1"]}'
 
-    ## Init ledger
-    # peer chaincode invoke -o localhost:7050 \
-    #     --ordererTLSHostnameOverride orderer.GOnetwork.com \
-    #     --tls $CORE_PEER_TLS_ENABLED \
-    #     --cafile $ORDERER_CA \
-    #     -C $CHANNEL_NAME -n ${CC_NAME} \
-    #     --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
-    #     --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
-    #     -c '{"function": "initLedger","Args":[]}'
+    
 
 }
 
-#chaincodeInvoke
+chaincodeInvoke
 
 chaincodeQuery() {
     setGlobalsForPeer0issuer

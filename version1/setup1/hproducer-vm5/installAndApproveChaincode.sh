@@ -45,7 +45,7 @@ packageChaincode() {
         --label ${CC_NAME}_${VERSION}
     echo "===================== Chaincode is packaged on h-peer0.hproducer ===================== "
 }
-#packageChaincode
+packageChaincode
 
 installChaincode() {
     setGlobalsForPeer0hproducer
@@ -54,7 +54,7 @@ installChaincode() {
 
 }
 
-#installChaincode
+installChaincode
 
 queryInstalled() {
     setGlobalsForPeer0hproducer
