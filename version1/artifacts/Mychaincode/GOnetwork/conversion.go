@@ -40,7 +40,7 @@ type GreenHydrogenGO struct {
 	GOType string `json:"GOType"`
 }
 
-type greenHydrogenGOprivatedetails struct {
+type GreenHydrogenGOprivatedetails struct {
 	AssetID string `json:"AssetID"`
 	OwnerID string `json:"OwnerID"`
 	Kilosproduced float64 `json:"Kilosproduced"`
@@ -51,12 +51,12 @@ type greenHydrogenGOprivatedetails struct {
 	UsedMWh float64 `json:"UsedMWh"`
 }
 
-type greenHydrogenGObacklog struct {
+type GreenHydrogenGObacklog struct {
 	Backlogkey string `json:"Backlogkey"`
 	GOType string `json:"GOType"`
 }
 
-type greenHydrogenGObacklogprivatedetails struct {
+type GreenHydrogenGObacklogprivatedetails struct {
 	Backlogkey string `json:"Backlogkey"`
 	OwnerID string `json:"OwnerID"`
 	Kilosproduced float64 `json:"Kilosproduced"`
@@ -96,9 +96,9 @@ func NewCount() *Count {
 }
 
 var EGOcount = NewCount()
-var hGOcount = NewCount()
+var HGOcount = NewCount()
 var ECancellations = NewCount()
-var hCancellations = NewCount()
+var HCancellations = NewCount()
 
 func (s *SmartContract) CreateElectricityGO(ctx contractapi.TransactionContextInterface) error {
 	
@@ -371,7 +371,7 @@ func (s *SmartContract) AddHydrogentoBacklog(ctx contractapi.TransactionContextI
 		return fmt.Errorf("Failed to get data: " + err.Error())
 	} 
 	if backlogJSON == nil {
-		hGObacklog := greenHydrogenGObacklog{
+		hGObacklog := GreenHydrogenGObacklog{
 			Backlogkey: backlogkey,
 			GOType: "Hydrogen",
 		}
@@ -393,7 +393,7 @@ func (s *SmartContract) AddHydrogentoBacklog(ctx contractapi.TransactionContextI
 			//return fmt.Errorf("failed setting state based endorsement for buyer and seller: %v", err)
 		//}
 	
-		hGObacklogprivate := greenHydrogenGObacklogprivatedetails{
+		hGObacklogprivate := GreenHydrogenGObacklogprivatedetails{
 			Backlogkey: backlogkey,
 			OwnerID: clientID,
 			Kilosproduced: hGOInput.Kilosproduced,
@@ -414,13 +414,13 @@ func (s *SmartContract) AddHydrogentoBacklog(ctx contractapi.TransactionContextI
 		}
 	} else {
 		
-		var currentbacklog *greenHydrogenGObacklogprivatedetails
+		var currentbacklog *GreenHydrogenGObacklogprivatedetails
 		err = json.Unmarshal(backlogJSON, &currentbacklog)
 		if err != nil {
 			return fmt.Errorf("error unmarshaling the current backlog:%v", err)
 		}
 		
-		hGObacklog := greenHydrogenGObacklog{
+		hGObacklog := GreenHydrogenGObacklog{
 			Backlogkey: backlogkey,
 			GOType: "Hydrogen",
 		}
@@ -444,7 +444,7 @@ func (s *SmartContract) AddHydrogentoBacklog(ctx contractapi.TransactionContextI
 		//}
 	
 	
-		hGObacklogprivate := greenHydrogenGObacklogprivatedetails{
+		hGObacklogprivate := GreenHydrogenGObacklogprivatedetails{
 			Backlogkey: currentbacklog.Backlogkey,
 			OwnerID: currentbacklog.OwnerID,
 			Kilosproduced: hGOInput.Kilosproduced + currentbacklog.Kilosproduced,
@@ -599,7 +599,7 @@ func (s *SmartContract) IssuehGO(ctx contractapi.TransactionContextInterface) er
 		return fmt.Errorf("no backlog could be found:%v",err)
 	}
 
-	var backlogtobeissued *greenHydrogenGObacklogprivatedetails
+	var backlogtobeissued *GreenHydrogenGObacklogprivatedetails
 		err = json.Unmarshal(backlogtobeissuedJSON, &backlogtobeissued)
 		if err != nil {
 			return fmt.Errorf("error unmarshaling the current backlog to be issued:%v", err)
@@ -631,7 +631,7 @@ func (s *SmartContract) IssuehGO(ctx contractapi.TransactionContextInterface) er
 	}
 	//transcribing of 
 	var hydrogenGO GreenHydrogenGO
-	var hydrogenGOprivate greenHydrogenGOprivatedetails
+	var hydrogenGOprivate GreenHydrogenGOprivatedetails
 	var tobedeleted []string
 	
 	GOitemcounter := 0
@@ -864,12 +864,12 @@ func (s *SmartContract) ClaimRenewableattributesHydrogen(ctx contractapi.Transac
 		log.Printf("Private details for eGO %v do not exist in collection %v", ClaimHydrogenInput.HGOID, ClaimHydrogenInput.Collection)
 		return fmt.Errorf("no electricity GO with that ID exists")
 	}
-	var hGOprivate *greenHydrogenGOprivatedetails
+	var hGOprivate *GreenHydrogenGOprivatedetails
 	err = json.Unmarshal(hGOprivateJSON, &hGOprivate)
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal JSON: %v", err)
 	}
-	currentCancelKeyCount := hCancelcounter()
+	currentCancelKeyCount := HCancelcounter()
 	hCancellationkey := "hCancel"+strconv.Itoa(int(currentCancelKeyCount))
 	now4 := time.Now()
 	creationtime4 := now4.String()
@@ -978,7 +978,7 @@ func (s *SmartContract) ReadPrivatefromCollectioneGO(ctx contractapi.Transaction
 	return eGOprivate, nil
 }
 
-func (s *SmartContract) ReadPrivatefromCollectionhGO(ctx contractapi.TransactionContextInterface, collection string, hGOID string) (*greenHydrogenGOprivatedetails, error) {
+func (s *SmartContract) ReadPrivatefromCollectionhGO(ctx contractapi.TransactionContextInterface, collection string, hGOID string) (*GreenHydrogenGOprivatedetails, error) {
 	log.Printf("Reading private details of hGO with ID %v from collection %v", hGOID, collection)
 	hGOprivateJSON, err := ctx.GetStub().GetPrivateData(collection, hGOID)
 	if err != nil {
@@ -988,7 +988,7 @@ func (s *SmartContract) ReadPrivatefromCollectionhGO(ctx contractapi.Transaction
 		log.Printf("Private details for eGO %v do not exist in collection %v", hGOID, collection)
 		return nil, nil
 	}
-	var hGOprivate *greenHydrogenGOprivatedetails
+	var hGOprivate *GreenHydrogenGOprivatedetails
 	err = json.Unmarshal(hGOprivateJSON, &hGOprivate)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal JSON: %v", err)
@@ -1326,8 +1326,8 @@ func eGOcounter() float64 {
 }
 
 func hGOcounter() float64 {
-	hGOcount.Incr()
-	return hGOcount.count
+	HGOcount.Incr()
+	return HGOcount.count
 }
 
 func ECancelcounter() float64 {
@@ -1335,7 +1335,7 @@ func ECancelcounter() float64 {
 	return ECancellations.count
 }
 
-func hCancelcounter() float64 {
-	hCancellations.Incr()
-	return hCancellations.count
+func HCancelcounter() float64 {
+	HCancellations.Incr()
+	return HCancellations.count
 }
