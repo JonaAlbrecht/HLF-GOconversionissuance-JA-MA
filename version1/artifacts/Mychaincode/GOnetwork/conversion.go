@@ -103,12 +103,19 @@ var HCancellations = NewCount()
 func (s *SmartContract) CreateElectricityGO(ctx contractapi.TransactionContextInterface) error {
 	
 	type eGOTransientInput struct {
+		AmountMWh json.Number `json:"AmountMWh"`
+		Emissions json.Number `json:"Emissions"`
+		ElapsedSeconds json.Number `json:"ElapsedSeconds"`
+		ElectricityProductionMethod string `json:"ElectricityProductionMethod"`
+	}
+
+	type eGOTransientData struct {
 		AmountMWh float64 `json:"AmountMWh"`
 		Emissions float64 `json:"Emissions"`
 		ElapsedSeconds float64 `json:"ElapsedSeconds"`
 		ElectricityProductionMethod string `json:"ElectricityProductionMethod"`
 	}
-	
+
 	err := ctx.GetClientIdentity().AssertAttributeValue("electricitytrustedDevice", "true")
 	if err != nil {
 		return fmt.Errorf("submitting Sensor not authorized to create eGO asset, not a trusted electricity Smart Meter: %v", err)
@@ -129,14 +136,31 @@ func (s *SmartContract) CreateElectricityGO(ctx contractapi.TransactionContextIn
 	}
 
 	// eGO asset ID is of the format "eGO1", "eGO2" and so on...
-	currentCounteGO := eGOcounter()
+	currentCounteGO := EGOcounter()
 	eGOID := "eGO"+strconv.Itoa(int(currentCounteGO))
 	
-	var eGOInput eGOTransientInput
-	err = json.Unmarshal(eGODataAsBytes, &eGOInput)
+	var eGOInputJSONformat eGOTransientInput
+	var eGOInput eGOTransientData
+
+	err = json.Unmarshal(eGODataAsBytes, &eGOInputJSONformat)
 	if err != nil {
 		return fmt.Errorf("failed to decode JSON input of: " + string(eGODataAsBytes) + ". The error is: " + err.Error())
 	}
+
+	eGOInput.AmountMWh, err = eGOInputJSONformat.AmountMWh.Float64()
+	if err != nil {
+		return fmt.Errorf("failed to convert Json.number into float:%v", err)
+	}
+	eGOInput.Emissions, err = eGOInputJSONformat.Emissions.Float64()
+	if err != nil {
+		return fmt.Errorf("failed to convert Json.number into float:%v", err)
+	}
+	eGOInput.ElapsedSeconds, err = eGOInputJSONformat.ElapsedSeconds.Float64()
+	if err != nil {
+		return fmt.Errorf("failed to convert Json.number into float:%v", err)
+	}
+	eGOInput.ElectricityProductionMethod = eGOInputJSONformat.ElectricityProductionMethod
+
 	if eGOInput.AmountMWh == 0 {
 		return fmt.Errorf("go proposal must specify an amount of MWh")
 	}
@@ -255,6 +279,14 @@ func (s *SmartContract) CreateElectricityGO(ctx contractapi.TransactionContextIn
 func (s *SmartContract) AddHydrogentoBacklog(ctx contractapi.TransactionContextInterface) error {
 	
 	type hGObacklogTransientInput struct {
+		Kilosproduced json.Number `json:"Kilosproduced"`
+		EmissionsHydrogen json.Number `json:"EmissionsHydrogen"`
+		UsedMWh json.Number `json:"UsedMWh"`
+		HydrogenProductionMethod string `json:"HydrogenProductionMethod"`
+		ElapsedSeconds json.Number `json:"ElapsedSeconds"`
+	}
+
+	type hGObacklogTransientData struct {
 		Kilosproduced float64 `json:"Kilosproduced"`
 		EmissionsHydrogen float64 `json:"EmissionsHydrogen"`
 		UsedMWh float64 `json:"UsedMWh"`
@@ -281,11 +313,30 @@ func (s *SmartContract) AddHydrogentoBacklog(ctx contractapi.TransactionContextI
 		return fmt.Errorf("GO value must be non-empty")
 	}
 
-	var hGOInput hGObacklogTransientInput
-	err = json.Unmarshal(hGODataAsBytes, &hGOInput)
+	var hGOInputJSONFORMAT hGObacklogTransientInput
+	var hGOInput hGObacklogTransientData
+	err = json.Unmarshal(hGODataAsBytes, &hGOInputJSONFORMAT)
 	if err != nil {
 		return fmt.Errorf("failed to decode JSON input of: " + string(hGODataAsBytes) + ". The error is: " + err.Error())
 	}
+
+	hGOInput.Kilosproduced, err = hGOInputJSONFORMAT.Kilosproduced.Float64()
+	if err != nil {
+		return fmt.Errorf("failed to convert json.number into float:%v", err)
+	}
+	hGOInput.EmissionsHydrogen, err = hGOInputJSONFORMAT.EmissionsHydrogen.Float64()
+	if err != nil {
+		return fmt.Errorf("failed to convert json.number into float:%v", err)
+	}
+	hGOInput.UsedMWh, err = hGOInputJSONFORMAT.UsedMWh.Float64()
+	if err != nil {
+		return fmt.Errorf("failed to convert json.number into float:%v", err)
+	}
+	hGOInput.ElapsedSeconds, err = hGOInputJSONFORMAT.ElapsedSeconds.Float64()
+	if err != nil {
+		return fmt.Errorf("failed to convert json.number into float:%v", err)
+	}
+	hGOInput.HydrogenProductionMethod = hGOInputJSONFORMAT.HydrogenProductionMethod
 
 	if hGOInput.Kilosproduced == 0 {
 		return fmt.Errorf("go proposal must specify kilos produced")
@@ -555,7 +606,7 @@ func (s *SmartContract) TransfereGOtohproducer(ctx contractapi.TransactionContex
 			}
 			remainderamount := currentAsset.AmountMWh - partialtransferamount
 			remainderemissions := currentAsset.Emissions * (1 - ratio)
-			currentCounteGO := eGOcounter()
+			currentCounteGO := EGOcounter()
 			eGOID := "eGO"+strconv.Itoa(int(currentCounteGO))
 			partialasseteproducer := &ElectricityGOprivatedetails{AssetID: eGOID, OwnerID: "eproducerMSP", AmountMWh: remainderamount, Emissions: remainderemissions, ElectricityProductionMethod: currentAsset.ElectricityProductionMethod}
 			if len(partialasseteproducer.AssetID) == 0 {
@@ -680,7 +731,7 @@ func (s *SmartContract) IssuehGO(ctx contractapi.TransactionContextInterface) er
 		deletioncounter++
 	}
 
-	currentCounteGO1 := eGOcounter()
+	currentCounteGO1 := EGOcounter()
 	eGOID1 := "eGO"+strconv.Itoa(int(currentCounteGO1))
 
 	// issue eGO with excess emissions and MWhs
@@ -1074,7 +1125,7 @@ func (s *SmartContract) TransfereGOtobuyer(ctx contractapi.TransactionContextInt
 			}
 			remainderamount := currentAsset.AmountMWh - partialtransferamount
 			remainderemissions := currentAsset.Emissions * (1 - ratio)
-			currentCounteGO := eGOcounter()
+			currentCounteGO := EGOcounter()
 			eGOID := "eGO"+strconv.Itoa(int(currentCounteGO))
 			partialasseteproducer := &ElectricityGOprivatedetails{AssetID: eGOID, OwnerID: "eproducerMSP", AmountMWh: remainderamount, Emissions: remainderemissions, ElectricityProductionMethod: currentAsset.ElectricityProductionMethod}
 			if len(partialasseteproducer.AssetID) == 0 {
@@ -1320,7 +1371,7 @@ func (c *Count) Count() float64 {
     return count
 }
 
-func eGOcounter() float64 {
+func EGOcounter() float64 {
 	EGOcount.Incr()
 	return EGOcount.count
 }

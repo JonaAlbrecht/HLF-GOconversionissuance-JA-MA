@@ -32,6 +32,7 @@ services:
       file: base.yaml
       service: peer-base
     environment:
+      - GODEBUG=netdns=go
       - FABRIC_LOGGING_SPEC=DEBUG
       - ORDERER_GENERAL_LOGLEVEL=debug
       - CORE_PEER_LOCALMSPID=hproducerMSP
@@ -74,6 +75,7 @@ services:
       file: base.yaml
       service: peer-base
     environment:
+      - GODEBUG=netdns=go
       - FABRIC_LOGGING_SPEC=DEBUG
       - ORDERER_GENERAL_LOGLEVEL=debug
       - CORE_PEER_LOCALMSPID=hproducerMSP

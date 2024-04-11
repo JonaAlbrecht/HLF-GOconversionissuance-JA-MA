@@ -48,9 +48,8 @@ presetup() {
     popd
     echo Finished vendoring Go dependencies
 }
-#presetup
+presetup
 
-CHANNEL_NAME="mychannel"
 CC_RUNTIME_LANGUAGE="golang"
 VERSION="1"
 CC_SRC_PATH="./../../artifacts/Mychaincode"
@@ -64,7 +63,7 @@ packageChaincode() {
         --label ${CC_NAME}_${VERSION}
     echo "===================== Chaincode is packaged on i-peer0.issuer ===================== "
 }
-#packageChaincode
+packageChaincode
 
 installChaincode() {
     setGlobalsForPeer0issuer
@@ -73,7 +72,7 @@ installChaincode() {
 
 }
 
-#installChaincode
+installChaincode
 
 queryInstalled() {
     setGlobalsForPeer0issuer
@@ -84,7 +83,7 @@ queryInstalled() {
     echo "===================== Query installed successful on i-peer0.issuer on channel ===================== "
 }
 
-#queryInstalled
+queryInstalled
 
 approveForissuer() {
     setGlobalsForPeer0issuer
@@ -94,7 +93,7 @@ approveForissuer() {
         --ordererTLSHostnameOverride orderer3.GOnetwork.com --tls \
         --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${VERSION} \
         --init-required --package-id ${PACKAGE_ID} \
-        --sequence ${VERSION} --collections-config ${COLLECTION_CONFIGPATH}
+        --sequence ${VERSION} --collections-config $COLLECTION_CONFIGPATH
     # set +x
 
     echo "===================== chaincode approved from issuer ===================== "
@@ -102,80 +101,15 @@ approveForissuer() {
 }
 
 #queryInstalled
-#approveForissuer
+approveForissuer
 
 checkCommitReadyness() {
     setGlobalsForPeer0issuer
     peer lifecycle chaincode checkcommitreadiness \
         --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${VERSION} \
         --sequence ${VERSION} --output json --init-required \
-        --collections-config ${COLLECTION_CONFIGPATH}
+        --collections-config $COLLECTION_CONFIGPATH
     echo "===================== checking commit readyness from issuer ===================== "
 }
 
-#checkCommitReadyness
-
-commitChaincodeDefinition() {
-    setGlobalsForPeer0issuer
-    peer lifecycle chaincode commit -o localhost:9050 --ordererTLSHostnameOverride orderer3.GOnetwork.com \
-        --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \
-        --channelID $CHANNEL_NAME --name ${CC_NAME} \
-        --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_ISSUER_CA \
-        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_EPRODUCER_CA \
-        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_BUYER_CA \
-        --peerAddresses localhost:13051 --tlsRootCertFiles $PEER0_HPRODUCER_CA \
-        --version ${VERSION} --sequence ${VERSION} --init-required \
-        --collections-config ${COLLECTION_CONFIGPATH}
-}
-
-#commitChaincodeDefinition
-
-queryCommitted() {
-    setGlobalsForPeer0issuer
-    peer lifecycle chaincode querycommitted --channelID $CHANNEL_NAME --name ${CC_NAME}
-
-}
-
-#queryCommitted
-
-chaincodeInvokeInit() {
-    setGlobalsForPeer0issuer
-    peer chaincode invoke -o localhost:9050 \
-        --ordererTLSHostnameOverride orderer3.GOnetwork.com \
-        --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \
-        -C $CHANNEL_NAME -n ${CC_NAME} \
-        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_EPRODUCER_CA \
-        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_BUYER_CA \
-        --peerAddresses localhost:13051 --tlsRootCertFiles $PEER0_HPRODUCER_CA \
-        --isInit -c '{"Args":[]}'
-
-}
-
- # --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_ISSUER_CA \
-
-#chaincodeInvokeInit
-
-chaincodeInvoke() {
-    setGlobalsForPeer0issuer
-
-    peer chaincode invoke -o localhost:9050 \
-        --ordererTLSHostnameOverride orderer3.GOnetwork.com \
-        --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \
-        -C $CHANNEL_NAME -n ${CC_NAME} \
-        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_EPRODUCER_CA \
-        -c '{"function": "readPubliceGO","Args":["eGO1"]}'
-
-    
-
-}
-
-chaincodeInvoke
-
-chaincodeQuery() {
-    setGlobalsForPeer0issuer
-
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "getcurrenteGOsList","Args":["eGO1", "eGO50"]}'
- 
-}
-
-#chaincodeQuery
+checkCommitReadyness
