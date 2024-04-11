@@ -34,7 +34,7 @@ commitChaincodeDefinition() {
         --collections-config $COLLECTION_CONFIGPATH
 }
 
-#commitChaincodeDefinition
+commitChaincodeDefinition
 
 queryCommitted() {
     setGlobalsForPeer0issuer
@@ -42,7 +42,7 @@ queryCommitted() {
 
 }
 
-#queryCommitted
+queryCommitted
 
 chaincodeInvokeInit() {
     setGlobalsForPeer0issuer
@@ -59,38 +59,5 @@ chaincodeInvokeInit() {
 
  # --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_ISSUER_CA \
 
-#chaincodeInvokeInit
+chaincodeInvokeInit
 
-chaincodeInvoke() {
-    setGlobalsForPeer0issuer
-
-    peer chaincode invoke -o localhost:9050 \
-        --ordererTLSHostnameOverride orderer3.GOnetwork.com \
-        --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \
-        -C $CHANNEL_NAME -n ${CC_NAME} \
-        --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_ISSUER_CA \
-        -c '{"function": "ReadPubliceGO","Args":["eGO1"]}'
-
-    
-
-}
-
-chaincodeInvoke
-
-chaincodeQuery1() {
-    setGlobalsForPeer0issuer
-
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "GetcurrenteGOsList","Args":["eGO1", "eGO50"]}'
- 
-}
-
-#chaincodeQuery1
-
-chaincodeQuery2() {
-    setGlobalsForPeer0issuer
-
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPubliceGO","Args":["eGO1"]}'
- 
-}
-
-#chaincodeQuery2

@@ -31,7 +31,7 @@ fetchChannelBlock() {
         -c $CHANNEL_NAME --tls --cafile $ORDERER_CA
 }
 
-# fetchChannelBlock
+fetchChannelBlock
 
 joinChannel() {
     setGlobalsForPeer0hproducer
@@ -42,7 +42,7 @@ joinChannel() {
 
 }
 
-# joinChannel
+joinChannel
 
 updateAnchorPeers() {
     setGlobalsForPeer0hproducer
@@ -54,8 +54,4 @@ updateAnchorPeers() {
 
 }
 
-#updateAnchorPeers
-
-fetchChannelBlock
-joinChannel
 updateAnchorPeers

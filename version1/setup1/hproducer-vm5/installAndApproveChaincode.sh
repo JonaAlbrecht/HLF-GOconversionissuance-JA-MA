@@ -47,6 +47,8 @@ packageChaincode() {
 }
 packageChaincode
 
+echo "installing Chaincode on hproducer peer0... This may take a few minutes."
+
 installChaincode() {
     setGlobalsForPeer0hproducer
     peer lifecycle chaincode install ${CC_NAME}.tar.gz

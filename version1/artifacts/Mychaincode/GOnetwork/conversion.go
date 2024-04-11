@@ -172,7 +172,7 @@ func (s *SmartContract) CreateElectricityGO(ctx contractapi.TransactionContextIn
 	}
 
 	//check if the GO AssetID is already in use
-	testifexist, err := ctx.GetStub().GetPrivateData("eGOcollection", eGOID)
+	testifexist, err := ctx.GetStub().GetPrivateData("privateDetails-eGO", eGOID)
 	if err != nil {
 		return fmt.Errorf("Failed to get data: " + err.Error())
 	} else if testifexist != nil {
@@ -224,7 +224,10 @@ func (s *SmartContract) CreateElectricityGO(ctx contractapi.TransactionContextIn
 		return fmt.Errorf("different production method expected")
 	}
 
-	now1 := time.Now()
+	now1, err := ctx.GetStub().GetTxTimestamp()
+	if err != nil {
+		return fmt.Errorf("error getting timestamp:%v", err)
+	}
 	creationtime1 := now1.String()
 
 	eGO := ElectricityGO{
@@ -711,7 +714,10 @@ func (s *SmartContract) IssuehGO(ctx contractapi.TransactionContextInterface) er
 
 	hydrogenGO.AssetID = hGOID
 	hydrogenGO.GOType = "hydrogen"
-	now2 := time.Now()
+	now2, err := ctx.GetStub().GetTxTimestamp()
+	if err != nil {
+		return fmt.Errorf("error getting timestamp:%v", err)
+	}
 	now2string := now2.String()
 	hydrogenGO.CreationDateTime = now2string
 

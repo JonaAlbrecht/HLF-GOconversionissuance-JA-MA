@@ -45,6 +45,13 @@ createCertificateForeproducer() {
   fabric-ca-client register --caname ca.issuer.GOnetwork.com --id.name SmartMeter1 --id.secret Meter1pw --id.type client --id.attrs 'electricitytrustedDevice=true:ecert,maxEfficiency=50:ecert,technologyType=solar:ecert,emissionIntensity=41:ecert' --tls.certfiles ${PWD}/../../issuer-vm3/create-cryptomaterial-issuer/fabric-ca/issuer/tls-cert.pem
 
   echo
+  echo "Register Trusted User"
+  echo
+
+# this creates the trusted user who is authorized to transfer electricity GOs. This is ensured via ABAC, using the attribute 
+  fabric-ca-client register --caname ca.issuer.GOnetwork.com --id.name eTrustedUser --id.secret eTrustedUserpw --id.type client --id.attrs 'electricitytrustedUser=true:ecert' --tls.certfiles ${PWD}/../../issuer-vm3/create-cryptomaterial-issuer/fabric-ca/issuer/tls-cert.pem
+
+  echo
   echo "Register the org admin"
   echo
 
@@ -126,6 +133,19 @@ createCertificateForeproducer() {
   fabric-ca-client enroll -u https://eproduceradmin:eproduceradminpw@localhost:10054 --caname ca.issuer.GOnetwork.com -M ${PWD}/../crypto-config/peerOrganizations/eproducer.GOnetwork.com/SmartMeter/Admin@eproducer.GOnetwork.com/msp --tls.certfiles ${PWD}/../../issuer-vm3/create-cryptomaterial-issuer/fabric-ca/issuer/tls-cert.pem
 
   cp ${PWD}/../crypto-config/peerOrganizations/eproducer.GOnetwork.com/msp/config.yaml ${PWD}/../crypto-config/peerOrganizations/eproducer.GOnetwork.com/SmartMeter/Admin@eproducer.GOnetwork.com/msp/config.yaml
+
+  mkdir -p ../crypto-config/peerOrganizations/eproducer.GOnetwork.com/TrustedUser
+  mkdir -p ../crypto-config/peerOrganizations/eproducer.GOnetwork.com/TrustedUser/eTrustedUser@eproducer.GOnetwork.com
+
+  echo
+  echo "## Generate the Trusted User msp"
+  echo
+
+  fabric-ca-client enroll -u https://eTrustedUser:eTrustedUserpw@localhost:10054 --caname ca.issuer.GOnetwork.com -M ${PWD}/../crypto-config/peerOrganizations/eproducer.GOnetwork.com/TrustedUser/eTrustedUser@eproducer.GOnetwork.com/msp --tls.certfiles ${PWD}/../../issuer-vm3/create-cryptomaterial-issuer/fabric-ca/issuer/tls-cert.pem
+
+  #copy the Node OU configuration file into the Trusted User msp folder --> this is necessary for attribute-based chaincode invoke  
+  cp "${PWD}/../crypto-config/peerOrganizations/eproducer.GOnetwork.com/msp/config.yaml" "${PWD}/../crypto-config/peerOrganizations/eproducer.GOnetwork.com/TrustedUser/eTrustedUser@eproducer.GOnetwork.com/msp/config.yaml"
+
 
 }
 

@@ -48,6 +48,8 @@ packageChaincode() {
 }
 packageChaincode
 
+echo "installing Chaincode on buyer peer0... This may take a few minutes."
+
 installChaincode() {
     setGlobalsForPeer0buyer
     peer lifecycle chaincode install ${CC_NAME}.tar.gz

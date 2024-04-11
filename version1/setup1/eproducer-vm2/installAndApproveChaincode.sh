@@ -49,6 +49,8 @@ packageChaincode() {
 }
 packageChaincode
 
+echo "Installing Chaincode on eproducer peer0... This may take a few minutes"
+
 installChaincode() {
     setGlobalsForPeer0eproducer
     peer lifecycle chaincode install ${CC_NAME}.tar.gz
