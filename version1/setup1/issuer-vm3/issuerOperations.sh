@@ -31,30 +31,17 @@ setGlobalsForPeer0issuer() {
 #and then execute the script from this working directory with ./issuerOperations.sh
 # you could also past the environment variables into the terminal and then run the commands directly in the terminal
 
-#This first function returns the public information of a specific electricity GO (in this case eGO1).
+#Read Public eGO.
 ReadPubliceGO() {
-    setGlobalsForPeer0issuer
+    TIMEFORMAT=' %R seconds.'
+    time {
+        setGlobalsForPeer0issuer
 
-    peer chaincode invoke -o localhost:9050 \
-        --ordererTLSHostnameOverride orderer3.GOnetwork.com \
-        --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \
-        -C $CHANNEL_NAME -n ${CC_NAME} \
-        --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_ISSUER_CA \
-        -c '{"function": "ReadPubliceGO","Args":["eGO1"]}'
-
+        peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPubliceGO","Args":["eGO1"]}'
+    }
 }
 
 #ReadPubliceGO
-
-#The same result can be achieved with the peer chaincode query command.
-ReadPubliceGOasQuery() {
-    setGlobalsForPeer0issuer
-
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPubliceGO","Args":["eGO2"]}'
- 
-}
-
-#ReadPubliceGOasQuery
 
 
 #This function returns a list of electricity GOs by a range (here set from 1 to 50)
@@ -65,13 +52,21 @@ GetcurrenteGOsList() {
  
 }
 
-#GetcurrenteGOsList
+GetcurrenteGOsList
 
-#In the current setup, 
+#This function should return permission denied. 
 ReadPrivatefromCollectioneGO() {
     setGlobalsForPeer0issuer
 
     peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPrivatefromCollectioneGO", "Args":["privateDetails-eGO", "eGO1"]}'
 }
 
-ReadPrivatefromCollectioneGO
+#ReadPrivatefromCollectioneGO
+
+ReadPublichGO() {
+    setGlobalsForPeer0issuer
+
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPublichGO", "Args":["hGO1"]}'
+}
+
+ReadPublichGO

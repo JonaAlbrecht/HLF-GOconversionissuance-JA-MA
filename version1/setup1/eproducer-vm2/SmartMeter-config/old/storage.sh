@@ -18,22 +18,11 @@ export ORDERER_CA=/etc/hyperledger/channel/crypto-config/ordererOrganizations/GO
 export CHANNEL_NAME="mychannel"
 export CC_NAME="conversion" 
 
-execute () {
-    start=$(date +%s%N)
-
-    peer chaincode invoke -o orderer2.GOnetwork.com:8050 \
-        --ordererTLSHostnameOverride orderer2.GOnetwork.com \
-        --tls \
-        --cafile $ORDERER_CA -C mychannel -n conversion \
-        --peerAddresses e-peer0.eproducer.GOnetwork.com:9051 --tlsRootCertFiles /etc/hyperledger/channel/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer0.eproducer.GOnetwork.com/tls/ca.crt \
-        --peerAddresses i-peer0.issuer.GOnetwork.comcat:11051 --tlsRootCertFiles /etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer0.issuer.GOnetwork.com/tls/ca.crt \
-        -c '{"function": "CreateElectricityGO", "Args":[]}' \
-        --transient "{\"eGO\":\"$eGO\"}"
-    
-    end=$(date +%s%N)
-    echo "Elapsed time: $(($(($end-$start))/1000000)) ms" >> /custom/bin/time.txt
-}
-
-execute
-
- 
+peer chaincode invoke -o orderer2.GOnetwork.com:8050 \
+ --ordererTLSHostnameOverride orderer2.GOnetwork.com \
+ --tls \
+ --cafile $ORDERER_CA -C mychannel -n conversion \
+ --peerAddresses e-peer0.eproducer.GOnetwork.com:9051 --tlsRootCertFiles /etc/hyperledger/channel/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer0.eproducer.GOnetwork.com/tls/ca.crt \
+ --peerAddresses i-peer0.issuer.GOnetwork.com:11051 --tlsRootCertFiles /etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer0.issuer.GOnetwork.com/tls/ca.crt \
+ -c '{"function": "CreateElectricityGO", "Args":[]}' \
+ --transient "{\"eGO\":\"$eGO\"}" 

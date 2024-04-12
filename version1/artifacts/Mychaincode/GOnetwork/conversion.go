@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -85,6 +86,15 @@ type CancellationstatementHydrogen struct {
 	ElectricityProductionMethod string `json:"ElectricityProductionMethod"`
 	UsedMWh float64 `json:"UsedMWh"`
 }
+
+type FunctionAndDuration struct {
+	FunctionName string
+	Duration time.Duration
+}
+
+// AveragefunctiondurationCalculator transfers function durations to a different goroutine 
+// such that it doesnt block the chaincode execution
+var AveragefunctiondurationCalculator chan *FunctionAndDuration
 
 type Count struct {
 	mx *sync.Mutex
@@ -520,29 +530,50 @@ func (s *SmartContract) AddHydrogentoBacklog(ctx contractapi.TransactionContextI
 		
 	}
 
-	eventpayloadAsBytes := []byte(backlogkey)
-	
-		error := ctx.GetStub().SetEvent("hGObacklogupdate",eventpayloadAsBytes)
-		if (error != nil) {
-		 return fmt.Errorf("failed to emit hGOproposal event:%v", error)
-		}	
+
 	return nil
 }
 
-func (s *SmartContract) TransfereGOtohproducer(ctx contractapi.TransactionContextInterface, neededAmount float64) error {
-
-	//ABAC:
-	err := ctx.GetClientIdentity().AssertAttributeValue("electricitytrustedUser", "true")
+//returns a list of electricity GOs that are ready for transfer such that the combined AmountMWh is larger than the needed amount. 
+func (s *SmartContract) QueryPrivateeGOsbyAmountMWh(ctx contractapi.TransactionContextInterface) ([]string, error) {
+	
+	type QueryPrivateeGOtransientinputstruct struct {
+		NeededAmount json.Number `json:"NeededAmount"`
+		Collection string `json:"Collection"`
+	}
+	
+	transientMap, err := ctx.GetStub().GetTransient()
 	if err != nil {
-		return fmt.Errorf("submitting User not authorized to transfer electricity GOs to hydrogen producer: %v", err)
+		return nil, fmt.Errorf("error getting transient: %v", err)
+	}
+
+	QueryPrivateeGOInputAsBytes, ok := transientMap["QueryInput"]
+	if !ok {
+		return nil, fmt.Errorf("transfer Input must be a key in transient map:%v", ok)
+	}
+
+	if len(QueryPrivateeGOInputAsBytes) == 0 {
+		return nil, fmt.Errorf("transfer Input must be non-empty")
+	}
+	
+	var QueryPrivateeGOtransient QueryPrivateeGOtransientinputstruct
+	err = json.Unmarshal(QueryPrivateeGOInputAsBytes, &QueryPrivateeGOtransient)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode JSON input of: " + string(QueryPrivateeGOInputAsBytes) + ". The error is: " + err.Error())
+	}
+
+
+	NeededAmount, err := QueryPrivateeGOtransient.NeededAmount.Float64()
+	if err != nil {
+		return nil, fmt.Errorf("error turning needed amount into a float")
 	}
 	
 	startKey := "eGO1"
 	endKey := "eGO999"
 
-	resultsIterator,err := ctx.GetStub().GetPrivateDataByRange("privateDetails-eGO", startKey, endKey)
+	resultsIterator,err := ctx.GetStub().GetPrivateDataByRange(QueryPrivateeGOtransient.Collection, startKey, endKey)
 	if err != nil {
-		return fmt.Errorf("error getting all available eGOs:%v", err)
+		return nil, fmt.Errorf("error getting all available eGOs:%v", err)
 	}
 	defer resultsIterator.Close()
 
@@ -550,28 +581,171 @@ func (s *SmartContract) TransfereGOtohproducer(ctx contractapi.TransactionContex
 	for resultsIterator.HasNext() {
 		response, err := resultsIterator.Next()
 		if err != nil {
-			return fmt.Errorf("error iterating over all available eGOs:%v", err)
+			return nil, fmt.Errorf("error iterating over all available eGOs:%v", err)
 		}
 
 		var availableeGO *ElectricityGOprivatedetails
 		err = json.Unmarshal(response.Value, &availableeGO)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal JSON: %v", err)
+			return nil, fmt.Errorf("failed to unmarshal JSON: %v", err)
 		}
 		results = append(results, availableeGO)
 	}
 
+	var MWhcounter float64
+	var EGOList []string
+	MWhcounter = 0
+	assetCounter := 0
+	for MWhcounter < NeededAmount {
+		currentAsset := results[assetCounter]
+		EGOList = append(EGOList, currentAsset.AssetID)	
+		MWhcounter = MWhcounter + currentAsset.AmountMWh
+		assetCounter++
+	}
+	return EGOList, nil
+}
+
+//returns a list of hydrogen GOs that are ready for transfer such that the combined AmountMWh is larger than the needed amount. 
+func (s *SmartContract) QueryPrivatehGOsbyAmountMWh(ctx contractapi.TransactionContextInterface) ([]string, error) {
+	
+	type QueryPrivatehGOtransientinputstruct struct {
+		NeededAmount json.Number `json:"NeededAmount"`
+		Collection string `json:"Collection"`
+	}
+	
+	transientMap, err := ctx.GetStub().GetTransient()
+	if err != nil {
+		return nil, fmt.Errorf("error getting transient: %v", err)
+	}
+
+	QueryPrivatehGOInputAsBytes, ok := transientMap["QueryInput"]
+	if !ok {
+		return nil, fmt.Errorf("query Input must be a key in transient map:%v", ok)
+	}
+
+	if len(QueryPrivatehGOInputAsBytes) == 0 {
+		return nil, fmt.Errorf("query Input must be non-empty")
+	}
+	
+	var QueryPrivatehGOtransient QueryPrivatehGOtransientinputstruct
+	err = json.Unmarshal(QueryPrivatehGOInputAsBytes, &QueryPrivatehGOtransient)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode JSON input of: " + string(QueryPrivatehGOInputAsBytes) + ". The error is: " + err.Error())
+	}
+
+
+	NeededAmount, err := QueryPrivatehGOtransient.NeededAmount.Float64()
+	if err != nil {
+		return nil, fmt.Errorf("error turning needed amount into a float")
+	}
+	
+	startKey := "hGO1"
+	endKey := "hGO999"
+
+	resultsIterator,err := ctx.GetStub().GetPrivateDataByRange(QueryPrivatehGOtransient.Collection, startKey, endKey)
+	if err != nil {
+		return nil, fmt.Errorf("error getting all available hGOs:%v", err)
+	}
+	defer resultsIterator.Close()
+
+	results := []*GreenHydrogenGOprivatedetails{}
+	for resultsIterator.HasNext() {
+		response, err := resultsIterator.Next()
+		if err != nil {
+			return nil, fmt.Errorf("error iterating over all available eGOs:%v", err)
+		}
+
+		var availablehGO *GreenHydrogenGOprivatedetails
+		err = json.Unmarshal(response.Value, &availablehGO)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal JSON: %v", err)
+		}
+		results = append(results, availablehGO)
+	}
+
+	var Kilocounter float64
+	var HGOList []string
+	Kilocounter = 0
+	assetCounter := 0
+	for Kilocounter < NeededAmount {
+		currentAsset := results[assetCounter]
+		HGOList = append(HGOList, currentAsset.AssetID)	
+		Kilocounter = Kilocounter + currentAsset.Kilosproduced
+		assetCounter++
+	}
+	return HGOList, nil
+}
+
+func (s *SmartContract) TransfereGO(ctx contractapi.TransactionContextInterface) error {
+
+	type TransfereGOtransientinputstruct struct {
+		EGOList string `json:"EGOList"`
+		Recipient string `json:"Recipient"`
+		Neededamount json.Number `json:"Neededamount"`
+	}
+
+	//ABAC:
+	err := ctx.GetClientIdentity().AssertAttributeValue("electricitytrustedUser", "true")
+	if err != nil {
+		return fmt.Errorf("submitting User not authorized to transfer electricity GOs: %v", err)
+	}
+	
+	transientMap, err := ctx.GetStub().GetTransient()
+	if err != nil {
+		return fmt.Errorf("error getting transient: %v", err)
+	}
+
+	TransferInputDataAsBytes, ok := transientMap["TransferInput"]
+	if !ok {
+		return fmt.Errorf("transfer Input must be a key in transient map:%v", ok)
+	}
+
+	if len(TransferInputDataAsBytes) == 0 {
+		return fmt.Errorf("transfer Input must be non-empty")
+	}
+	
+	var TransfereGOtransientinput TransfereGOtransientinputstruct
+	err = json.Unmarshal(TransferInputDataAsBytes, &TransfereGOtransientinput)
+	if err != nil {
+		return fmt.Errorf("failed to decode JSON input of: " + string(TransferInputDataAsBytes) + ". The error is: " + err.Error())
+	}
+
+
+	NeededAmount, err := TransfereGOtransientinput.Neededamount.Float64()
+	if err != nil {
+		return fmt.Errorf("error turning needed amount into a float")
+	}
+
+	var privateCollectionID string
+	if TransfereGOtransientinput.Recipient == "hproducerMSP" {
+		privateCollectionID = "privateDetails-hGO"
+	} else if TransfereGOtransientinput.Recipient == "buyerMSP" {
+		privateCollectionID = "privateDetails-buyer"
+	} else {
+		return fmt.Errorf("recipient ID malformed - please try again")
+	}
+	EGOList := strings.Split(TransfereGOtransientinput.EGOList, "+")
+
 	var transferredMWh float64
 	transferredMWh = 0
-	assetCounter :=0
-	for transferredMWh < neededAmount {
-		currentAsset := results[assetCounter]
-		updatedAsset := &ElectricityGOprivatedetails{AssetID: currentAsset.AssetID, OwnerID: "hproducerMSP", AmountMWh: currentAsset.AmountMWh, Emissions: currentAsset.Emissions, ElectricityProductionMethod: currentAsset.ElectricityProductionMethod}	
+	assetCounter := 0
+	for transferredMWh < NeededAmount {
+		currentID := EGOList[assetCounter]
+		currentAssetJSON, err := ctx.GetStub().GetPrivateData("privateDetails-eGO", currentID)
+		if err != nil {
+			return fmt.Errorf("error getting private Details for eGO %v:%v", currentID, err)
+		}
+		var currentAsset *ElectricityGOprivatedetails
+		err = json.Unmarshal(currentAssetJSON, &currentAsset)
+		if err != nil {
+			return fmt.Errorf("error unmarshaling the current asset for transfer:%v", err)
+		}
+		updatedAsset := &ElectricityGOprivatedetails{AssetID: currentID, OwnerID: TransfereGOtransientinput.Recipient, AmountMWh: currentAsset.AmountMWh, Emissions: currentAsset.Emissions, ElectricityProductionMethod: currentAsset.ElectricityProductionMethod}	
 		transferredMWh = transferredMWh + updatedAsset.AmountMWh
 		assetCounter++
 		//if-else is necessary bc on the last execution of the for-loop the MWhs transferred will exceed the needed amount, once the transferred MWh variable has been updated (see line prior) 
 		//at this time, the last GO to be transferred needs to be transferred only in parts. This is achieved in the else-section of the statement. 
-		if transferredMWh < neededAmount {
+		if transferredMWh < NeededAmount {
 			if len(updatedAsset.AssetID) == 0 {
 				return fmt.Errorf("failed to change eGO owner")
 			}
@@ -579,7 +753,7 @@ func (s *SmartContract) TransfereGOtohproducer(ctx contractapi.TransactionContex
 			if err != nil {
 				return fmt.Errorf("error marshaling the updated eGO:%v", err)
 			}
-			err = ctx.GetStub().PutPrivateData("privateDetails-hGO", updatedAsset.AssetID, updatedAssetasBytes)
+			err = ctx.GetStub().PutPrivateData(privateCollectionID, updatedAsset.AssetID, updatedAssetasBytes)
 			if err != nil {
 				return fmt.Errorf("error putting electricity GO into hydrogen producer private collection:%v", err)
 			}
@@ -588,22 +762,22 @@ func (s *SmartContract) TransfereGOtohproducer(ctx contractapi.TransactionContex
 				return fmt.Errorf("error deleting electricity GO from electricity producer private collection:%v", err)
 			}
 		} else {
-			partialtransferamount := transferredMWh - neededAmount
+			partialtransferamount := transferredMWh - NeededAmount
 			ratio := partialtransferamount/currentAsset.AmountMWh
 			partialtransferemissions := ratio * currentAsset.Emissions
-			partialassethproducer := &ElectricityGOprivatedetails{AssetID: currentAsset.AssetID, OwnerID: "hproducerMSP", AmountMWh: partialtransferamount, Emissions: partialtransferemissions, ElectricityProductionMethod: currentAsset.ElectricityProductionMethod}	
-			if len(partialassethproducer.AssetID) == 0 {
+			partialasset := &ElectricityGOprivatedetails{AssetID: currentAsset.AssetID, OwnerID: TransfereGOtransientinput.Recipient, AmountMWh: partialtransferamount, Emissions: partialtransferemissions, ElectricityProductionMethod: currentAsset.ElectricityProductionMethod}	
+			if len(partialasset.AssetID) == 0 {
 				return fmt.Errorf("failed to change eGO owner")
 			}
-			partialassethproducerasBytes, err := json.Marshal(partialassethproducer)
+			partialassetasBytes, err := json.Marshal(partialasset)
 			if err != nil {
 				return fmt.Errorf("error marshaling the updated eGO:%v", err)
 			}
-			error := ctx.GetStub().PutPrivateData("privateDetails-hGO", partialassethproducer.AssetID, partialassethproducerasBytes)
+			error := ctx.GetStub().PutPrivateData(privateCollectionID, partialasset.AssetID, partialassetasBytes)
 			if error != nil {
-				return fmt.Errorf("error putting partial electricity GO into hydrogen producer private collection:%v", error)
+				return fmt.Errorf("error putting partial electricity GO into private collection of recipient:%v", error)
 			}
-			error1 := ctx.GetStub().DelPrivateData("privateDetails-eGO", partialassethproducer.AssetID)
+			error1 := ctx.GetStub().DelPrivateData("privateDetails-eGO", partialasset.AssetID)
 			if error1 != nil {
 				return fmt.Errorf("error deleting partial electricity GO from electricity producer private collection:%v", error1)
 			}
@@ -621,7 +795,7 @@ func (s *SmartContract) TransfereGOtohproducer(ctx contractapi.TransactionContex
 			}
 			error2 := ctx.GetStub().PutPrivateData("privateDetails-eGO", partialasseteproducer.AssetID, partialasseteproducerasBytes)
 			if error2 != nil {
-				return fmt.Errorf("error putting partial electricity GO into hydrogen producer private collection:%v", error2)
+				return fmt.Errorf("error putting partial electricity GO into electricity producer private collection:%v", error2)
 			}
 		}
 		
@@ -629,6 +803,8 @@ func (s *SmartContract) TransfereGOtohproducer(ctx contractapi.TransactionContex
 	return nil
 }
 
+
+//!!! Have to implement same as for transfer EGO --> read in List of eGOs to convert from query eGO function
 //This next function creates hydrogen GOs by reading electricity GOs from own collection, 
 //cancelling the correct amount, 
 //reading the remaining amount of MWhs and emissions back into the collection
@@ -1051,106 +1227,6 @@ func (s *SmartContract) ReadPrivatefromCollectionhGO(ctx contractapi.Transaction
 		return nil, fmt.Errorf("failed to unmarshal JSON: %v", err)
 	}
 	return hGOprivate, nil
-}
-
-func (s *SmartContract) TransfereGOtobuyer(ctx contractapi.TransactionContextInterface, neededAmount float64) error {
-
-	//ABAC:
-	err := ctx.GetClientIdentity().AssertAttributeValue("electricitytrustedUser", "true")
-	if err != nil {
-		return fmt.Errorf("submitting User not authorized to transfer electricity GOs to buyer: %v", err)
-	}
-	
-	startKey := "eGO1"
-	endKey := "eGO999"
-
-	resultsIterator,err := ctx.GetStub().GetPrivateDataByRange("privateDetails-eGO", startKey, endKey)
-	if err != nil {
-		return fmt.Errorf("error getting all available eGOs:%v", err)
-	}
-	defer resultsIterator.Close()
-
-	results := []*ElectricityGOprivatedetails{}
-	for resultsIterator.HasNext() {
-		response, err := resultsIterator.Next()
-		if err != nil {
-			return fmt.Errorf("error iterating over all available eGOs:%v", err)
-		}
-
-		var availableeGO *ElectricityGOprivatedetails
-		err = json.Unmarshal(response.Value, &availableeGO)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal JSON: %v", err)
-		}
-		results = append(results, availableeGO)
-	}
-
-	var transferredMWh float64
-	transferredMWh = 0
-	assetCounter :=0
-	for transferredMWh < neededAmount {
-		currentAsset := results[assetCounter]
-		updatedAsset := &ElectricityGOprivatedetails{AssetID: currentAsset.AssetID, OwnerID: "buyerMSP", AmountMWh: currentAsset.AmountMWh, Emissions: currentAsset.Emissions, ElectricityProductionMethod: currentAsset.ElectricityProductionMethod}	
-		transferredMWh = transferredMWh + updatedAsset.AmountMWh
-		if transferredMWh < neededAmount {
-			if len(updatedAsset.AssetID) == 0 {
-				return fmt.Errorf("failed to change eGO owner")
-			}
-			updatedAssetasBytes, err := json.Marshal(updatedAsset)
-			if err != nil {
-				return fmt.Errorf("error marshaling the updated eGO:%v", err)
-			}
-			error := ctx.GetStub().PutPrivateData("privateDetails-buyer", updatedAsset.AssetID, updatedAssetasBytes)
-			if error != nil {
-				return fmt.Errorf("error putting electricity GO into hydrogen producer private collection:%v", error)
-			}
-			error1 := ctx.GetStub().DelPrivateData("privateDetails-eGO", currentAsset.AssetID)
-			if error1 != nil {
-				return fmt.Errorf("error deleting electricity GO from electricity producer private collection:%v", error1)
-			}
-			assetCounter++
-		} else {
-			partialtransferamount := transferredMWh - neededAmount
-			ratio := partialtransferamount/currentAsset.AmountMWh
-			partialtransferemissions := ratio * currentAsset.Emissions
-			partialassetbuyer := &ElectricityGOprivatedetails{AssetID: currentAsset.AssetID, OwnerID: "buyerMSP", AmountMWh: partialtransferamount, Emissions: partialtransferemissions, ElectricityProductionMethod: currentAsset.ElectricityProductionMethod}	
-			if len(partialassetbuyer.AssetID) == 0 {
-				return fmt.Errorf("failed to change eGO owner")
-			}
-			partialassetbuyerasBytes, err := json.Marshal(partialassetbuyer)
-			if err != nil {
-				return fmt.Errorf("error marshaling the updated eGO:%v", err)
-			}
-			error := ctx.GetStub().PutPrivateData("privateDetails-buyer", partialassetbuyer.AssetID, partialassetbuyerasBytes)
-			if error != nil {
-				return fmt.Errorf("error putting partial electricity GO into buyer private collection:%v", error)
-			}
-			error1 := ctx.GetStub().DelPrivateData("privateDetails-eGO", partialassetbuyer.AssetID)
-			if error1 != nil {
-				return fmt.Errorf("error deleting partial electricity GO from electricity producer private collection:%v", error1)
-			}
-			remainderamount := currentAsset.AmountMWh - partialtransferamount
-			remainderemissions := currentAsset.Emissions * (1 - ratio)
-			currentCounteGO := EGOcounter()
-			eGOID := "eGO"+strconv.Itoa(int(currentCounteGO))
-			partialasseteproducer := &ElectricityGOprivatedetails{AssetID: eGOID, OwnerID: "eproducerMSP", AmountMWh: remainderamount, Emissions: remainderemissions, ElectricityProductionMethod: currentAsset.ElectricityProductionMethod}
-			if len(partialasseteproducer.AssetID) == 0 {
-				return fmt.Errorf("failed to create remainder GO for electricity producer")
-			}
-			partialasseteproducerasBytes, err := json.Marshal(partialasseteproducer)
-			if err != nil {
-				return fmt.Errorf("error marshaling the updated eGO:%v", err)
-			}
-
-			error2 := ctx.GetStub().PutPrivateData("privateDetails-eGO", partialasseteproducer.AssetID, partialasseteproducerasBytes)
-			if error2 != nil {
-				return fmt.Errorf("error putting partial electricity GO into hydrogen producer private collection:%v", error2)
-			}
-			assetCounter++
-		}
-		
-	}
-	return nil
 }
 
 func getClientOrgID(ctx contractapi.TransactionContextInterface) (string, error) {

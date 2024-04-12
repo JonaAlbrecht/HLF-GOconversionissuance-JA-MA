@@ -146,7 +146,6 @@ createCertificateForeproducer() {
   #copy the Node OU configuration file into the Trusted User msp folder --> this is necessary for attribute-based chaincode invoke  
   cp "${PWD}/../crypto-config/peerOrganizations/eproducer.GOnetwork.com/msp/config.yaml" "${PWD}/../crypto-config/peerOrganizations/eproducer.GOnetwork.com/TrustedUser/eTrustedUser@eproducer.GOnetwork.com/msp/config.yaml"
 
-
 }
 
 createCertificateForeproducer

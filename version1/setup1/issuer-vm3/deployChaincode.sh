@@ -6,6 +6,7 @@ export PEER0_BUYER_CA=${PWD}/../buyer-vm1/crypto-config/peerOrganizations/buyer.
 export PEER0_HPRODUCER_CA=${PWD}/../hproducer-vm5/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/ca.crt
 export FABRIC_CFG_PATH=${PWD}/../../artifacts/channel/config/
 export COLLECTION_CONFIGPATH=${PWD}/../../artifacts/private-data-collections/collection-config.json
+export CURRENT_DIRECTORY=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3
 
 
 export CHANNEL_NAME=mychannel
@@ -42,6 +43,7 @@ setGlobalsForPeer1issuer() {
 # }
 
 presetup() {
+    cd $CURRENT_DIRECTORY
     echo Vendoring Go dependencies ...
     pushd ./../../artifacts/Mychaincode
     GO111MODULE=on go mod vendor

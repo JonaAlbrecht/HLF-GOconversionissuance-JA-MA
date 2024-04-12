@@ -17,8 +17,7 @@ cd ${DIRECTORY}/orderer-vm4/create-cryptomaterial-orderer && docker-compose up -
 
 echo -e "${GREEN}Finished creating certificate authorities ${ENDCOLOR}"
 sleep 1
-echo -e "${GREEN}Creating the cryptomaterial for all organisations ${ENDCOLOR}"
-sleep 1
+
 echo -e "${GREEN}Creating the cryptomaterial for issuer ${ENDCOLOR}"
 sleep 1
 
@@ -61,13 +60,34 @@ cd ${DIRECTORY}/../artifacts/channel
 sudo chmod +x ./create-artifacts.sh
 sh ./create-artifacts.sh
 
-echo -e "${GREEN}Creating the peer, client and couchDB docker container ${ENDCOLOR}"
+echo -e "${GREEN}Creating the Smart Meter docker image ${ENDCOLOR}"
 sleep 1
 
+cd ${DIRECTORY}/eproducer-vm2/SmartMeter-config && docker build -t smartmeter .
+
+echo -e "${GREEN}Creating the Output Meter docker image ${ENDCOLOR}"
+sleep 1
+
+cd ${DIRECTORY}/hproducer-vm5/OutputMeter-config && docker build -t outputmeter .
+
+echo -e "${GREEN}Creating the peer, couchDB and client docker container for buyer org ${ENDCOLOR}"
+sleep 1
 cd ${DIRECTORY}/buyer-vm1 && docker-compose up -d
+
+echo -e "${GREEN}Creating the peer, couchDB and Smart Meter docker container for hydrogen producer org ${ENDCOLOR}"
+sleep 1
 cd ${DIRECTORY}/eproducer-vm2 && docker-compose up -d
+
+echo -e "${GREEN}Creating the peer and couchDB docker container for issuer org ${ENDCOLOR}"
+sleep 1
 cd ${DIRECTORY}/issuer-vm3 && docker-compose up -d
+
+echo -e "${GREEN}Creating the peer, couchDB and Output Meter docker container for hydrogen producer org ${ENDCOLOR}"
+sleep 1
 cd ${DIRECTORY}/hproducer-vm5 && docker-compose up -d
+
+echo -e "${GREEN}Creating the orderer docker containers ${ENDCOLOR}"
+sleep 1
 cd ${DIRECTORY}/orderer-vm4 && docker-compose up -d
 
 echo -e "${GREEN}Creating the channel: ${ENDCOLOR}"
@@ -133,5 +153,5 @@ sh ./joinChannel.sh
 #sleep 1
 
 #cd ${DIRECTORY}/issuer-vm3
-#sudo chmod +x ./invokeChaincode.sh
-#sh ./invokeChaincode.sh
+#sudo chmod +x ./commitChaincode.sh
+#sh ./commitChaincode.sh

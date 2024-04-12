@@ -16,6 +16,7 @@ echo -e "${RED}Removing relevant images${ENDCOLOR}"
 sleep 1
 docker rmi $(docker images | grep 'dev')
 docker rmi $(docker images | grep 'smartmeter')
+docker rmi $(docker images | grep 'outputmeter')
 
 echo -e "${RED}Removing crypto-config folders${ENDCOLOR}"
 sudo chmod 777 -R *

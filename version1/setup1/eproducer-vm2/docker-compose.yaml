@@ -137,7 +137,7 @@ services:
 
   SmartMeter:
     container_name: SmartMeter
-    image: hyperledger/fabric-tools
+    image: smartmeter:latest
     tty: true
     environment:
       - GOPATH=/opt/gopath
@@ -155,8 +155,6 @@ services:
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/channel/crypto-config/peerOrganizations/eproducer.GOnetwork.com/SmartMeter/Admin@eproducer.GOnetwork.com/msp
 
       - CORE_CHAINCODE_KEEPALIVE=10
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
-    command: /bin/bash
     networks:
       - test
     volumes:
