@@ -69,4 +69,4 @@ ReadPublichGO() {
     peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPublichGO", "Args":["hGO1"]}'
 }
 
-ReadPublichGO
+#ReadPublichGO

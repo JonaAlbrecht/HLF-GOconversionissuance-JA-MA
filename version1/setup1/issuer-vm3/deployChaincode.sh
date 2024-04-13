@@ -43,11 +43,10 @@ setGlobalsForPeer1issuer() {
 # }
 
 presetup() {
-    cd $CURRENT_DIRECTORY
     echo Vendoring Go dependencies ...
     pushd ./../../artifacts/Mychaincode
     GO111MODULE=on go mod vendor
-    popd
+    popd 
     echo Finished vendoring Go dependencies
 }
 presetup
@@ -80,9 +79,9 @@ installChaincode
 
 queryInstalled() {
     setGlobalsForPeer0issuer
-    peer lifecycle chaincode queryinstalled >&log.txt
-    cat log.txt
-    PACKAGE_ID=$(sed -n "/${CC_NAME}_${VERSION}/{s/^Package ID: //; s/, Label:.*$//; p;}" log.txt)
+    peer lifecycle chaincode queryinstalled >&${PWD}/log.txt
+    cat ${PWD}/log.txt
+    PACKAGE_ID=$(sed -n "/${CC_NAME}_${VERSION}/{s/^Package ID: //; s/, Label:.*$//; p;}" ${PWD}/log.txt)
     echo PackageID is ${PACKAGE_ID}
     echo "===================== Query installed successful on i-peer0.issuer on channel ===================== "
 }

@@ -1,0 +1,13 @@
+QueryPrivateeGOsbyAmountMWh Elapsed time: 69 ms
+QueryPrivateeGOsbyAmountMWh Elapsed time: 86 ms
+GetcurrenteGOsList Elapsed time: 104 ms
+GetcurrenteGOsList Elapsed time: 88 ms
+QueryPrivateeGOsbyAmountMWh Elapsed time: 99 ms
+QueryPrivateeGOsbyAmountMWh Elapsed time: 106 ms
+QueryPrivateeGOsbyAmountMWh Elapsed time: 72 ms
+GetcurrenteGOsList Elapsed time: 73 ms
+QueryPrivateeGOsbyAmountMWh Elapsed time: 85 ms
+QueryPrivateeGOsbyAmountMWh Elapsed time: 84 ms
+QueryPrivateeGOsbyAmountMWh Elapsed time: 79 ms
+QueryPrivateeGOsbyAmountMWh Elapsed time: 78 ms
+GetcurrenteGOsList Elapsed time: 102 ms
