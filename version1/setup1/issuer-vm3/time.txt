@@ -1,0 +1,5 @@
+GetcurrenteGOsList Elapsed time: 75 ms
+GetcurrenteGOsList Elapsed time: 85 ms
+GetcurrenteGOsList Elapsed time: 103 ms
+GetcurrenteGOsList Elapsed time: 64 ms
+GetcurrenteGOsList Elapsed time: 83 ms

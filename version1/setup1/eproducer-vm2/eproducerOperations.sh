@@ -60,7 +60,7 @@ GetcurrenteGOsList() {
 ReadPrivatefromCollectioneGO() {
     setGlobalsForPeer0eproducer
 
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPrivatefromCollectioneGO", "Args":["privateDetails-eGO", "eGO2"]}'
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPrivatefromCollectioneGO", "Args":["privateDetails-eGO", "eGO3"]}'
 }
 
 ReadPrivatefromCollectioneGO

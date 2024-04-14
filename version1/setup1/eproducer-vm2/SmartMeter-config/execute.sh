@@ -1,4 +1,6 @@
  execute () {
+
+    start=$(date +%s%N)
     #max Efficiency of 50MW as per certificate
     export maxEfficiency=50
     export randomLoss=$((1 + $RANDOM % 5))
@@ -18,8 +20,6 @@
     export ORDERER_CA=/etc/hyperledger/channel/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
     export CHANNEL_NAME="mychannel"
     export CC_NAME="conversion"
-
-    start=$(date +%s%N)
 
     peer chaincode invoke -o orderer2.GOnetwork.com:8050 \
         --ordererTLSHostnameOverride orderer2.GOnetwork.com \

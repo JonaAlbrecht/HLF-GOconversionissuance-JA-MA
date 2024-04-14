@@ -29,45 +29,47 @@ setGlobalsForPeer0hproducer() {
 # you could also past the environment variables into the terminal and then run the commands directly in the terminal
 
 
-
-#ReadPubliceGO.
-ReadPubliceGO() {
-    start=$(date +%s%N)
-
-    setGlobalsForPeer0hproducer
-
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPubliceGO","Args":["eGO2"]}'
-    
-    end=$(date +%s%N)
-    echo "ReadPubliceGO Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
-}
-
-#ReadPubliceGO
-
-
-#This function returns a list of electricity GOs by a range (here set from 1 to 50)
-GetcurrenteGOsList() {
-    start=$(date +%s%N)
-    setGlobalsForPeer0hproducer
-
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "GetcurrenteGOsList","Args":["eGO1", "eGO50"]}'
-    end=$(date +%s%N)
-    echo "GetcurrenteGOsList Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
-}
-
-#GetcurrenteGOsList
-
 ReadPrivatefromCollectioneGO() {
+    start=$(date +%s%N)
     setGlobalsForPeer0hproducer
 
     peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPrivatefromCollectioneGO", "Args":["privateDetails-hGO", "eGO1"]}'
+    end=$(date +%s%N)
+    echo "ReadPrivatefromCollectioneGO Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
 }
 
-ReadPrivatefromCollectioneGO
+#ReadPrivatefromCollectioneGO
+
+#Query the Hydrogen Backlog created by the OutputMeter 
+QueryHydrogenBacklog() {
+    start=$(date +%s%N)
+
+    setGlobalsForPeer0hproducer
+
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "QueryHydrogenBacklog","Args":[]}'
+    
+    end=$(date +%s%N)
+    echo "QueryHydrogenBacklog Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
+}
+
+QueryHydrogenBacklog
+
+
+#This function is necessary prior to Backlog issuing. Needed Amount should correspond AmountMWh output from Query Hydrogen Backlog function. 
+QueryPrivateeGOsbyAmountMWh() {
+    start=$(date +%s%N)
+    setGlobalsForPeer0eproducer
+    export QueryInput=$(echo -n "{\"NeededAmount\":\"100\",\"Collection\":\"privateDetails-eGO\"}" | base64 | tr -d \\n)
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "QueryPrivateeGOsbyAmountMWh", "Args":[]}' --transient "{\"QueryInput\":\"$QueryInput\"}"
+    end=$(date +%s%N)
+    echo "QueryPrivateeGOsbyAmountMWh Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
+}
+
+#QueryPrivateeGOsbyAmountMWh
 
 
 IssuehGO() {
-    
+    start=$(date +%s%N)
     setGlobalsForPeer0hproducer
     export TransferInput=$(echo -n "{\"EGOList\":\"eGO1+eGO2+eGO3+eGO4+eGO5\",\"Recipient\":\"hproducerMSP\",\"Neededamount\":200}" | base64 | tr -d \\n)
     peer chaincode invoke -o localhost:8050 \
@@ -77,10 +79,10 @@ IssuehGO() {
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_EPRODUCER_CA \
         -c '{"function": "TransfereGO","Args":[]}' \
         --transient "{\"TransferInput\":\"$TransferInput\"}"
-
+    end=$(date +%s%N)
+    echo "IssuehGO Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
 }
-
-#TransferhGO
+#IssuehGO
 
 
 

@@ -33,12 +33,12 @@ setGlobalsForPeer0issuer() {
 
 #Read Public eGO.
 ReadPubliceGO() {
-    TIMEFORMAT=' %R seconds.'
-    time {
-        setGlobalsForPeer0issuer
-
-        peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPubliceGO","Args":["eGO1"]}'
-    }
+    start=$(date +%s%N)
+    setGlobalsForPeer0issuer
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPubliceGO","Args":["eGO1"]}'
+    end=$(date +%s%N)
+    echo "GetcurrenteGOsList Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
+    
 }
 
 #ReadPubliceGO
@@ -46,27 +46,32 @@ ReadPubliceGO() {
 
 #This function returns a list of electricity GOs by a range (here set from 1 to 50)
 GetcurrenteGOsList() {
+    start=$(date +%s%N)
     setGlobalsForPeer0issuer
-
     peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "GetcurrenteGOsList","Args":["eGO1", "eGO50"]}'
- 
+    end=$(date +%s%N)
+    echo "GetcurrenteGOsList Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
 }
 
 GetcurrenteGOsList
 
 #This function should return permission denied. 
 ReadPrivatefromCollectioneGO() {
+    start=$(date +%s%N)
     setGlobalsForPeer0issuer
-
     peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPrivatefromCollectioneGO", "Args":["privateDetails-eGO", "eGO1"]}'
+    end=$(date +%s%N)
+    echo "ReadPrivatefromCollectioneGO Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
 }
 
 #ReadPrivatefromCollectioneGO
 
 ReadPublichGO() {
+    start=$(date +%s%N)
     setGlobalsForPeer0issuer
-
     peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPublichGO", "Args":["hGO1"]}'
+    end=$(date +%s%N)
+    echo "ReadPrivatefromCollectioneGO Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
 }
 
 #ReadPublichGO

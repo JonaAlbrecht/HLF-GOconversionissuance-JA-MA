@@ -11,3 +11,5 @@ QueryPrivateeGOsbyAmountMWh Elapsed time: 84 ms
 QueryPrivateeGOsbyAmountMWh Elapsed time: 79 ms
 QueryPrivateeGOsbyAmountMWh Elapsed time: 78 ms
 GetcurrenteGOsList Elapsed time: 102 ms
+QueryPrivateeGOsbyAmountMWh Elapsed time: 96 ms
+QueryPrivateeGOsbyAmountMWh Elapsed time: 76 ms

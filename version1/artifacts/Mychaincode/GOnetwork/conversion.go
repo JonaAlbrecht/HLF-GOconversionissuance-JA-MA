@@ -478,55 +478,55 @@ func (s *SmartContract) AddHydrogentoBacklog(ctx contractapi.TransactionContextI
 		}
 	} else {
 		
-		var currentbacklog *GreenHydrogenGObacklogprivatedetails
-		err = json.Unmarshal(backlogJSON, &currentbacklog)
-		if err != nil {
-			return fmt.Errorf("error unmarshaling the current backlog:%v", err)
-		}
+	var currentbacklog *GreenHydrogenGObacklogprivatedetails
+	err = json.Unmarshal(backlogJSON, &currentbacklog)
+	if err != nil {
+		return fmt.Errorf("error unmarshaling the current backlog:%v", err)
+	}
 		
-		hGObacklog := GreenHydrogenGObacklog{
-			Backlogkey: backlogkey,
-			GOType: "Hydrogen",
-		}
+	hGObacklog := GreenHydrogenGObacklog{
+		Backlogkey: backlogkey,
+		GOType: "Hydrogen",
+	}
 	
-		hGOpublicBytes, err := json.Marshal(hGObacklog)
-		if err != nil {
-			return fmt.Errorf("failed to create hGO json: %v", err.Error())
-		}
+	hGOpublicBytes, err := json.Marshal(hGObacklog)
+	if err != nil {
+		return fmt.Errorf("failed to create hGO json: %v", err.Error())
+	}
 	
-		err = ctx.GetStub().PutState(backlogkey, hGOpublicBytes)
-		if err != nil {
-			return fmt.Errorf("failed to put asset in public data: %v", err.Error())
-		}
+	err = ctx.GetStub().PutState(backlogkey, hGOpublicBytes)
+	if err != nil {
+		return fmt.Errorf("failed to put asset in public data: %v", err.Error())		
+	}
 	
-		// Set the endorsement policy such that an owner org peer is required to endorse future updates.
-		// In practice, consider additional endorsers such as a trusted third party to further secure transfers.
-		//endorsingOrgs := []string{clientID}
-		//err = setGOEndorsementpolicy(ctx, hGO.Backlogkey, endorsingOrgs)
-		//if err != nil {
-			//return fmt.Errorf("failed setting state based endorsement for buyer and seller: %v", err)
-		//}
+	// Set the endorsement policy such that an owner org peer is required to endorse future updates.
+	// In practice, consider additional endorsers such as a trusted third party to further secure transfers.
+	//endorsingOrgs := []string{clientID}
+	//err = setGOEndorsementpolicy(ctx, hGO.Backlogkey, endorsingOrgs)
+	//if err != nil {
+	//return fmt.Errorf("failed setting state based endorsement for buyer and seller: %v", err)
+	//}
 	
 	
-		hGObacklogprivate := GreenHydrogenGObacklogprivatedetails{
-			Backlogkey: currentbacklog.Backlogkey,
-			OwnerID: currentbacklog.OwnerID,
-			Kilosproduced: hGOInput.Kilosproduced + currentbacklog.Kilosproduced,
-			EmissionsHydrogen: hGOInput.EmissionsHydrogen + currentbacklog.EmissionsHydrogen,
-			HydrogenProductionMethod: hGOInput.HydrogenProductionMethod,
-			UsedMWh: hGOInput.UsedMWh + currentbacklog.UsedMWh,
-		}	
+	hGObacklogprivate := GreenHydrogenGObacklogprivatedetails{
+		Backlogkey: currentbacklog.Backlogkey,
+		OwnerID: currentbacklog.OwnerID,
+		Kilosproduced: hGOInput.Kilosproduced + currentbacklog.Kilosproduced,
+		EmissionsHydrogen: hGOInput.EmissionsHydrogen + currentbacklog.EmissionsHydrogen,
+		HydrogenProductionMethod: hGOInput.HydrogenProductionMethod,
+		UsedMWh: hGOInput.UsedMWh + currentbacklog.UsedMWh,
+	}	
 	
-		hGObacklogprivateBytes, err := json.Marshal(hGObacklogprivate)
-		if err != nil {
+	hGObacklogprivateBytes, err := json.Marshal(hGObacklogprivate)
+	if err != nil {
 			return fmt.Errorf("failed to create eGO json: %v", err)
-		}
+	}
 	
-		// Persist private immutable asset properties to owner's private data collection
-		err = ctx.GetStub().PutPrivateData("privateDetails-hGO", currentbacklog.Backlogkey, hGObacklogprivateBytes)
-		if err != nil {
+	// Persist private immutable asset properties to owner's private data collection
+	err = ctx.GetStub().PutPrivateData("privateDetails-hGO", currentbacklog.Backlogkey, hGObacklogprivateBytes)
+	if err != nil {
 			return fmt.Errorf("unable to create asset private data: %v", err)
-		}
+	}
 		
 	}
 
@@ -676,6 +676,32 @@ func (s *SmartContract) QueryPrivatehGOsbyAmountMWh(ctx contractapi.TransactionC
 	return HGOList, nil
 }
 
+func (s *SmartContract) QueryHydrogenBacklog(ctx contractapi.TransactionContextInterface) (*GreenHydrogenGObacklogprivatedetails, error) {
+	
+	log.Printf("Reading hydrogen backlog")
+	backlogkey := "hydrogenbacklog"
+	//ABAC: 
+	err := ctx.GetClientIdentity().AssertAttributeValue("hydrogentrustedUser", "true")
+	if err != nil {
+		return nil, fmt.Errorf("submitting User not authorized to query the hydrogen backlog: %v", err)
+	}
+
+	backlogprivateJSON, err := ctx.GetStub().GetPrivateData("privateDetails-hGO", backlogkey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read asset details: %v", err)
+	}
+	if backlogprivateJSON == nil {
+		log.Printf("Backlog not found in hydrogen producer's private collection")
+		return nil, nil
+	}
+	var backlogprivate *GreenHydrogenGObacklogprivatedetails
+	err = json.Unmarshal(backlogprivateJSON, &backlogprivate)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal JSON: %v", err)
+	}
+	return backlogprivate, nil
+}
+
 func (s *SmartContract) TransfereGO(ctx contractapi.TransactionContextInterface) ([]string, error) {
 
 	type TransfereGOtransientinputstruct struct {
@@ -730,6 +756,7 @@ func (s *SmartContract) TransfereGO(ctx contractapi.TransactionContextInterface)
 	var currentAsset ElectricityGOprivatedetails
 	var updatedAsset ElectricityGOprivatedetails
 	var transferredMWh float64
+	var test []string
 	for transferredMWh = 0; transferredMWh < NeededAmount; transferredMWh = transferredMWh + currentAsset.AmountMWh {
 		currentID := EGOList[assetCounter]
 		currentAssetJSON, err := ctx.GetStub().GetPrivateData("privateDetails-eGO", currentID)
@@ -764,6 +791,8 @@ func (s *SmartContract) TransfereGO(ctx contractapi.TransactionContextInterface)
 		if err != nil {
 			return nil, fmt.Errorf("error deleting electricity GO from electricity producer private collection:%v", err)
 		}
+		element := "During iteration" + strconv.Itoa(assetCounter) + strconv.Itoa(int(updatedAsset.AmountMWh)) + "MWhs were transferred"
+		test = append(test, element)
 	}
 		
 	excesstransferamount := transferredMWh - NeededAmount
@@ -808,20 +837,11 @@ func (s *SmartContract) TransfereGO(ctx contractapi.TransactionContextInterface)
 	if error2 != nil {
 		return nil, fmt.Errorf("error putting partial electricity GO into electricity producer private collection:%v", error2)
 	}
-	test_transferredMWH := strconv.Itoa(int(transferredMWh))
-	test_excessamount := strconv.Itoa(int(excesstransferamount))
-	test_Neededamount := strconv.Itoa(int(NeededAmount))
-	test := []string{test_transferredMWH, test_excessamount, partialasset.OwnerID, test_Neededamount}
-				
+			
 	return test, nil	
 
 	}
 
-	
-
-
-
-//!!! Have to implement same as for transfer EGO --> read in List of eGOs to convert from query eGO function
 //This next function creates hydrogen GOs by reading electricity GOs from own collection, 
 //cancelling the correct amount, 
 //reading the remaining amount of MWhs and emissions back into the collection
@@ -831,7 +851,6 @@ func (s *SmartContract) IssuehGO(ctx contractapi.TransactionContextInterface) er
 	type IssuehGOtransientinputstruct struct {
 		EGOList string `json:"EGOList"`
 	}
-
 
 	//ABAC:
 	err := ctx.GetClientIdentity().AssertAttributeValue("hydrogentrustedUser", "true")
@@ -1226,6 +1245,7 @@ func (s *SmartContract) ReadPublichGO(ctx contractapi.TransactionContextInterfac
 	}
 	return hGO, nil
 }
+
 func (s *SmartContract) ReadPrivatefromCollectioneGO(ctx contractapi.TransactionContextInterface, collection string, eGOID string) (*ElectricityGOprivatedetails, error) {
 	log.Printf("Reading private details of eGO with ID %v from collection %v", eGOID, collection)
 	eGOprivateJSON, err := ctx.GetStub().GetPrivateData(collection, eGOID)
