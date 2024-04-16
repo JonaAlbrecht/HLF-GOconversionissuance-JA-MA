@@ -189,6 +189,7 @@ func (s *SmartContract) CreateElectricityGO(ctx contractapi.TransactionContextIn
 		return fmt.Errorf("This GO Asset ID already exists: " + eGOID)
 	}
 	
+	// need to change this such that eproducerMSP is an attribute in the certificate. 
 	//get ID of submitting Client Identity
 	clientID, err := getClientOrgID(ctx)
 	if err != nil {
@@ -683,7 +684,7 @@ func (s *SmartContract) QueryHydrogenBacklog(ctx contractapi.TransactionContextI
 	//ABAC: 
 	err := ctx.GetClientIdentity().AssertAttributeValue("hydrogentrustedUser", "true")
 	if err != nil {
-		return nil, fmt.Errorf("submitting User not authorized to query the hydrogen backlog: %v", err)
+		return  nil, fmt.Errorf("submitting User not authorized to query the hydrogen backlog: %v", err)
 	}
 
 	backlogprivateJSON, err := ctx.GetStub().GetPrivateData("privateDetails-hGO", backlogkey)
@@ -691,18 +692,85 @@ func (s *SmartContract) QueryHydrogenBacklog(ctx contractapi.TransactionContextI
 		return nil, fmt.Errorf("failed to read asset details: %v", err)
 	}
 	if backlogprivateJSON == nil {
-		log.Printf("Backlog not found in hydrogen producer's private collection")
-		return nil, nil
+		return nil, fmt.Errorf("backlog not found in hydrogen producer's private collection")
 	}
-	var backlogprivate *GreenHydrogenGObacklogprivatedetails
+	var backlogprivate GreenHydrogenGObacklogprivatedetails
 	err = json.Unmarshal(backlogprivateJSON, &backlogprivate)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal JSON: %v", err)
 	}
-	return backlogprivate, nil
+	return &backlogprivate, nil
 }
 
-func (s *SmartContract) TransfereGO(ctx contractapi.TransactionContextInterface) ([]string, error) {
+func (s *SmartContract) TransfereGO(ctx contractapi.TransactionContextInterface) error {
+	type TransfereGOtransinputstruct struct {
+		EGO string `json:"EGO"`
+		Recipient string `json:"Recipient"`
+	}
+	//ABAC:
+	err := ctx.GetClientIdentity().AssertAttributeValue("electricitytrustedUser", "true")
+	if err != nil {
+		return fmt.Errorf("submitting User not authorized to transfer electricity GOs: %v", err)
+	}
+	transientMap, err := ctx.GetStub().GetTransient()
+	if err != nil {
+		return fmt.Errorf("error getting transient: %v", err)
+	}
+
+	TransferInputDataAsBytes, ok := transientMap["TransferInput"]
+	if !ok {
+		return fmt.Errorf("transfer Input must be a key in transient map:%v", ok)
+	}
+	if len(TransferInputDataAsBytes) == 0 {
+		return fmt.Errorf("transfer Input must be non-empty")
+	}
+	
+	var TransfereGOtransientinput TransfereGOtransinputstruct
+	err = json.Unmarshal(TransferInputDataAsBytes, &TransfereGOtransientinput)
+	if err != nil {
+		return fmt.Errorf("failed to decode JSON input of: " + string(TransferInputDataAsBytes) + ". The error is: " + err.Error())
+	}
+
+	var privateCollectionID string
+	if TransfereGOtransientinput.Recipient == "hproducerMSP" {
+		privateCollectionID = "privateDetails-hGO"
+	} else if TransfereGOtransientinput.Recipient == "buyerMSP" {
+		privateCollectionID = "privateDetails-buyer"
+	} else {
+		return fmt.Errorf("recipient ID malformed - please try again")
+	}
+
+	var currentAsset ElectricityGOprivatedetails
+	currentAssetJSON, err := ctx.GetStub().GetPrivateData("privateDetails-eGO", TransfereGOtransientinput.EGO)
+		if err != nil {
+			return fmt.Errorf("error getting private Details for eGO %v:%v", TransfereGOtransientinput.EGO, err)
+		}
+		err = json.Unmarshal(currentAssetJSON, &currentAsset)
+		if err != nil {
+			return fmt.Errorf("error unmarshaling the current asset for transfer:%v", err)
+		}
+	
+	currentAsset.OwnerID = TransfereGOtransientinput.Recipient
+	
+	err = ctx.GetStub().DelPrivateData("privateDetails-eGO", TransfereGOtransientinput.EGO)
+	if err != nil {
+		return fmt.Errorf("error deleting electricity GO from electricity producer private collection:%v", err)
+	}
+
+	updatedAssetasBytes, err := json.Marshal(currentAsset)
+	if err != nil {
+		return fmt.Errorf("error marshaling the updated eGO:%v", err)
+	}
+	err = ctx.GetStub().PutPrivateData(privateCollectionID, TransfereGOtransientinput.EGO, updatedAssetasBytes)
+	if err != nil {
+		return fmt.Errorf("error putting electricity GO into recipient private collection:%v", err)
+	}
+	
+
+	return nil
+}
+
+func (s *SmartContract) TransfereGObyAmount(ctx contractapi.TransactionContextInterface) ([]string, error) {
 
 	type TransfereGOtransientinputstruct struct {
 		EGOList string `json:"EGOList"`
@@ -735,7 +803,6 @@ func (s *SmartContract) TransfereGO(ctx contractapi.TransactionContextInterface)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode JSON input of: " + string(TransferInputDataAsBytes) + ". The error is: " + err.Error())
 	}
-
 
 	NeededAmount, err := TransfereGOtransientinput.Neededamount.Float64()
 	if err != nil {
@@ -1283,9 +1350,12 @@ func (s *SmartContract) ReadPrivatefromCollectionhGO(ctx contractapi.Transaction
 }
 
 func getClientOrgID(ctx contractapi.TransactionContextInterface) (string, error) {
-	clientOrgID, err := ctx.GetClientIdentity().GetMSPID()
+	clientOrgID, found, err := ctx.GetClientIdentity().GetAttributeValue("organization")
 	if err != nil {
 		return "", fmt.Errorf("failed getting client's orgID: %v", err)
+	}
+	if !found {
+		return "", fmt.Errorf("certificate doesnt have attribute 'organization'")
 	}
 
 	return clientOrgID, nil
@@ -1508,7 +1578,8 @@ func (c *Count) Count() float64 {
 
 func EGOcounter() float64 {
 	EGOcount.Incr()
-	return EGOcount.count
+	Returnval := EGOcount.count / 2
+	return Returnval
 }
 
 func hGOcounter() float64 {
