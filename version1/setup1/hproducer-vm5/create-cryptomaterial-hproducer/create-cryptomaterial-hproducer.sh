@@ -7,22 +7,22 @@ createCertificateForhproducer() {
 
   export FABRIC_CA_CLIENT_HOME=${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/
   
-# enroll the ca for hydrogen producer org cryptomaterial creation, the flag --tls.certfiles paths to the issuing body certificate authority root certificate
-  fabric-ca-client enroll -u https://admin:adminpw@localhost:10054 --caname ca.issuer.GOnetwork.com --tls.certfiles ${PWD}/../../issuer-vm3/create-cryptomaterial-issuer/fabric-ca/issuer/tls-cert.pem
+# enroll the ca for hydrogen producer org cryptomaterial creation, the flag --tls.certfiles paths to the hydrogen producer certificate authority root certificate
+  fabric-ca-client enroll -u https://admin:adminpw@localhost:11054 --caname ca.hproducer.GOnetwork.com --tls.certfiles ${PWD}/fabric-ca/hproducer/tls-cert.pem
 
   echo 'NodeOUs:
   Enable: true
   ClientOUIdentifier:
-    Certificate: cacerts/localhost-10054-ca-issuer-GOnetwork-com.pem
+    Certificate: cacerts/localhost-11054-ca-hproducer-GOnetwork-com.pem
     OrganizationalUnitIdentifier: client
   PeerOUIdentifier:
-    Certificate: cacerts/localhost-10054-ca-issuer-GOnetwork-com.pem
+    Certificate: cacerts/localhost-11054-ca-hproducer-GOnetwork-com.pem
     OrganizationalUnitIdentifier: peer
   AdminOUIdentifier:
-    Certificate: cacerts/localhost-10054-ca-issuer-GOnetwork-com.pem
+    Certificate: cacerts/localhost-11054-ca-hproducer-GOnetwork-com.pem
     OrganizationalUnitIdentifier: admin
   OrdererOUIdentifier:
-    Certificate: cacerts/localhost-10054-ca-issuer-GOnetwork-com.pem
+    Certificate: cacerts/localhost-11054-ca-hproducer-GOnetwork-com.pem
     OrganizationalUnitIdentifier: orderer' >${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/msp/config.yaml
 
   echo
@@ -30,55 +30,46 @@ createCertificateForhproducer() {
   echo
   sleep 1
 
-  fabric-ca-client register --caname ca.issuer.GOnetwork.com --id.name h-peer0 --id.secret h-peer0pw --id.type peer --tls.certfiles ${PWD}/../../issuer-vm3/create-cryptomaterial-issuer/fabric-ca/issuer/tls-cert.pem
+  fabric-ca-client register --caname ca.hproducer.GOnetwork.com --id.name h-peer0 --id.secret h-peer0pw --id.type peer --tls.certfiles ${PWD}/fabric-ca/hproducer/tls-cert.pem
 
   echo
   echo "Register h-peer1"
   echo
 
-  fabric-ca-client register --caname ca.issuer.GOnetwork.com --id.name h-peer1 --id.secret h-peer1pw --id.type peer --tls.certfiles ${PWD}/../../issuer-vm3/create-cryptomaterial-issuer/fabric-ca/issuer/tls-cert.pem
-
- 
-  echo
-  echo "Register OutputMeter"
-  echo
-
-# this creates the Output Meter "measuring" the output electrolysis process x509 certificate with the attributes "trusted device = true, maxOutput = 10000 kilos of hydrogen per hour; kwhperkilo: varies between 50, i.e. the kilowatthours input needed per kilo hydrogen ouptut, conversion efficiency of 0.8 and the technology type, set to PEM electrolyser"
-  fabric-ca-client register --caname ca.issuer.GOnetwork.com --id.name OutputMeter1 --id.secret OutputMeter1pw --id.type client --id.attrs 'hydrogentrustedDevice=true:ecert,maxOutput=10000:ecert,kwhperkilo=50:ecert,conversionEfficiency=0.8:ecert,technologyType=PEMelectrolyser:ecert,emissionIntensity=20:ecert' --tls.certfiles ${PWD}/../../issuer-vm3/create-cryptomaterial-issuer/fabric-ca/issuer/tls-cert.pem
+  fabric-ca-client register --caname ca.hproducer.GOnetwork.com --id.name h-peer1 --id.secret h-peer1pw --id.type peer --tls.certfiles ${PWD}/fabric-ca/hproducer/tls-cert.pem
 
   echo
   echo "Register Trusted User for hydrogen producer"
   echo
 
 # this creates the Trusted User for the hydrogen organisation which will be authorized to transfer hydrogen GOs 
-  fabric-ca-client register --caname ca.issuer.GOnetwork.com --id.name hTrustedUser --id.secret hTrustedUserpw --id.type client --id.attrs 'hydrogentrustedUser=true:ecert' --tls.certfiles ${PWD}/../../issuer-vm3/create-cryptomaterial-issuer/fabric-ca/issuer/tls-cert.pem
+  fabric-ca-client register --caname ca.hproducer.GOnetwork.com --id.name hTrustedUser --id.secret hTrustedUserpw --id.type client --id.attrs 'hydrogentrustedUser=true:ecert,TrustedUser=true:ecert' --tls.certfiles ${PWD}/fabric-ca/hproducer/tls-cert.pem
 
 
   echo
   echo "Register the org admins"
   echo
 
-#this creates the admin for output meter
-  fabric-ca-client register --caname ca.issuer.GOnetwork.com --id.name outhproduceradmin --id.secret outhproduceradminpw --id.type admin --tls.certfiles ${PWD}/../../issuer-vm3/create-cryptomaterial-issuer/fabric-ca/issuer/tls-cert.pem
+#this creates the admin
+  fabric-ca-client register --caname ca.hproducer.GOnetwork.com --id.name outhproduceradmin --id.secret outhproduceradminpw --id.type admin --tls.certfiles ${PWD}/fabric-ca/hproducer/tls-cert.pem
 
   mkdir -p ../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers
   mkdir -p ../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com
 
-  # --------------------------------------------------------------
-  # Peer 0
+# --------------------------------------------------------------
+# Peer 0
   echo
   echo "## Generate the h-peer0 msp"
   echo
 
-  fabric-ca-client enroll -u https://h-peer0:h-peer0pw@localhost:10054 --caname ca.issuer.GOnetwork.com -M ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/msp --csr.hosts h-peer0.hproducer.GOnetwork.com --tls.certfiles ${PWD}/../../issuer-vm3/create-cryptomaterial-issuer/fabric-ca/issuer/tls-cert.pem
-
+  fabric-ca-client enroll -u https://h-peer0:h-peer0pw@localhost:11054 --caname ca.hproducer.GOnetwork.com -M ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/msp --csr.hosts h-peer0.hproducer.GOnetwork.com --tls.certfiles ${PWD}/fabric-ca/hproducer/tls-cert.pem
   cp ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/msp/config.yaml ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/msp/config.yaml
 
   echo
   echo "## Generate the h-peer0-tls certificates"
   echo
 
-  fabric-ca-client enroll -u https://h-peer0:h-peer0pw@localhost:10054 --caname ca.issuer.GOnetwork.com -M ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls --enrollment.profile tls --csr.hosts h-peer0.hproducer.GOnetwork.com --csr.hosts localhost --tls.certfiles ${PWD}/../../issuer-vm3/create-cryptomaterial-issuer/fabric-ca/issuer/tls-cert.pem
+  fabric-ca-client enroll -u https://h-peer0:h-peer0pw@localhost:11054 --caname ca.hproducer.GOnetwork.com -M ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls --enrollment.profile tls --csr.hosts h-peer0.hproducer.GOnetwork.com --csr.hosts localhost --tls.certfiles ${PWD}/fabric-ca/hproducer/tls-cert.pem
 
   cp ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/tlscacerts/* ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/ca.crt
   cp ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/signcerts/* ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/server.crt
@@ -92,14 +83,14 @@ createCertificateForhproducer() {
 
   mkdir ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/ca
   cp ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/msp/cacerts/* ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/ca/ca.hproducer.GOnetwork.com-cert.pem
+# -----------------------------------------------------------------------------------
+#Peer 1
 
-  # --------------------------------------------------------------------------------
-  #  Peer 1
   echo
   echo "## Generate the h-peer1 msp"
   echo
 
-  fabric-ca-client enroll -u https://h-peer1:h-peer1pw@localhost:10054 --caname ca.issuer.GOnetwork.com -M ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer1.hproducer.GOnetwork.com/msp --csr.hosts h-peer1.hproducer.GOnetwork.com --tls.certfiles ${PWD}/../../issuer-vm3/create-cryptomaterial-issuer/fabric-ca/issuer/tls-cert.pem
+  fabric-ca-client enroll -u https://h-peer1:h-peer1pw@localhost:11054 --caname ca.hproducer.GOnetwork.com -M ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer1.hproducer.GOnetwork.com/msp --csr.hosts h-peer1.hproducer.GOnetwork.com --tls.certfiles ${PWD}/fabric-ca/hproducer/tls-cert.pem
 
   cp ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/msp/config.yaml ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer1.hproducer.GOnetwork.com/msp/config.yaml
 
@@ -107,35 +98,24 @@ createCertificateForhproducer() {
   echo "## Generate the h-peer1-tls certificates"
   echo
 
-  fabric-ca-client enroll -u https://h-peer1:h-peer1pw@localhost:10054 --caname ca.issuer.GOnetwork.com -M ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer1.hproducer.GOnetwork.com/tls --enrollment.profile tls --csr.hosts h-peer1.hproducer.GOnetwork.com --csr.hosts localhost --tls.certfiles ${PWD}/../../issuer-vm3/create-cryptomaterial-issuer/fabric-ca/issuer/tls-cert.pem
+  fabric-ca-client enroll -u https://h-peer1:h-peer1pw@localhost:11054 --caname ca.hproducer.GOnetwork.com -M ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer1.hproducer.GOnetwork.com/tls --enrollment.profile tls --csr.hosts h-peer1.hproducer.GOnetwork.com --csr.hosts localhost --tls.certfiles ${PWD}/fabric-ca/hproducer/tls-cert.pem
 
   cp ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer1.hproducer.GOnetwork.com/tls/tlscacerts/* ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer1.hproducer.GOnetwork.com/tls/ca.crt
   cp ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer1.hproducer.GOnetwork.com/tls/signcerts/* ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer1.hproducer.GOnetwork.com/tls/server.crt
   cp ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer1.hproducer.GOnetwork.com/tls/keystore/* ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer1.hproducer.GOnetwork.com/tls/server.key
-  # -----------------------------------------------------------------------------------
-  #Output Meter
 
-  mkdir -p ../crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter
-  mkdir -p ../crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/OutputMeter1@hproducer.GOnetwork.com
+# --------------------------------------------------------------------------
+# Admin and Trusted User
 
   echo
-  echo "## Generate the OutputMeter msp"
+  echo "## Generate the Admin msp"
   echo
 
-  fabric-ca-client enroll -u https://OutputMeter1:OutputMeter1pw@localhost:10054 --caname ca.issuer.GOnetwork.com -M ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/OutputMeter1@hproducer.GOnetwork.com/msp --tls.certfiles ${PWD}/../../issuer-vm3/create-cryptomaterial-issuer/fabric-ca/issuer/tls-cert.pem
+  mkdir -p ../crypto-config/peerOrganizations/hproducer.GOnetwork.com/Admin/oAdmin@hproducer.GOnetwork.com
 
-  #copy the Node OU configuration file into the Output Meter msp folder --> this is necessary for attribute-based chaincode invoke  
-  cp "${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/msp/config.yaml" "${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/OutputMeter1@hproducer.GOnetwork.com/msp/config.yaml"
+  fabric-ca-client enroll -u https://outhproduceradmin:outhproduceradminpw@localhost:11054 --caname ca.hproducer.GOnetwork.com -M ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/Admin/oAdmin@hproducer.GOnetwork.com/msp --tls.certfiles ${PWD}/fabric-ca/hproducer/tls-cert.pem
 
-  mkdir -p ../crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/oAdmin@hproducer.GOnetwork.com
-
-  echo
-  echo "## Generate the OutputMeter admin msp"
-  echo
-
-  fabric-ca-client enroll -u https://outhproduceradmin:outhproduceradminpw@localhost:10054 --caname ca.issuer.GOnetwork.com -M ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/oAdmin@hproducer.GOnetwork.com/msp --tls.certfiles ${PWD}/../../issuer-vm3/create-cryptomaterial-issuer/fabric-ca/issuer/tls-cert.pem
-
-  cp ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/msp/config.yaml ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/oAdmin@hproducer.GOnetwork.com/msp/config.yaml
+  cp ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/msp/config.yaml ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/Admin/oAdmin@hproducer.GOnetwork.com/msp/config.yaml
 
   #Trusted User
 
@@ -146,7 +126,7 @@ createCertificateForhproducer() {
   echo "## Generate the Trusted User msp"
   echo
 
-  fabric-ca-client enroll -u https://hTrustedUser:hTrustedUserpw@localhost:10054 --caname ca.issuer.GOnetwork.com -M ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/TrustedUser/hTrustedUser@hproducer.GOnetwork.com/msp --tls.certfiles ${PWD}/../../issuer-vm3/create-cryptomaterial-issuer/fabric-ca/issuer/tls-cert.pem
+  fabric-ca-client enroll -u https://hTrustedUser:hTrustedUserpw@localhost:11054 --caname ca.hproducer.GOnetwork.com -M ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/TrustedUser/hTrustedUser@hproducer.GOnetwork.com/msp --tls.certfiles ${PWD}/fabric-ca/hproducer/tls-cert.pem
 
   #copy the Node OU configuration file into the Trusted User msp folder --> this is necessary for attribute-based chaincode invoke  
   cp "${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/msp/config.yaml" "${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/TrustedUser/hTrustedUser@hproducer.GOnetwork.com/msp/config.yaml"

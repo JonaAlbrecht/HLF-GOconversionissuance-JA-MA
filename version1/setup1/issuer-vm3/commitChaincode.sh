@@ -16,7 +16,7 @@ CC_SRC_PATH="./../../artifacts/Mychaincode"
 CC_NAME="conversion" 
 
 setGlobalsForPeer0issuer() {
-    export CORE_PEER_LOCALMSPID="issuerMSP"
+    export CORE_PEER_LOCALMSPID=issuerMSP
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ISSUER_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-users/Admin@issuer.GOnetwork.com/msp
     export CORE_PEER_ADDRESS=localhost:11051
@@ -59,5 +59,4 @@ chaincodeInvokeInit() {
 
  # --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_ISSUER_CA \
 
-chaincodeInvokeInit
-
+#chaincodeInvokeInit

@@ -1,0 +1,3 @@
+QueryHydrogenBacklog Elapsed time: 296 ms
+QueryHydrogenBacklog Elapsed time: 445 ms
+QueryHydrogenBacklog Elapsed time: 70 ms

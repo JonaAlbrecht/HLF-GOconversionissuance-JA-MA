@@ -1,0 +1,10 @@
+GetcurrenteGOsList Elapsed time: 83 ms
+GetcurrenteGOsList Elapsed time: 67 ms
+GetcurrenteGOsList Elapsed time: 77 ms
+ReadPrivatefromCollectioneGO Elapsed time: 86 ms
+GetcurrenteGOsList Elapsed time: 80 ms
+GetcurrenteGOsList Elapsed time: 97 ms
+GetcurrenteGOsList Elapsed time: 114 ms
+GetcurrenteGOsList Elapsed time: 75 ms
+GetcurrenteGOsList Elapsed time: 72 ms
+GetcurrenteGOsList Elapsed time: 62 ms

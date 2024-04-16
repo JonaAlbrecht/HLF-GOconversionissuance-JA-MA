@@ -6,17 +6,17 @@ export FABRIC_CFG_PATH=${PWD}/../../artifacts/channel/config/
 export CHANNEL_NAME=mychannel
 
 setGlobalsForPeer0eproducer() {
-    export CORE_PEER_LOCALMSPID="eproducerMSP"
+    export CORE_PEER_LOCALMSPID=eproducerMSP
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_EPRODUCER_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/eproducer.GOnetwork.com/SmartMeter/Admin@eproducer.GOnetwork.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/eproducer.GOnetwork.com/Admin/Admin@eproducer.GOnetwork.com/msp
     export CORE_PEER_ADDRESS=localhost:9051
 
 }
 
 setGlobalsForPeer1eproducer() {
-    export CORE_PEER_LOCALMSPID="eproducerMSP"
+    export CORE_PEER_LOCALMSPID=eproducerMSP
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_EPRODUCER_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/eproducer.GOnetwork.com/SmartMeter/Admin@eproducer.GOnetwork.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/eproducer.GOnetwork.com/Admin/Admin@eproducer.GOnetwork.com/msp
     export CORE_PEER_ADDRESS=localhost:10051
 
 }

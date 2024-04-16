@@ -13,3 +13,7 @@ QueryPrivateeGOsbyAmountMWh Elapsed time: 78 ms
 GetcurrenteGOsList Elapsed time: 102 ms
 QueryPrivateeGOsbyAmountMWh Elapsed time: 96 ms
 QueryPrivateeGOsbyAmountMWh Elapsed time: 76 ms
+GetcurrenteGOsList Elapsed time: 68 ms
+GetcurrenteGOsList Elapsed time: 91 ms
+GetcurrenteGOsList Elapsed time: 76 ms
+QueryPrivateeGOsbyAmountMWh Elapsed time: 76 ms

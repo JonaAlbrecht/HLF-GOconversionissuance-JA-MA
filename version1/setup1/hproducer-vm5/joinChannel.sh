@@ -6,17 +6,17 @@ export FABRIC_CFG_PATH=${PWD}/../../artifacts/channel/config/
 export CHANNEL_NAME=mychannel
 
 setGlobalsForPeer0hproducer() {
-    export CORE_PEER_LOCALMSPID="hproducerMSP"
+    export CORE_PEER_LOCALMSPID=hproducerMSP
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_HPRODUCER_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/oAdmin@hproducer.GOnetwork.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/hproducer.GOnetwork.com/Admin/oAdmin@hproducer.GOnetwork.com/msp
     export CORE_PEER_ADDRESS=localhost:13051
 
 }
 
 setGlobalsForPeer1hproducer() {
-    export CORE_PEER_LOCALMSPID="hproducerMSP"
+    export CORE_PEER_LOCALMSPID=hproducerMSP
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_HPRODUCER_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/oAdmin@hproducer.GOnetwork.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/hproducer.GOnetwork.com/Admin/oAdmin@hproducer.GOnetwork.com/msp
     export CORE_PEER_ADDRESS=localhost:14051
 
 }

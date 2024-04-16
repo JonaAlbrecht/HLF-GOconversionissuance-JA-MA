@@ -13,8 +13,8 @@
     export ElectricityProductionMethod="solar"
     export eGO=$(echo -n "{\"AmountMWh\":\"$AmountMWh\",\"Emissions\":\"$Emissions\",\"ElapsedSeconds\":\"$ElapsedSeconds\",\"ElectricityProductionMethod\":\"$ElectricityProductionMethod\"}" | base64 | tr -d \\n)    
     export CORE_PEER_TLS_ENABLED=true
-    export CORE_PEER_LOCALMSPID="eproducerMSP"
-    export CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/channel/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer0.eproducer.GOnetwork.com/tls/ca.crt
+    export CORE_PEER_LOCALMSPID=eproducerMSP
+    export CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer0.issuer.GOnetwork.com/tls/ca.crt
     export CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/channel/crypto-config/peerOrganizations/eproducer.GOnetwork.com/SmartMeter/SmartMeter1@eproducer.GOnetwork.com/msp
     export CORE_PEER_ADDRESS=e-peer0.eproducer.GOnetwork.com:9051
     export ORDERER_CA=/etc/hyperledger/channel/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem

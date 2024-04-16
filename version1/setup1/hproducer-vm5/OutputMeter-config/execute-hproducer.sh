@@ -14,7 +14,7 @@ execute () {
     export HydrogenProductionMethod="PEMelectrolyser"
     export hGO=$(echo -n "{\"Kilosproduced\":\"$Kilosproduced\",\"EmissionsHydrogen\":\"$EmissionsHydrogen\",\"UsedMWh\":\"$UsedMWh\",\"HydrogenProductionMethod\":\"$HydrogenProductionMethod\",\"ElapsedSeconds\":\"$ElapsedSeconds\"}" | base64 | tr -d \\n)
     export CORE_PEER_TLS_ENABLED=true
-    export CORE_PEER_LOCALMSPID="hproducerMSP"
+    export CORE_PEER_LOCALMSPID=hproducerMSP
     export CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/ca.crt
     export CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/OutputMeter1@hproducer.GOnetwork.com/msp
     export CORE_PEER_ADDRESS=h-peer0.hproducer.GOnetwork.com:13051

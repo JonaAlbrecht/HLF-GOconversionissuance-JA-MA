@@ -7,14 +7,14 @@ export COLLECTION_CONFIGPATH=${PWD}/../../artifacts/private-data-collections/col
 export CHANNEL_NAME=mychannel
 
 setGlobalsForPeer0issuer() {
-    export CORE_PEER_LOCALMSPID="issuerMSP"
+    export CORE_PEER_LOCALMSPID=issuerMSP
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ISSUER_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-users/Admin@issuer.GOnetwork.com/msp
     export CORE_PEER_ADDRESS=localhost:11051
 }
 
 setGlobalsForPeer1issuer() {
-    export CORE_PEER_LOCALMSPID="issuerMSP"
+    export CORE_PEER_LOCALMSPID=issuerMSP
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ISSUER_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-users/Admin@issuer.GOnetwork.com/msp
     export CORE_PEER_ADDRESS=localhost:12051

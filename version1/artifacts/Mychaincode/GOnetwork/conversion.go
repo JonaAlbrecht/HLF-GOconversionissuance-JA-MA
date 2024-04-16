@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/hyperledger/fabric-chaincode-go/pkg/statebased"
 	"github.com/hyperledger/fabric-chaincode-go/shim"
@@ -23,7 +22,7 @@ type SmartContract struct {
 
 type ElectricityGO struct {
 	AssetID string `json:"AssetID"`
-	CreationDateTime string `json:"CreationDateTime"`
+	CreationDateTime int64 `json:"CreationDateTime"`
 	GOType string `json:"GOType"`
 }
 
@@ -33,11 +32,12 @@ type ElectricityGOprivatedetails struct {
 	AmountMWh float64 `json:"AmountMWh"`
 	Emissions float64 `json:"Emissions"`
 	ElectricityProductionMethod string `json:"ElectricityProductionMethod"`
+	ConsumptionDeclarations []string `json:"ConsumptionDeclarations"`
 }
 
 type GreenHydrogenGO struct {
 	AssetID string `json:"AssetID"`
-	CreationDateTime string `json:"CreationDateTime"`
+	CreationDateTime int64 `json:"CreationDateTime"`
 	GOType string `json:"GOType"`
 }
 
@@ -48,8 +48,9 @@ type GreenHydrogenGOprivatedetails struct {
 	EmissionsHydrogen float64 `json:"Emissions"`
 	HydrogenProductionMethod string `json:"HydrogenProductionMethod"`
 	InputEmissions float64 `json:"InputEmissions"`
-	ElectricityProductionMethod string `json:"ElectricityProductionMethod"`
 	UsedMWh float64 `json:"UsedMWh"`
+	ElectricityProductionMethod []string `json:"ElectricityProductionMethod"`
+	ConsumptionDeclarations []string `json:"ConsumptionDeclarations"`
 }
 
 type GreenHydrogenGObacklog struct {
@@ -68,33 +69,50 @@ type GreenHydrogenGObacklogprivatedetails struct {
 
 type CancellationstatementElectricity struct {
 	ECancellationkey string `json:"eCancellationkey"`
-	CancellationTime string `json:"CancellationTime"`
+	CancellationTime int64 `json:"CancellationTime"`
 	OwnerID string `json:"OwnerID"`
 	AmountMWh float64 `json:"AmountMWh"`
 	Emissions float64 `json:"Emissions"`
 	ElectricityProductionMethod string `json:"ElectricityProductionMethod"`
+	ConsumptionDeclarations []string `json:"ConsumptionDeclarations"`
 }
 
+// (see EN16325 4.9.2) A cancellation statement is an electronic, non-transferrable receipt which provides evidence of the cancellation of one or more GOs
+//for the purpose of Disclosure of the Attributes of those GOs for the beneficiary or beneficiaries of the cancellation
 type CancellationstatementHydrogen struct {
 	HCancellationkey string `json:"hCancellationkey"`
-	CancellationTime string `json:"CancellationTime"`
+	CancellationTime int64 `json:"CancellationTime"`
 	OwnerID string `json:"OwnerID"`
 	Kilosproduced float64 `json:"Kilosproduced"`
 	EmissionsHydrogen float64 `json:"Emissions"`
 	HydrogenProductionMethod string `json:"HydrogenProductionMethod"`
 	InputEmissions float64 `json:"InputEmissions"`
-	ElectricityProductionMethod string `json:"ElectricityProductionMethod"`
+	ElectricityProductionMethod []string `json:"ElectricityProductionMethod"`
 	UsedMWh float64 `json:"UsedMWh"`
+	ConsumptionDeclarations []string `json:"ConsumptionDeclarations"`
 }
 
-type FunctionAndDuration struct {
-	FunctionName string
-	Duration time.Duration
+//(See EN16325 4.5.5.1.2 c), a Consumption Declaration shall contain the amount of Input, per
+//Energy Carrier, during that period and the identity and relevant Attributes of the GOs Cancelled
+//to Disclose the Attributes of that energy
+type ConsumptionDeclarationElectricity struct {
+	Consumptionkey string `json:"Consumptionkey"`
+	CancelledGOID string `json:"CancelledGOID"`
+	ConsumptionDateTime int64 `json:"ConsumptionDateTime"`
+	AmountMWh float64 `json:"AmountMWh"`
+	Emissions float64 `json:"Emissions"`
+	ElectricityProductionMethod string `json:"ElectricityProductionMethod"`
+	ConsumptionDeclarations []string `json:"ConsumptionDeclarations"`
 }
 
-// AveragefunctiondurationCalculator transfers function durations to a different goroutine 
-// such that it doesnt block the chaincode execution
-var AveragefunctiondurationCalculator chan *FunctionAndDuration
+type ConsumptionDeclarationHydrogen struct {
+	Consumptionkey string `json:"Consumptionkey"`
+	CancelledGOID string `json:"CancelledGOID"`
+	Kilosproduced float64 `json:"Kilosproduced"`
+	EmissionsHydrogen float64 `json:"Emissions"`
+	HydrogenProductionMethod string `json:"HydrogenProductionMethod"`
+	ConsumptionDeclarations []string `json:"ConsumptionDeclarations"`
+}
 
 type Count struct {
 	mx *sync.Mutex
@@ -109,6 +127,8 @@ var EGOcount = NewCount()
 var HGOcount = NewCount()
 var ECancellations = NewCount()
 var HCancellations = NewCount()
+var EConsumptions = NewCount()
+var HConsumptions = NewCount()
 
 func (s *SmartContract) CreateElectricityGO(ctx contractapi.TransactionContextInterface) error {
 	
@@ -147,7 +167,7 @@ func (s *SmartContract) CreateElectricityGO(ctx contractapi.TransactionContextIn
 
 	// eGO asset ID is of the format "eGO1", "eGO2" and so on...
 	currentCounteGO := EGOcounter()
-	eGOID := "eGO"+strconv.Itoa(int(currentCounteGO))
+	eGOID := "eGO"+strconv.Itoa(currentCounteGO)
 	
 	var eGOInputJSONformat eGOTransientInput
 	var eGOInput eGOTransientData
@@ -239,7 +259,7 @@ func (s *SmartContract) CreateElectricityGO(ctx contractapi.TransactionContextIn
 	if err != nil {
 		return fmt.Errorf("error getting timestamp:%v", err)
 	}
-	creationtime1 := now1.String()
+	creationtime1 := now1.GetSeconds()
 
 	eGO := ElectricityGO{
 		AssetID: eGOID,
@@ -274,6 +294,7 @@ func (s *SmartContract) CreateElectricityGO(ctx contractapi.TransactionContextIn
 		AmountMWh: eGOInput.AmountMWh,
 		Emissions: eGOInput.Emissions,
 		ElectricityProductionMethod: eGOInput.ElectricityProductionMethod,
+		ConsumptionDeclarations: []string{"none"},
 	}
 
 	eGOprivateBytes, err := json.Marshal(eGOprivate)
@@ -380,18 +401,15 @@ func (s *SmartContract) AddHydrogentoBacklog(ctx contractapi.TransactionContextI
 	if err != nil {
 		return fmt.Errorf("error getting max Output: %v", err.Error())
 	}
-
 	impliedOutputefficiency := (hGOInput.Kilosproduced/hGOInput.ElapsedSeconds)*3600
 	maxOutputint, err := strconv.Atoi(maxOutput)
 	if err != nil {
         return fmt.Errorf("max Efficiency could not be converted to an int %v", err.Error())
     }
 	maxOutputfloat := float64(maxOutputint)
-	
 	if maxOutputfloat < impliedOutputefficiency {
 		return fmt.Errorf("go rejected - Efficiency is suspiciously high")
 	}
-
 	emissionIntensity, err := getEmissionIntensityhGO(ctx)
 	if err != nil {
         return fmt.Errorf("error getting Emission Intensity hydrogen GO %v", err.Error())
@@ -401,12 +419,10 @@ func (s *SmartContract) AddHydrogentoBacklog(ctx contractapi.TransactionContextI
         return fmt.Errorf("max Efficiency could not be converted to an int %v", err.Error())
     }
 	emissionIntensityfloat := float64(emissionIntensityint)
-
 	impliedemissionIntensity := (hGOInput.EmissionsHydrogen/hGOInput.ElapsedSeconds)*3600
 	if emissionIntensityfloat > impliedemissionIntensity {
 		return fmt.Errorf("go rejected - Emissions are suspiciously low")
 	}
-
 	kwhperkilo, err := getkwhperkilo(ctx)
 	if err != nil {
         return fmt.Errorf("error getting kwhperkilo %v", err.Error())
@@ -416,12 +432,10 @@ func (s *SmartContract) AddHydrogentoBacklog(ctx contractapi.TransactionContextI
         return fmt.Errorf("kwhperkilo couldnt be converted to an int %v", err.Error())
     }
 	kwhperkilofloat := float64(kwhperkiloint)
-
 	impliedkwhperkilo := hGOInput.UsedMWh/hGOInput.Kilosproduced
 	if kwhperkilofloat < impliedkwhperkilo {
 		return fmt.Errorf("GO rejected - Used electricity amount is suspiciously low")
 	}
-
 	technologytypehGO, err := getTechnologyTypehGO(ctx)
 	if err != nil {
         return fmt.Errorf("error getting hydrogen technology type %v", err.Error())
@@ -429,7 +443,6 @@ func (s *SmartContract) AddHydrogentoBacklog(ctx contractapi.TransactionContextI
 	if technologytypehGO != hGOInput.HydrogenProductionMethod {
 		return fmt.Errorf("different production method expected")
 	}
-
 	//get the backlog
 	backlogJSON, err := ctx.GetStub().GetPrivateData("privateDetails-hGO", backlogkey)
 	if err != nil {
@@ -440,24 +453,20 @@ func (s *SmartContract) AddHydrogentoBacklog(ctx contractapi.TransactionContextI
 			Backlogkey: backlogkey,
 			GOType: "Hydrogen",
 		}
-	
 		hGOpublicBytes, err := json.Marshal(hGObacklog)
 		if err != nil {
 			return fmt.Errorf("failed to create hGO json: %v", err.Error())
 		}
-	
 		err = ctx.GetStub().PutState(backlogkey, hGOpublicBytes)
 		if err != nil {
 			return fmt.Errorf("failed to put asset in public data: %v", err.Error())
 		}
-	
 		// Set the endorsement policy such that an owner org peer is required to endorse future updates.
 		//endorsingOrgs := []string{clientID}
 		//err = setGOEndorsementpolicy(ctx, hGO.Backlogkey, endorsingOrgs)
 		//if err != nil {
 			//return fmt.Errorf("failed setting state based endorsement for buyer and seller: %v", err)
 		//}
-	
 		hGObacklogprivate := GreenHydrogenGObacklogprivatedetails{
 			Backlogkey: backlogkey,
 			OwnerID: clientID,
@@ -477,60 +486,56 @@ func (s *SmartContract) AddHydrogentoBacklog(ctx contractapi.TransactionContextI
 		if err != nil {
 			return fmt.Errorf("unable to create asset private data: %v", err)
 		}
-	} else {
-		
-	var currentbacklog *GreenHydrogenGObacklogprivatedetails
-	err = json.Unmarshal(backlogJSON, &currentbacklog)
-	if err != nil {
+	} else {	
+		var currentbacklog *GreenHydrogenGObacklogprivatedetails
+		err = json.Unmarshal(backlogJSON, &currentbacklog)
+		if err != nil {
 		return fmt.Errorf("error unmarshaling the current backlog:%v", err)
-	}
-		
-	hGObacklog := GreenHydrogenGObacklog{
+		}
+		hGObacklog := GreenHydrogenGObacklog{
 		Backlogkey: backlogkey,
 		GOType: "Hydrogen",
-	}
+		}
 	
-	hGOpublicBytes, err := json.Marshal(hGObacklog)
-	if err != nil {
+		hGOpublicBytes, err := json.Marshal(hGObacklog)
+		if err != nil {
 		return fmt.Errorf("failed to create hGO json: %v", err.Error())
-	}
+		}
 	
-	err = ctx.GetStub().PutState(backlogkey, hGOpublicBytes)
-	if err != nil {
-		return fmt.Errorf("failed to put asset in public data: %v", err.Error())		
-	}
+		err = ctx.GetStub().PutState(backlogkey, hGOpublicBytes)
+		if err != nil {
+			return fmt.Errorf("failed to put asset in public data: %v", err.Error())		
+		}
 	
-	// Set the endorsement policy such that an owner org peer is required to endorse future updates.
-	// In practice, consider additional endorsers such as a trusted third party to further secure transfers.
-	//endorsingOrgs := []string{clientID}
-	//err = setGOEndorsementpolicy(ctx, hGO.Backlogkey, endorsingOrgs)
-	//if err != nil {
-	//return fmt.Errorf("failed setting state based endorsement for buyer and seller: %v", err)
-	//}
+		// Set the endorsement policy such that an owner org peer is required to endorse future updates.
+		// In practice, consider additional endorsers such as a trusted third party to further secure transfers.
+		//endorsingOrgs := []string{clientID}
+		//err = setGOEndorsementpolicy(ctx, hGO.Backlogkey, endorsingOrgs)
+		//if err != nil {
+		//return fmt.Errorf("failed setting state based endorsement for buyer and seller: %v", err)
+		//}
 	
+		hGObacklogprivate := GreenHydrogenGObacklogprivatedetails{
+			Backlogkey: currentbacklog.Backlogkey,
+			OwnerID: currentbacklog.OwnerID,
+			Kilosproduced: hGOInput.Kilosproduced + currentbacklog.Kilosproduced,
+			EmissionsHydrogen: hGOInput.EmissionsHydrogen + currentbacklog.EmissionsHydrogen,
+			HydrogenProductionMethod: hGOInput.HydrogenProductionMethod,
+			UsedMWh: hGOInput.UsedMWh + currentbacklog.UsedMWh,
+		}	
 	
-	hGObacklogprivate := GreenHydrogenGObacklogprivatedetails{
-		Backlogkey: currentbacklog.Backlogkey,
-		OwnerID: currentbacklog.OwnerID,
-		Kilosproduced: hGOInput.Kilosproduced + currentbacklog.Kilosproduced,
-		EmissionsHydrogen: hGOInput.EmissionsHydrogen + currentbacklog.EmissionsHydrogen,
-		HydrogenProductionMethod: hGOInput.HydrogenProductionMethod,
-		UsedMWh: hGOInput.UsedMWh + currentbacklog.UsedMWh,
-	}	
-	
-	hGObacklogprivateBytes, err := json.Marshal(hGObacklogprivate)
-	if err != nil {
+		hGObacklogprivateBytes, err := json.Marshal(hGObacklogprivate)
+		if err != nil {
 			return fmt.Errorf("failed to create eGO json: %v", err)
-	}
+		}
 	
-	// Persist private immutable asset properties to owner's private data collection
-	err = ctx.GetStub().PutPrivateData("privateDetails-hGO", currentbacklog.Backlogkey, hGObacklogprivateBytes)
-	if err != nil {
+		// Persist private immutable asset properties to owner's private data collection
+		err = ctx.GetStub().PutPrivateData("privateDetails-hGO", currentbacklog.Backlogkey, hGObacklogprivateBytes)
+		if err != nil {
 			return fmt.Errorf("unable to create asset private data: %v", err)
-	}
+		}
 		
 	}
-
 
 	return nil
 }
@@ -634,7 +639,6 @@ func (s *SmartContract) QueryPrivatehGOsbyAmountMWh(ctx contractapi.TransactionC
 		return nil, fmt.Errorf("failed to decode JSON input of: " + string(QueryPrivatehGOInputAsBytes) + ". The error is: " + err.Error())
 	}
 
-
 	NeededAmount, err := QueryPrivatehGOtransient.NeededAmount.Float64()
 	if err != nil {
 		return nil, fmt.Errorf("error turning needed amount into a float")
@@ -642,7 +646,6 @@ func (s *SmartContract) QueryPrivatehGOsbyAmountMWh(ctx contractapi.TransactionC
 	
 	startKey := "hGO1"
 	endKey := "hGO999"
-
 	resultsIterator,err := ctx.GetStub().GetPrivateDataByRange(QueryPrivatehGOtransient.Collection, startKey, endKey)
 	if err != nil {
 		return nil, fmt.Errorf("error getting all available hGOs:%v", err)
@@ -663,7 +666,6 @@ func (s *SmartContract) QueryPrivatehGOsbyAmountMWh(ctx contractapi.TransactionC
 		}
 		results = append(results, availablehGO)
 	}
-
 	var Kilocounter float64
 	var HGOList []string
 	Kilocounter = 0
@@ -708,7 +710,7 @@ func (s *SmartContract) TransfereGO(ctx contractapi.TransactionContextInterface)
 		Recipient string `json:"Recipient"`
 	}
 	//ABAC:
-	err := ctx.GetClientIdentity().AssertAttributeValue("electricitytrustedUser", "true")
+	err := ctx.GetClientIdentity().AssertAttributeValue("TrustedUser", "true")
 	if err != nil {
 		return fmt.Errorf("submitting User not authorized to transfer electricity GOs: %v", err)
 	}
@@ -731,17 +733,30 @@ func (s *SmartContract) TransfereGO(ctx contractapi.TransactionContextInterface)
 		return fmt.Errorf("failed to decode JSON input of: " + string(TransferInputDataAsBytes) + ". The error is: " + err.Error())
 	}
 
-	var privateCollectionID string
+	var receiverCollectionID string
 	if TransfereGOtransientinput.Recipient == "hproducerMSP" {
-		privateCollectionID = "privateDetails-hGO"
+		receiverCollectionID = "privateDetails-hGO"
 	} else if TransfereGOtransientinput.Recipient == "buyerMSP" {
-		privateCollectionID = "privateDetails-buyer"
+		receiverCollectionID = "privateDetails-buyer"
 	} else {
 		return fmt.Errorf("recipient ID malformed - please try again")
 	}
-
+	ClientID, err := getClientOrgID(ctx)
+	if err != nil {
+		return fmt.Errorf("error while getting client ID:%v", err)
+	}
+	var senderCollectionID string
+	if ClientID == "eproducerMSP" {
+		senderCollectionID = "privateDetails-eGO"
+	} else if ClientID == "hproducerMSP" {
+		senderCollectionID = "privateDetails-eGO"
+	} else if ClientID == "buyerMSP" {
+		senderCollectionID = "privateDetails-buyer"
+	} else {
+		return fmt.Errorf("sender ID malformed - please try again")
+	}
 	var currentAsset ElectricityGOprivatedetails
-	currentAssetJSON, err := ctx.GetStub().GetPrivateData("privateDetails-eGO", TransfereGOtransientinput.EGO)
+	currentAssetJSON, err := ctx.GetStub().GetPrivateData(senderCollectionID, TransfereGOtransientinput.EGO)
 		if err != nil {
 			return fmt.Errorf("error getting private Details for eGO %v:%v", TransfereGOtransientinput.EGO, err)
 		}
@@ -751,8 +766,25 @@ func (s *SmartContract) TransfereGO(ctx contractapi.TransactionContextInterface)
 		}
 	
 	currentAsset.OwnerID = TransfereGOtransientinput.Recipient
+	for i := 0; i < len(currentAsset.ConsumptionDeclarations); i++ {
+		bool1 := strings.HasPrefix(currentAsset.ConsumptionDeclarations[i], "eCon")
+		if (bool1) {
+			ConsumptionDeclarationJSON, err := ctx.GetStub().GetPrivateData(senderCollectionID, currentAsset.ConsumptionDeclarations[i])
+			if err != nil {
+				return fmt.Errorf("error transferring consumption declarations:%v", err)
+			}
+			err = ctx.GetStub().PutPrivateData(receiverCollectionID, currentAsset.ConsumptionDeclarations[i], ConsumptionDeclarationJSON)
+			if err != nil {
+				return fmt.Errorf("error transferring consumption declarations:%v", err)
+			}
+			err = ctx.GetStub().DelPrivateData(senderCollectionID, currentAsset.ConsumptionDeclarations[i])
+			if err != nil {
+				return fmt.Errorf("error transferring consumption declarations:%v", err)
+			}
+		}
+	}
 	
-	err = ctx.GetStub().DelPrivateData("privateDetails-eGO", TransfereGOtransientinput.EGO)
+	err = ctx.GetStub().DelPrivateData(senderCollectionID, TransfereGOtransientinput.EGO)
 	if err != nil {
 		return fmt.Errorf("error deleting electricity GO from electricity producer private collection:%v", err)
 	}
@@ -761,12 +793,10 @@ func (s *SmartContract) TransfereGO(ctx contractapi.TransactionContextInterface)
 	if err != nil {
 		return fmt.Errorf("error marshaling the updated eGO:%v", err)
 	}
-	err = ctx.GetStub().PutPrivateData(privateCollectionID, TransfereGOtransientinput.EGO, updatedAssetasBytes)
+	err = ctx.GetStub().PutPrivateData(receiverCollectionID, TransfereGOtransientinput.EGO, updatedAssetasBytes)
 	if err != nil {
 		return fmt.Errorf("error putting electricity GO into recipient private collection:%v", err)
 	}
-	
-
 	return nil
 }
 
@@ -779,7 +809,7 @@ func (s *SmartContract) TransfereGObyAmount(ctx contractapi.TransactionContextIn
 	}
 
 	//ABAC:
-	err := ctx.GetClientIdentity().AssertAttributeValue("electricitytrustedUser", "true")
+	err := ctx.GetClientIdentity().AssertAttributeValue("TrustedUser", "true")
 	if err != nil {
 		return nil, fmt.Errorf("submitting User not authorized to transfer electricity GOs: %v", err)
 	}
@@ -809,14 +839,30 @@ func (s *SmartContract) TransfereGObyAmount(ctx contractapi.TransactionContextIn
 		return nil, fmt.Errorf("error turning needed amount into a float")
 	}
 
-	var privateCollectionID string
+	var receiverCollectionID string
 	if TransfereGOtransientinput.Recipient == "hproducerMSP" {
-		privateCollectionID = "privateDetails-hGO"
+		receiverCollectionID = "privateDetails-hGO"
 	} else if TransfereGOtransientinput.Recipient == "buyerMSP" {
-		privateCollectionID = "privateDetails-buyer"
+		receiverCollectionID = "privateDetails-buyer"
 	} else {
 		return nil, fmt.Errorf("recipient ID malformed - please try again")
 	}
+
+	ClientID, err := getClientOrgID(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error while getting client ID:%v", err)
+	}
+	var senderCollectionID string
+	if ClientID == "eproducerMSP" {
+		senderCollectionID = "privateDetails-eGO"
+	} else if ClientID == "hproducerMSP" {
+		senderCollectionID = "privateDetails-eGO"
+	} else if ClientID == "buyerMSP" {
+		senderCollectionID = "privateDetails-buyer"
+	} else {
+		return nil, fmt.Errorf("sender ID malformed - please try again")
+	}
+
 	EGOList := strings.Split(TransfereGOtransientinput.EGOList, "+")
 	
 	assetCounter := 0
@@ -840,21 +886,40 @@ func (s *SmartContract) TransfereGObyAmount(ctx contractapi.TransactionContextIn
 		updatedAsset.AmountMWh = currentAsset.AmountMWh 
 		updatedAsset.Emissions = currentAsset.Emissions 
 		updatedAsset.ElectricityProductionMethod = currentAsset.ElectricityProductionMethod
+		updatedAsset.ConsumptionDeclarations = currentAsset.ConsumptionDeclarations
 		
 		assetCounter++
 		
 		if len(updatedAsset.AssetID) == 0 {
 			return nil, fmt.Errorf("failed to change eGO owner")
 		}
+
+		for i := 0; i < len(updatedAsset.ConsumptionDeclarations); i++ {
+			bool1 := strings.HasPrefix(updatedAsset.ConsumptionDeclarations[i], "eCon")
+			if (bool1) {
+				ConsumptionDeclarationJSON, err := ctx.GetStub().GetPrivateData(senderCollectionID, currentAsset.ConsumptionDeclarations[i])
+				if err != nil {
+					return nil, fmt.Errorf("error transferring consumption declarations:%v", err)
+				}
+				err = ctx.GetStub().PutPrivateData(receiverCollectionID, currentAsset.ConsumptionDeclarations[i], ConsumptionDeclarationJSON)
+				if err != nil {
+					return nil, fmt.Errorf("error transferring consumption declarations:%v", err)
+				}
+				err = ctx.GetStub().DelPrivateData(senderCollectionID, currentAsset.ConsumptionDeclarations[i])
+				if err != nil {
+					return nil, fmt.Errorf("error transferring consumption declarations:%v", err)
+				}
+			}
+		}
 		updatedAssetasBytes, err := json.Marshal(updatedAsset)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling the updated eGO:%v", err)
 		}
-		err = ctx.GetStub().PutPrivateData(privateCollectionID, updatedAsset.AssetID, updatedAssetasBytes)
+		err = ctx.GetStub().PutPrivateData(receiverCollectionID, updatedAsset.AssetID, updatedAssetasBytes)
 		if err != nil {
 			return nil, fmt.Errorf("error putting electricity GO into recipient private collection:%v", err)
-		}
-		err = ctx.GetStub().DelPrivateData("privateDetails-eGO", currentAsset.AssetID)
+		} 
+		err = ctx.GetStub().DelPrivateData(senderCollectionID, currentAsset.AssetID)
 		if err != nil {
 			return nil, fmt.Errorf("error deleting electricity GO from electricity producer private collection:%v", err)
 		}
@@ -866,48 +931,63 @@ func (s *SmartContract) TransfereGObyAmount(ctx contractapi.TransactionContextIn
 	ratio := excesstransferamount/updatedAsset.AmountMWh
 	updatedAsset.AmountMWh = updatedAsset.AmountMWh - excesstransferamount
 	partialtransferemissions := (1 - ratio) * updatedAsset.Emissions
+	ConsumptionDeclarations := append(updatedAsset.ConsumptionDeclarations, "split")
 	partialasset := ElectricityGOprivatedetails{
 		AssetID: updatedAsset.AssetID, 
 		OwnerID: TransfereGOtransientinput.Recipient, 
 		AmountMWh: updatedAsset.AmountMWh, 
 		Emissions: partialtransferemissions, 
 		ElectricityProductionMethod: updatedAsset.ElectricityProductionMethod,
+		ConsumptionDeclarations: ConsumptionDeclarations,
 	}	
 	if len(partialasset.AssetID) == 0 {
 		return nil, fmt.Errorf("failed to change eGO owner")
 	}
+
+	for i := 0; i < len(partialasset.ConsumptionDeclarations); i++ {
+		bool1 := strings.HasPrefix(partialasset.ConsumptionDeclarations[i], "eCon")
+		if (bool1) {
+			ConsumptionDeclarationJSON, err := ctx.GetStub().GetPrivateData(senderCollectionID, partialasset.ConsumptionDeclarations[i])
+			if err != nil {
+				return nil, fmt.Errorf("error transferring consumption declarations:%v", err)
+			}
+			err = ctx.GetStub().PutPrivateData(receiverCollectionID, partialasset.ConsumptionDeclarations[i], ConsumptionDeclarationJSON)
+			if err != nil {
+				return nil, fmt.Errorf("error transferring consumption declarations:%v", err)
+			}
+		}
+	}
+
 	partialassetasBytes, err := json.Marshal(partialasset)
 	if err != nil {
 		return nil, fmt.Errorf("error marshaling the updated eGO:%v", err)
 	}
-	error := ctx.GetStub().PutPrivateData(privateCollectionID, partialasset.AssetID, partialassetasBytes)
+	error := ctx.GetStub().PutPrivateData(receiverCollectionID, partialasset.AssetID, partialassetasBytes)
 	if error != nil {
 		return nil, fmt.Errorf("error putting partial electricity GO into private collection of recipient:%v", error)
 	}
-	error1 := ctx.GetStub().DelPrivateData("privateDetails-eGO", partialasset.AssetID)
+	error1 := ctx.GetStub().DelPrivateData(senderCollectionID, partialasset.AssetID)
 	if error1 != nil {
 		return nil, fmt.Errorf("error deleting partial electricity GO from electricity producer private collection:%v", error1)
 	}
 	
 	remainderemissions := updatedAsset.Emissions * ratio
 	currentCounteGO := EGOcounter()
-	eGOID := "eGO"+strconv.Itoa(int(currentCounteGO))
-	partialasseteproducer := &ElectricityGOprivatedetails{AssetID: eGOID, OwnerID: "eproducerMSP", AmountMWh: excesstransferamount, Emissions: remainderemissions, ElectricityProductionMethod: currentAsset.ElectricityProductionMethod}
-	if len(partialasseteproducer.AssetID) == 0 {
+	eGOID := "eGO"+strconv.Itoa(currentCounteGO)
+	partialassetsender := &ElectricityGOprivatedetails{AssetID: eGOID, OwnerID: "eproducerMSP", AmountMWh: excesstransferamount, Emissions: remainderemissions, ElectricityProductionMethod: currentAsset.ElectricityProductionMethod, ConsumptionDeclarations: ConsumptionDeclarations}
+	if len(partialassetsender.AssetID) == 0 {
 		return nil, fmt.Errorf("failed to create remainder GO for electricity producer")
 	}
-	partialasseteproducerasBytes, err := json.Marshal(partialasseteproducer)
+	partialasseteproducerasBytes, err := json.Marshal(partialassetsender)
 	if err != nil {
 		return nil, fmt.Errorf("error marshaling the updated eGO:%v", err)
 	}
-	error2 := ctx.GetStub().PutPrivateData("privateDetails-eGO", partialasseteproducer.AssetID, partialasseteproducerasBytes)
+	error2 := ctx.GetStub().PutPrivateData("privateDetails-eGO", partialassetsender.AssetID, partialasseteproducerasBytes)
 	if error2 != nil {
 		return nil, fmt.Errorf("error putting partial electricity GO into electricity producer private collection:%v", error2)
 	}
-			
-	return test, nil	
-
-	}
+	return test, nil
+}
 
 //This next function creates hydrogen GOs by reading electricity GOs from own collection, 
 //cancelling the correct amount, 
@@ -973,8 +1053,15 @@ func (s *SmartContract) IssuehGO(ctx contractapi.TransactionContextInterface) er
 	var inputGO ElectricityGOprivatedetails
 	GOitemcounter := 0
 
+	now2, err := ctx.GetStub().GetTxTimestamp()
+	if err != nil {
+		return fmt.Errorf("error getting timestamp:%v", err)
+	}
+	now2string := now2.GetSeconds()
+
 	for hydrogenGOprivate.UsedMWh < backlogtobeissued.UsedMWh {
 		currentID := EGOList[GOitemcounter]
+		GOitemcounter++
 		inputGOJSON, err := ctx.GetStub().GetPrivateData("privateDetails-hGO", currentID)
 		if err != nil {
 			return fmt.Errorf("error getting private Details for eGO %v:%v", currentID, err)
@@ -985,10 +1072,31 @@ func (s *SmartContract) IssuehGO(ctx contractapi.TransactionContextInterface) er
 		}
 		hydrogenGOprivate.UsedMWh = hydrogenGOprivate.UsedMWh + inputGO.AmountMWh
 		hydrogenGOprivate.InputEmissions = hydrogenGOprivate.InputEmissions + inputGO.Emissions
-		hydrogenGOprivate.ElectricityProductionMethod = hydrogenGOprivate.ElectricityProductionMethod + "," + inputGO.ElectricityProductionMethod
+		hydrogenGOprivate.ElectricityProductionMethod = append(hydrogenGOprivate.ElectricityProductionMethod, inputGO.ElectricityProductionMethod)
+		hydrogenGOprivate.ConsumptionDeclarations = append(hydrogenGOprivate.ConsumptionDeclarations, inputGO.ConsumptionDeclarations...)
+		hydrogenGOprivate.ConsumptionDeclarations = append(hydrogenGOprivate.ConsumptionDeclarations, inputGO.AssetID)
 		//make keylist of eGOs that are to be deleted
 		tobedeleted = append(tobedeleted, inputGO.AssetID)
-		GOitemcounter++
+		currenteConsumpkey := EConsumptioncounter()
+		Consumptionkey := "eCon"+strconv.Itoa(currenteConsumpkey)
+		ConsumptionDeclaration := ConsumptionDeclarationElectricity{
+			Consumptionkey: Consumptionkey, 
+			CancelledGOID: inputGO.AssetID,
+			ConsumptionDateTime: now2string,
+			AmountMWh: inputGO.AmountMWh,
+			Emissions: inputGO.Emissions,
+			ElectricityProductionMethod: inputGO.ElectricityProductionMethod,
+			ConsumptionDeclarations: inputGO.ConsumptionDeclarations,
+		}
+		ConsumptionDeclarationBytes, err := json.Marshal(ConsumptionDeclaration)
+		if err != nil {
+			return fmt.Errorf("error marshalling consumption declaration: %v", err)
+		}
+		error2 := ctx.GetStub().PutPrivateData("privateDetails-hGO", Consumptionkey, ConsumptionDeclarationBytes)
+		if error2 != nil {
+			return fmt.Errorf("error creating Consumption Declarations:%v", err)
+		}
+		
 	}
 	excess := hydrogenGOprivate.UsedMWh - backlogtobeissued.UsedMWh
 	ratio := excess / hydrogenGOprivate.UsedMWh
@@ -1005,12 +1113,8 @@ func (s *SmartContract) IssuehGO(ctx contractapi.TransactionContextInterface) er
 	hydrogenGOprivate.EmissionsHydrogen = backlogtobeissued.EmissionsHydrogen
 
 	hydrogenGO.AssetID = hGOID
-	hydrogenGO.GOType = "hydrogen"
-	now2, err := ctx.GetStub().GetTxTimestamp()
-	if err != nil {
-		return fmt.Errorf("error getting timestamp:%v", err)
-	}
-	now2string := now2.String()
+	hydrogenGO.GOType = "Hydrogen"
+	
 	hydrogenGO.CreationDateTime = now2string
 
 	//delete eGOs
@@ -1036,7 +1140,7 @@ func (s *SmartContract) IssuehGO(ctx contractapi.TransactionContextInterface) er
 	excesseGO := ElectricityGO{
 		AssetID: eGOID1,
 		CreationDateTime: now2string,
-		GOType: "electricity",
+		GOType: "Electricity",
 	}
 
 	excesseGOpublicBytes, err := json.Marshal(excesseGO)
@@ -1055,6 +1159,7 @@ func (s *SmartContract) IssuehGO(ctx contractapi.TransactionContextInterface) er
 		AmountMWh: excess,
 		Emissions: emissionsexcess,
 		ElectricityProductionMethod: "excessGO",
+		ConsumptionDeclarations: []string{"none"},
 	}
 
 	excesseGOprivateBytes, err := json.Marshal(excesseGOprivate)
@@ -1096,82 +1201,150 @@ func (s *SmartContract) IssuehGO(ctx contractapi.TransactionContextInterface) er
 func (s *SmartContract) ClaimRenewableattributesElectricity(ctx contractapi.TransactionContextInterface) error {
 	type ClaimRenewablesTransientInput struct {
 		Collection string `json:"collection"`
-		EGOID string `json:"eGOID"`
+		EGOList string `json:"EGOList"`
+		Cancelamount json.Number `json:"Cancelamount"`
 	}
 
+	ClientID, err := ctx.GetClientIdentity().GetMSPID()
+	if err != nil { 
+		return fmt.Errorf("error getting MSPID: %v", err)
+	}
 	transientMap, err := ctx.GetStub().GetTransient()
-	if err != nil {
+	if err != nil { 
 		return fmt.Errorf("error getting transient: %v", err)
 	}
 	claimrenewablesfunctioninputasbytes, ok := transientMap["ClaimRenewables"]
-	if !ok {
+	if !ok { 
 		return fmt.Errorf("'ClaimRenewables' must be the key in the transient map:%v", ok)
 	}
-
-	if len(claimrenewablesfunctioninputasbytes) == 0 {
+	if len(claimrenewablesfunctioninputasbytes) == 0 { 
 		return fmt.Errorf("claim Renewables function invoke must be non-empty")
 	}
 	var ClaimRenewablesInput ClaimRenewablesTransientInput
 	err = json.Unmarshal(claimrenewablesfunctioninputasbytes, &ClaimRenewablesInput)
-	if err != nil {
+	if err != nil { 
 		return fmt.Errorf("failed to decode JSON input with error: %v", err)
 	}
 	if ClaimRenewablesInput.Collection == "" {
 		return fmt.Errorf("claim renewables must specify a collection")
 	}
-	if ClaimRenewablesInput.EGOID == "" {
-		return fmt.Errorf("claim renewables must specify an electricity GO ID")
-	}
-
-	log.Printf("Reading private details of eGO with ID %v from collection %v", ClaimRenewablesInput.EGOID, ClaimRenewablesInput.Collection)
-	eGOprivateJSON, err := ctx.GetStub().GetPrivateData(ClaimRenewablesInput.Collection, ClaimRenewablesInput.EGOID)
+	Claimamount, err := ClaimRenewablesInput.Cancelamount.Float64()
 	if err != nil {
-		return fmt.Errorf("failed to read asset details: %v", err)
+		return fmt.Errorf("error converting json.number into float: %v", err)
 	}
-	if eGOprivateJSON == nil {
-		log.Printf("Private details for eGO %v do not exist in collection %v", ClaimRenewablesInput.EGOID, ClaimRenewablesInput.Collection)
-		return fmt.Errorf("no electricity GO with that ID exists")
-	}
+	var claimedamount float64
+	EGOList := strings.Split(ClaimRenewablesInput.EGOList, "+")
 	var eGOprivate *ElectricityGOprivatedetails
-	err = json.Unmarshal(eGOprivateJSON, &eGOprivate)
-	if err != nil {
-		return fmt.Errorf("failed to unmarshal JSON: %v", err)
-	}
-	currentCancelKeyCount := ECancelcounter()
-	eCancellationkey := "eCancel"+strconv.Itoa(int(currentCancelKeyCount))
+	assetCounter := 0
+	claimedamount = 0
 	now3, err := ctx.GetStub().GetTxTimestamp()
 	if err != nil {
 		return fmt.Errorf("error creating transaction timestamp:%v", err)
 	}
-	creationtime3 := now3.String()
+	creationtime3 := now3.GetSeconds()
+	for claimedamount < Claimamount {
+		eGOprivateJSON, err := ctx.GetStub().GetPrivateData(ClaimRenewablesInput.Collection, EGOList[assetCounter])
+		if err != nil {
+			return fmt.Errorf("failed to read asset details: %v", err)
+		}
+		if eGOprivateJSON == nil {
+			return fmt.Errorf("no electricity GO with that ID exists")
+		}
+		err = json.Unmarshal(eGOprivateJSON, &eGOprivate)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal JSON: %v", err)
+		}
+		currentCancelKeyCount := ECancelcounter()
+		eCancellationkey := "eCancel"+strconv.Itoa(currentCancelKeyCount)
+		claimedamount = claimedamount + eGOprivate.AmountMWh
+		if claimedamount < Claimamount {
+			eCancellationStatement := CancellationstatementElectricity{
+				ECancellationkey: eCancellationkey,
+				CancellationTime: creationtime3,
+				OwnerID: eGOprivate.OwnerID,
+				AmountMWh: eGOprivate.AmountMWh,
+				Emissions: eGOprivate.Emissions,
+				ElectricityProductionMethod: eGOprivate.ElectricityProductionMethod,
+				ConsumptionDeclarations: eGOprivate.ConsumptionDeclarations,
+			}
+			//deleting the electricity GO
+			err = ctx.GetStub().DelState(EGOList[assetCounter])
+			if err != nil {
+				return fmt.Errorf("error deleting electricity GO from public data:%v", err)
+			}
+			err = ctx.GetStub().DelPrivateData(ClaimRenewablesInput.Collection, EGOList[assetCounter])
+			if err != nil {
+				return fmt.Errorf("error deleting electricity GO from private collection:%v", err)
+			}
+			//issuing the electricity cancellation statement
+			eCancellationStatementasBytes, error4 := json.Marshal(eCancellationStatement)
+			if error4 != nil {
+				return fmt.Errorf("failed to marshal cancellation Statement")
+			}
+			err = ctx.GetStub().PutPrivateData(ClaimRenewablesInput.Collection, eCancellationStatement.ECancellationkey, eCancellationStatementasBytes) 
+			if err != nil {
+				return fmt.Errorf("failed to put cancellation statement into collection: %v", err)
+			}		
+		} else {
+			excesscancellationamount := claimedamount - Claimamount
+			ratio := excesscancellationamount/eGOprivate.AmountMWh
+			excessemissions := ratio * eGOprivate.Emissions
+			tobecancelledemissions := (1 - ratio) * eGOprivate.Emissions
+			ConsumptionDeclarations := append(eGOprivate.ConsumptionDeclarations, "split")
+			stilltobecancelled := eGOprivate.AmountMWh - excesscancellationamount
+			eCancellationStatement := CancellationstatementElectricity{
+				ECancellationkey: eCancellationkey,
+				CancellationTime: creationtime3,
+				OwnerID: eGOprivate.OwnerID,
+				AmountMWh: stilltobecancelled,
+				Emissions: tobecancelledemissions,
+				ElectricityProductionMethod: eGOprivate.ElectricityProductionMethod,
+				ConsumptionDeclarations: ConsumptionDeclarations,
+			}
 
-	eCancellationStatement := CancellationstatementElectricity{
-		ECancellationkey: eCancellationkey,
-		CancellationTime: creationtime3,
-		OwnerID: eGOprivate.OwnerID,
-		AmountMWh: eGOprivate.AmountMWh,
-		Emissions: eGOprivate.Emissions,
-		ElectricityProductionMethod: eGOprivate.ElectricityProductionMethod,
-	}
-	//deleting the electricity GO
-	err = ctx.GetStub().DelState(ClaimRenewablesInput.EGOID)
-	if err != nil {
-		return fmt.Errorf("error deleting electricity GO from public data:%v", err)
-	}
-	err = ctx.GetStub().DelPrivateData(ClaimRenewablesInput.Collection, ClaimRenewablesInput.EGOID)
-	if err != nil {
-		return fmt.Errorf("error deleting electricity GO from private collection:%v", err)
-	}
+			currentCounteGO := EGOcounter()
+			eGOID := "eGO"+strconv.Itoa(currentCounteGO)
+			GOforissuepublic := ElectricityGO{
+				AssetID: eGOID,
+				CreationDateTime: creationtime3,
+				GOType: "Electricity",
+			}
+			GOforIssue := ElectricityGOprivatedetails{
+				AssetID: eGOID, 
+				OwnerID: ClientID,
+				AmountMWh: excesscancellationamount,
+				Emissions: excessemissions,
+				ElectricityProductionMethod: eGOprivate.ElectricityProductionMethod,
+				ConsumptionDeclarations: ConsumptionDeclarations,
+			}
+			//deleting the electricity GO
+			err = ctx.GetStub().DelState(EGOList[assetCounter])
+			if err != nil {
+				return fmt.Errorf("error deleting electricity GO from public data:%v", err)
+			}
+			err = ctx.GetStub().DelPrivateData(ClaimRenewablesInput.Collection, EGOList[assetCounter])
+			if err != nil {
+				return fmt.Errorf("error deleting electricity GO from private collection:%v", err)
+			}
+			//issuing the electricity cancellation statement
+			eCancellationStatementasBytes, error4 := json.Marshal(eCancellationStatement)
+			if error4 != nil {
+				return fmt.Errorf("failed to marshal cancellation Statement")
+			}
+			err = ctx.GetStub().PutPrivateData(ClaimRenewablesInput.Collection, eCancellationStatement.ECancellationkey, eCancellationStatementasBytes) 
+			if err != nil {return fmt.Errorf("failed to put cancellation statement into collection: %v", err)}
+			//issuing the remainder GO
+			GOforissuepublicbytes, err := json.Marshal(GOforissuepublic)
+			if err != nil { return fmt.Errorf("error marshaling json object for remainder GO: %v", err)}
+			err = ctx.GetStub().PutState(eGOID, GOforissuepublicbytes)	
+			if err != nil { return fmt.Errorf("error putting remainder GO into Public Data: %v", err)}
+			GOforIssuebytes, err := json.Marshal(GOforIssue)
+			if err != nil { return fmt.Errorf("error marshaling json object for remainder GO private data: %v", err)}
+			err = ctx.GetStub().PutPrivateData(ClaimRenewablesInput.Collection, eGOID, GOforIssuebytes)
+			if err != nil { return fmt.Errorf("error putting private data for remainder GO: %v", err)}	
+		}
 
-	//issuing the electricity cancellation statement
-	eCancellationStatementasBytes, error4 := json.Marshal(eCancellationStatement)
-	if error4 != nil {
-		return fmt.Errorf("failed to marshal cancellation Statement")
-	}
-
-	err = ctx.GetStub().PutPrivateData(ClaimRenewablesInput.Collection, eCancellationStatement.ECancellationkey, eCancellationStatementasBytes) 
-	if err != nil {
-		return fmt.Errorf("failed to put cancellation statement into collection: %v", err)
+		assetCounter++
 	}
 	return nil
 }
@@ -1180,83 +1353,171 @@ func (s *SmartContract) ClaimRenewableattributesHydrogen(ctx contractapi.Transac
 	//claiming renewable attributes of Hydrogen by individual GOs. also should implement a claim by quantity function for both energy carriers. 
 	type ClaimHydrogenTransientInput struct {
 		Collection string `json:"collection"`
-		HGOID string `json:"hGOID"`
+		HGOList string `json:"HGOList"`
+		Cancelamount json.Number `json:"Cancelamount"`
 	}
 
-	transientMap, err := ctx.GetStub().GetTransient()
+	ClientID, err := ctx.GetClientIdentity().GetMSPID()
 	if err != nil {
+		return fmt.Errorf("error getting MSPID: %v", err)
+	}
+	transientMap, err := ctx.GetStub().GetTransient()
+	if err != nil { 
 		return fmt.Errorf("error getting transient: %v", err)
 	}
 	claimhydrogenfunctioninputasbytes, ok := transientMap["ClaimHydrogen"]
-	if !ok {
+	if !ok { 
 		return fmt.Errorf("'ClaimHydrogen' must be the key in the transient map:%v", ok)
 	}
-
 	if len(claimhydrogenfunctioninputasbytes) == 0 {
 		return fmt.Errorf("claim Renewables function invoke must be non-empty")
 	}
 	var ClaimHydrogenInput ClaimHydrogenTransientInput
 	err = json.Unmarshal(claimhydrogenfunctioninputasbytes, &ClaimHydrogenInput)
-	if err != nil {
+	if err != nil { 
 		return fmt.Errorf("failed to decode JSON input with error: %v", err)
 	}
 	if ClaimHydrogenInput.Collection == "" {
 		return fmt.Errorf("claim Hydrogen invokation must specify a collection")
 	}
-	if ClaimHydrogenInput.HGOID == "" {
-		return fmt.Errorf("claim Hydrogen invokation must specify a hGOID")
-	}
-
-	log.Printf("Reading private details of eGO with ID %v from collection %v", ClaimHydrogenInput.HGOID, ClaimHydrogenInput.Collection)
-	hGOprivateJSON, err := ctx.GetStub().GetPrivateData(ClaimHydrogenInput.Collection, ClaimHydrogenInput.HGOID)
+	Claimamount, err := ClaimHydrogenInput.Cancelamount.Float64()
 	if err != nil {
-		return fmt.Errorf("failed to read asset details: %v", err)
+		return fmt.Errorf("error converting json.number into float: %v", err)
 	}
-	if hGOprivateJSON == nil {
-		log.Printf("Private details for eGO %v do not exist in collection %v", ClaimHydrogenInput.HGOID, ClaimHydrogenInput.Collection)
-		return fmt.Errorf("no electricity GO with that ID exists")
-	}
+	var claimedamount float64
+	HGOList := strings.Split(ClaimHydrogenInput.HGOList, "+")
 	var hGOprivate *GreenHydrogenGOprivatedetails
-	err = json.Unmarshal(hGOprivateJSON, &hGOprivate)
+	assetCounter := 0
+	claimedamount = 0
+	now, err := ctx.GetStub().GetTxTimestamp()
 	if err != nil {
-		return fmt.Errorf("failed to unmarshal JSON: %v", err)
+		return fmt.Errorf("error creating transaction timestamp: %v", err)
 	}
-	currentCancelKeyCount := HCancelcounter()
-	hCancellationkey := "hCancel"+strconv.Itoa(int(currentCancelKeyCount))
-	now4 := time.Now()
-	creationtime4 := now4.String()
+	creationtime := now.GetSeconds()
+	for claimedamount < Claimamount {
+		hGOprivateJSON, err := ctx.GetStub().GetPrivateData(ClaimHydrogenInput.Collection, HGOList[assetCounter])
+		if err != nil { 
+			return fmt.Errorf("failed to read asset details: %v", err)
+		}
+		if hGOprivateJSON == nil {
+			return fmt.Errorf("no hydrogen GO with that ID exists")
+		}
+		err = json.Unmarshal(hGOprivateJSON, &hGOprivate)
+		if err != nil { 
+			return fmt.Errorf("failed to unmarshal JSON: %v", err)
+		}
+		currentCancelKeyCount := HCancelcounter()
+		hCancellationkey := "hCancel"+strconv.Itoa(int(currentCancelKeyCount))
+		claimedamount = claimedamount + hGOprivate.Kilosproduced
+		if claimedamount < Claimamount {
+			hCancellationStatement := CancellationstatementHydrogen{
+				HCancellationkey: hCancellationkey,
+				CancellationTime: creationtime,
+				OwnerID: ClientID,
+				Kilosproduced: hGOprivate.Kilosproduced,
+				EmissionsHydrogen: hGOprivate.EmissionsHydrogen,
+				HydrogenProductionMethod: hGOprivate.HydrogenProductionMethod,
+				InputEmissions: hGOprivate.InputEmissions,
+				ElectricityProductionMethod: hGOprivate.ElectricityProductionMethod,
+				UsedMWh: hGOprivate.UsedMWh,
+			}
+			//deleting the hydrogen GO
+			err = ctx.GetStub().DelState(HGOList[assetCounter])
+			if err != nil { 
+				return fmt.Errorf("error deleting hydrogen GO from public data:%v", err)
+			}
+			err = ctx.GetStub().DelPrivateData(ClaimHydrogenInput.Collection, HGOList[assetCounter])
+			if err != nil { 
+				return fmt.Errorf("error deleting hydrogen GO from private collection:%v", err)
+			}
+			//issuing the electricity cancellation statement
+			hCancellationStatementasBytes, error4 := json.Marshal(hCancellationStatement)
+			if error4 != nil {
+				return fmt.Errorf("failed to marshal cancellation Statement")
+			}
+			err = ctx.GetStub().PutPrivateData(ClaimHydrogenInput.Collection, hCancellationStatement.HCancellationkey, hCancellationStatementasBytes) 
+			if err != nil {
+				return fmt.Errorf("failed to put cancellation statement into collection: %v", err)
+			}
+		} else {
+			excesscancellationamount := claimedamount - Claimamount
+			ratio := excesscancellationamount/hGOprivate.Kilosproduced
+			excessemissions := ratio * hGOprivate.EmissionsHydrogen
+			tobecancelledemissions := (1 - ratio) * hGOprivate.EmissionsHydrogen
+			ConsumptionDeclarations := append(hGOprivate.ConsumptionDeclarations, "split")
+			stilltobecancelled := hGOprivate.Kilosproduced - excesscancellationamount
+			tobecancelledinputemissions := (1 - ratio) * hGOprivate.InputEmissions
+			excessinputemissions := ratio * hGOprivate.InputEmissions
+			tobecancelledMWh := (1 - ratio) * hGOprivate.UsedMWh
+			excessMWh := ratio * hGOprivate.UsedMWh
+			hCancellationStatement := CancellationstatementHydrogen{
+				HCancellationkey: hCancellationkey,
+				CancellationTime: creationtime,
+				OwnerID: hGOprivate.OwnerID,
+				Kilosproduced: stilltobecancelled,
+				EmissionsHydrogen: tobecancelledemissions,
+				HydrogenProductionMethod: hGOprivate.HydrogenProductionMethod,
+				InputEmissions: tobecancelledinputemissions,
+				ElectricityProductionMethod: hGOprivate.ElectricityProductionMethod,
+				UsedMWh: tobecancelledMWh,
+				ConsumptionDeclarations: ConsumptionDeclarations,
+			}
 
-	hCancellationStatement := CancellationstatementHydrogen{
-		HCancellationkey: hCancellationkey,
-		CancellationTime: creationtime4,
-		OwnerID: hGOprivate.OwnerID,
-		Kilosproduced: hGOprivate.Kilosproduced,
-		EmissionsHydrogen: hGOprivate.EmissionsHydrogen,
-		HydrogenProductionMethod: hGOprivate.HydrogenProductionMethod,
-		InputEmissions: hGOprivate.InputEmissions,
-		ElectricityProductionMethod: hGOprivate.ElectricityProductionMethod,
-		UsedMWh: hGOprivate.UsedMWh,
-	}
-
-	//deleting the hydrogen GO
-	err = ctx.GetStub().DelState(ClaimHydrogenInput.HGOID)
-	if err != nil {
-		return fmt.Errorf("error deleting hydrogen GO from public data:%v", err)
-	}
-	err = ctx.GetStub().DelPrivateData(ClaimHydrogenInput.Collection, ClaimHydrogenInput.HGOID)
-	if err != nil {
-		return fmt.Errorf("error deleting hydrogen GO from private collection:%v", err)
-	}
-
-	//issuing the electricity cancellation statement
-	hCancellationStatementasBytes, error4 := json.Marshal(hCancellationStatement)
-	if error4 != nil {
-		return fmt.Errorf("failed to marshal cancellation Statement")
-	}
-
-	err = ctx.GetStub().PutPrivateData(ClaimHydrogenInput.Collection, hCancellationStatement.HCancellationkey, hCancellationStatementasBytes) 
-	if err != nil {
-		return fmt.Errorf("failed to put cancellation statement into collection: %v", err)
+			currentCounthGO := hGOcounter()
+			hGOID := "hGO"+strconv.Itoa(currentCounthGO)
+			GOforissuepublic := GreenHydrogenGO{
+				AssetID: hGOID,
+				CreationDateTime: creationtime,
+				GOType: "Hydrogen",
+			}
+			GOforIssue := GreenHydrogenGOprivatedetails{
+				AssetID: hGOID, 
+				OwnerID: ClientID,
+				Kilosproduced: excesscancellationamount,
+				EmissionsHydrogen: excessemissions,
+				HydrogenProductionMethod: hGOprivate.HydrogenProductionMethod,
+				InputEmissions: excessinputemissions,
+				UsedMWh: excessMWh, 
+				ElectricityProductionMethod: hGOprivate.ElectricityProductionMethod,
+				ConsumptionDeclarations: ConsumptionDeclarations,
+			}
+			//deleting the Hydrogen GO
+			err = ctx.GetStub().DelState(HGOList[assetCounter])
+			if err != nil {
+				return fmt.Errorf("error deleting electricity GO from public data:%v", err)
+			}
+			err = ctx.GetStub().DelPrivateData(ClaimHydrogenInput.Collection, HGOList[assetCounter])
+			if err != nil {
+				return fmt.Errorf("error deleting electricity GO from private collection:%v", err)
+			}
+			//issuing the electricity cancellation statement
+			hCancellationStatementasBytes, error4 := json.Marshal(hCancellationStatement)
+			if error4 != nil {
+				return fmt.Errorf("failed to marshal cancellation Statement")
+			}
+			err = ctx.GetStub().PutPrivateData(ClaimHydrogenInput.Collection, hCancellationStatement.HCancellationkey, hCancellationStatementasBytes) 
+			if err != nil {
+				return fmt.Errorf("failed to put cancellation statement into collection: %v", err)
+			}
+			//issuing the remainder GO
+			GOforissuepublicbytes, err := json.Marshal(GOforissuepublic)
+			if err != nil { 
+				return fmt.Errorf("error marshaling json object for remainder GO: %v", err)
+			}
+			err = ctx.GetStub().PutState(hGOID, GOforissuepublicbytes)	
+			if err != nil { 
+				return fmt.Errorf("error putting remainder GO into Public Data: %v", err)
+			}
+			GOforIssuebytes, err := json.Marshal(GOforIssue)
+			if err != nil { 
+				return fmt.Errorf("error marshaling json object for remainder GO private data: %v", err)
+			}
+			err = ctx.GetStub().PutPrivateData(ClaimHydrogenInput.Collection, hGOID, GOforIssuebytes)
+			if err != nil { 
+				return fmt.Errorf("error putting private data for remainder GO: %v", err)
+			}
+		}
+		assetCounter++
 	}
 	return nil
 }
@@ -1483,7 +1744,7 @@ func SetGOEndorsementpolicy(ctx contractapi.TransactionContextInterface, assetID
 
 // This function allows the buyer of an electricity GO to validate the GO properties 
 // by receiving the private data from the seller and checking their hash against on-chain hash recovered via the assetID
-func (s *SmartContract) VerifyeGO(ctx contractapi.TransactionContextInterface, eGOID string) (bool, error) {
+func (s *SmartContract) VerifyData(ctx contractapi.TransactionContextInterface, eGOID string) (bool, error) {
 	transMap, err := ctx.GetStub().GetTransient()
 	if err != nil {
 		return false, fmt.Errorf("error getting transient: %v", err)
@@ -1562,37 +1823,38 @@ func ConstructhGOFromIterator(resultsIterator shim.StateQueryIteratorInterface) 
 
 	return hGOs, nil
 }
-
 func (c *Count) Incr() {
     c.mx.Lock()
     c.count++
     c.mx.Unlock()
 }
-
 func (c *Count) Count() int {
     c.mx.Lock()
     count := c.count
     c.mx.Unlock()
     return count
 }
-
 func EGOcounter() int {
 	EGOcount.Incr()
-	Returnval := EGOcount.count / 2
-	return Returnval
+	return EGOcount.count
 }
-
 func hGOcounter() int {
 	HGOcount.Incr()
 	return HGOcount.count
 }
-
 func ECancelcounter() int {
 	ECancellations.Incr()
 	return ECancellations.count
 }
-
 func HCancelcounter() int {
 	HCancellations.Incr()
 	return HCancellations.count
+}
+func EConsumptioncounter() int {
+	EConsumptions.Incr()
+	return EConsumptions.count
+}
+func HConsumptioncounter() int {
+	HConsumptions.Incr()
+	return HConsumptions.count
 }

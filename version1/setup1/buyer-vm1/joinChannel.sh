@@ -6,7 +6,7 @@ export FABRIC_CFG_PATH=${PWD}/../../artifacts/channel/config/
 export CHANNEL_NAME=mychannel
 
 setGlobalsForPeer0buyer() {
-    export CORE_PEER_LOCALMSPID="buyerMSP"
+    export CORE_PEER_LOCALMSPID=buyerMSP
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_BUYER_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/Admin@buyer.GOnetwork.com/msp
     export CORE_PEER_ADDRESS=localhost:7051
@@ -14,7 +14,7 @@ setGlobalsForPeer0buyer() {
 }
 
 setGlobalsForPeer1buyer() {
-    export CORE_PEER_LOCALMSPID="buyerMSP"
+    export CORE_PEER_LOCALMSPID=buyerMSP
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_BUYER_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/Admin@buyer.GOnetwork.com/msp
     export CORE_PEER_ADDRESS=localhost:8051

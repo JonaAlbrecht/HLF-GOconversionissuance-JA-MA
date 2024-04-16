@@ -9,3 +9,5 @@ QueryPrivateeGOsbyAmountMWh Elapsed time: 225 ms
 GetcurrenteGOsList Elapsed time: 131 ms
 ReadPubliceGO Elapsed time: 75 ms
 QueryHydrogenBacklog Elapsed time: 84 ms
+QueryHydrogenBacklog Elapsed time: 85 ms
+QueryHydrogenBacklog Elapsed time: 78 ms

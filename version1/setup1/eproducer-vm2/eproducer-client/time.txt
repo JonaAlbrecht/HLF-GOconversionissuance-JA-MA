@@ -1,0 +1,8 @@
+GetcurrenteGOsList Elapsed time: 81 ms
+GetcurrenteGOsList Elapsed time: 66 ms
+GetcurrenteGOsList Elapsed time: 109 ms
+GetcurrenteGOsList Elapsed time: 133 ms
+ReadPubliceGO Elapsed time: 158 ms
+GetcurrenteGOsList Elapsed time: 131 ms
+GetcurrenteGOsList Elapsed time: 125 ms
+QueryPrivateeGOsbyAmountMWh Elapsed time: 94 ms

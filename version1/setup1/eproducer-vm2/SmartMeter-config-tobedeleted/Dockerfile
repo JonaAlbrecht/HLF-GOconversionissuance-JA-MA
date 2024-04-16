@@ -1,4 +1,4 @@
-FROM hyperledger/fabric-tools
+FROM hyperledger/fabric-tools:latest
 RUN apt-get update && apt-get install -y cron nano
 RUN mkdir -p /custom/bin
 COPY ./execute.sh /custom/bin/execute.sh

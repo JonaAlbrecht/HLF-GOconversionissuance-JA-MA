@@ -32,7 +32,6 @@ services:
       file: base.yaml
       service: peer-base
     environment:
-      - GODEBUG=netdns=go
       - FABRIC_LOGGING_SPEC=DEBUG
       - ORDERER_GENERAL_LOGLEVEL=debug
       - CORE_PEER_LOCALMSPID=hproducerMSP
@@ -68,14 +67,12 @@ services:
       - ./:/etc/hyperledger/channel/
     networks:
       - test
-
   h-peer1.hproducer.GOnetwork.com:
     container_name: h-peer1.hproducer.GOnetwork.com
     extends:
       file: base.yaml
       service: peer-base
     environment:
-      - GODEBUG=netdns=go
       - FABRIC_LOGGING_SPEC=DEBUG
       - ORDERER_GENERAL_LOGLEVEL=debug
       - CORE_PEER_LOCALMSPID=hproducerMSP
@@ -111,12 +108,12 @@ services:
       - ./:/etc/hyperledger/channel/
     networks:
       - test
-
-  OutputMeter:
-    container_name: OutputMeter
+  hproducer-client:
+    container_name: hproducer-client
     image: outputmeter:latest
     tty: true
     environment:
+      - GODEBUG=netdns=go
       - GOPATH=/opt/gopath
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - CORE_LOGGING_LEVEL=DEBUG
@@ -129,9 +126,11 @@ services:
       - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/server.crt
       - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/server.key
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/ca.crt
-      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/oAdmin@hproducer.GOnetwork.com/msp
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com/TrustedUser/TrustedUser@hproducer.GOnetwork.com/msp
 
       - CORE_CHAINCODE_KEEPALIVE=10
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
     networks:
       - test
     volumes:
@@ -141,3 +140,4 @@ services:
       - ./../issuer-vm3/crypto-config/peerOrganizations/issuer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/
       - ./../orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/:/etc/hyperledger/channel/crypto-config/ordererOrganizations/GOnetwork.com/
       - ./crypto-config/peerOrganizations/hproducer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com
+      - ./hproducer-client/:/opt/gopath/src/github.com/hyperledger/fabric/peer/
