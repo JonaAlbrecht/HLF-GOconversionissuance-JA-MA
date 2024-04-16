@@ -98,7 +98,7 @@ var AveragefunctiondurationCalculator chan *FunctionAndDuration
 
 type Count struct {
 	mx *sync.Mutex
-	count float64
+	count int
 }
 
 func NewCount() *Count {
@@ -1569,30 +1569,30 @@ func (c *Count) Incr() {
     c.mx.Unlock()
 }
 
-func (c *Count) Count() float64 {
+func (c *Count) Count() int {
     c.mx.Lock()
     count := c.count
     c.mx.Unlock()
     return count
 }
 
-func EGOcounter() float64 {
+func EGOcounter() int {
 	EGOcount.Incr()
 	Returnval := EGOcount.count / 2
 	return Returnval
 }
 
-func hGOcounter() float64 {
+func hGOcounter() int {
 	HGOcount.Incr()
 	return HGOcount.count
 }
 
-func ECancelcounter() float64 {
+func ECancelcounter() int {
 	ECancellations.Incr()
 	return ECancellations.count
 }
 
-func HCancelcounter() float64 {
+func HCancelcounter() int {
 	HCancellations.Incr()
 	return HCancellations.count
 }
