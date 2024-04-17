@@ -9,7 +9,7 @@
     "memberOnlyWrite": true
   },
   {
-    "name": "privateDetails-eGO",
+    "name": "privateDetails-eproducerMSP",
     "policy": "OR('eproducerMSP.member', 'issuerMSP.member')",
     "requiredPeerCount": 0,
     "maxPeerCount": 3,
@@ -21,7 +21,7 @@
     }
   },
   {
-    "name": "privateDetails-hGO",
+    "name": "privateDetails-hproducerMSP",
     "policy": "OR('hproducerMSP.member', 'issuerMSP.member')",
     "requiredPeerCount": 0,
     "maxPeerCount": 3,
@@ -33,7 +33,7 @@
     }
   },
   {
-    "name": "privateDetails-buyer",
+    "name": "privateDetails-buyerMSP",
     "policy": "OR('buyerMSP.member')",
     "requiredPeerCount": 0,
     "maxPeerCount": 3,

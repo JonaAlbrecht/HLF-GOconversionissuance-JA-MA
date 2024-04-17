@@ -14,7 +14,7 @@ setGlobalsForPeer0eproducer() {
 QueryPrivateeGOsbyAmountMWh() {
     start=$(date +%s%N)
     setGlobalsForPeer0eproducer
-    export QueryInput=$(echo -n "{\"NeededAmount\":\"100\",\"Collection\":\"privateDetails-eGO\"}" | base64 | tr -d \\n)
+    export QueryInput=$(echo -n "{\"NeededAmount\":\"100\",\"Collection\":\"privateDetails-eproducerMSP\"}" | base64 | tr -d \\n)
     peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "QueryPrivateeGOsbyAmountMWh", "Args":[]}' --transient "{\"QueryInput\":\"$QueryInput\"}"
     end=$(date +%s%N)
     echo "QueryPrivateeGOsbyAmountMWh Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt

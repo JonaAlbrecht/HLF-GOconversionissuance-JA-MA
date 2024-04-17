@@ -14,7 +14,7 @@ setGlobalsForPeer0buyer() {
 ReadPrivatefromCollectioneGO() {
     setGlobalsForPeer0buyer
 
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPrivatefromCollectioneGO", "Args":["privateDetails-buyer", "eGO1"]}'
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPrivatefromCollectioneGO", "Args":["privateDetails-buyerMSP", "eGO1"]}'
 }
 
 ReadPrivatefromCollectioneGO
