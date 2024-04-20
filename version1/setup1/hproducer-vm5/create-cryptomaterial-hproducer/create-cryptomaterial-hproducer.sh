@@ -130,7 +130,9 @@ createCertificateForhproducer() {
 
   #copy the Node OU configuration file into the Trusted User msp folder --> this is necessary for attribute-based chaincode invoke  
   cp "${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/msp/config.yaml" "${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/TrustedUser/hTrustedUser@hproducer.GOnetwork.com/msp/config.yaml"
-
+# Caliper Testing
+  #if doing a caliper test run, uncomment the line -- also uncomment lines in network-down script
+  cp -r ${PWD}/../crypto-config/peerOrganizations/hproducer.GOnetwork.com/ ${PWD}/../../../../testing/crypto-config/peerOrganizations/
 }
 
 createCertificateForhproducer

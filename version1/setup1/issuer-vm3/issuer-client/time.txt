@@ -8,3 +8,9 @@ GetcurrenteGOsList Elapsed time: 114 ms
 GetcurrenteGOsList Elapsed time: 75 ms
 GetcurrenteGOsList Elapsed time: 72 ms
 GetcurrenteGOsList Elapsed time: 62 ms
+GetcurrenteGOsList Elapsed time: 92 ms
+ReadPrivatefromCollectioneGO Elapsed time: 117 ms
+GetcurrenteGOsList Elapsed time: 101 ms
+GetcurrenteGOsList Elapsed time: 74 ms
+GetcurrenteGOsList Elapsed time: 102 ms
+GetcurrenteGOsList Elapsed time: 77 ms

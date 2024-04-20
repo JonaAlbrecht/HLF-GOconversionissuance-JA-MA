@@ -20,7 +20,7 @@ setGlobalsForPeer0issuer() {
 ReadPrivatefromCollectioneGO() {
     start=$(date +%s%N)
     setGlobalsForPeer0issuer
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPrivatefromCollectioneGO", "Args":["privateDetails-eGO", "eGO1"]}'
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPrivatefromCollectioneGO", "Args":["privateDetails-eproducerMSP", "eGO1"]}'
     end=$(date +%s%N)
     echo "ReadPrivatefromCollectioneGO Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
 }

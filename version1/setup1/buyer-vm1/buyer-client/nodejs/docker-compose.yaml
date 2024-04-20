@@ -1,0 +1,15 @@
+version: "3.8"
+
+networks:
+  test:
+
+services:
+  api:
+    image: api:1.0
+    build: .
+    networks:
+      - test
+    ports:
+      - 4000:4000
+    environment:
+      - PEER_ENDPOINT=b-peer0.buyer.GOnetwork.com:7051

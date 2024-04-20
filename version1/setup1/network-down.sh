@@ -59,3 +59,7 @@ rm ./../artifacts/channel/issuerMSPanchors.tx
 
 echo -e "${RED}Removing chaincode vendoring${ENDCOLOR}"
 rm -rf ./../artifacts/Mychaincode/vendor
+
+# Uncomment these lines if doing caliper test run
+echo -e "${RED}Removing crypto config in testing folder"
+rm -rf ./../../testing/crypto-config

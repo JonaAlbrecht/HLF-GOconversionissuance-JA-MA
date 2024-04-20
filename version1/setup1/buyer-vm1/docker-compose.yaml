@@ -114,8 +114,8 @@ services:
     networks:
       - test
 
-  cli:
-    container_name: cli
+  buyer-client:
+    container_name: buyer-client
     image: hyperledger/fabric-tools
     tty: true
     environment:
@@ -143,6 +143,7 @@ services:
       - /var/run/:/host/var/run/
       # - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
       - ./crypto-config/peerOrganizations/buyer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/buyer.GOnetwork.com/
+      - ./create-cryptomaterial-buyer/fabric-ca/:/etc/hyperledger/channel/fabric-ca
       - ./../eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/eproducer.GOnetwork.com/
       - ./../issuer-vm3/crypto-config/peerOrganizations/issuer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/
       - ./../orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/:/etc/hyperledger/channel/crypto-config/ordererOrganizations/GOnetwork.com/

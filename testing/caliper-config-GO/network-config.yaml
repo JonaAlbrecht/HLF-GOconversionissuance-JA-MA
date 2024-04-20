@@ -1,0 +1,168 @@
+name: Fabric
+version: "1.0"
+mutual-tls: false
+
+caliper:
+  blockchain: fabric
+
+info:
+  Version: 2.2.0
+  Size: 4 Orgs, 8 Peers, 4 clients, 4 orderers
+  Orderer: Raft
+  Distribution: Single Host
+  StateDB: CouchDB
+
+clients:
+  buyer-client:
+    client:
+      organization: buyer
+      credentialStore:
+        path: /tmp/hfc-kvs/org1
+        cryptoStore:
+          path: /tmp/hfc-cvs/org1
+      clientPrivateKey:
+        path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/b-User1@buyer.GOnetwork.com/msp/keystore/ed780c8e3c78d426aa9aa548d9f07be6171d608800b8d8e4e98fa2fa32bb2359_sk
+      clientSignedCert:
+        path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/b-User1@buyer.GOnetwork.com/msp/signcerts/cert.pem
+
+  eproducer-client:
+    client:
+      organization: eproducer
+      credentialStore:
+        path: /tmp/hfc-kvs/org2
+        cryptoStore:
+          path: /tmp/hfc-cvs/org2
+      clientPrivateKey:
+        path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org2.example.com/users/User1@org2.example.com/msp/keystore/priv_sk
+      clientSignedCert:
+        path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org2.example.com/users/User1@org2.example.com/msp/signcerts/User1@org2.example.com-cert.pem
+
+channels:
+  mychannel:
+    created: true
+    contracts: [{ "id": "conversion", "version": "1" }]
+    definition:
+      capabilities: []
+      consortium: "SampleConsortium"
+      msps: ["buyerMSP", "eproducerMSP", "issuerMSP", "hproducerMSP"]
+      version: 0
+    orderers:
+      - orderer.GOnetwork.com
+      - orderer2.GOnetwork.com
+      - orderer3.GOnetwork.com
+      - orderer4.GOnetwork.com
+    peers:
+      b-peer0.buyer.GOnetwork.com:
+        eventSource: true
+      b-peer1.buyer.GOnetwork.com:
+        eventSource: true
+      e-peer0.eproducer.GOnetwork.com:
+        eventSource: true
+      e-peer1.eproducer.GOnetwork.com:
+        eventSource: true
+      i-peer0.issuer.GOnetwork.com:
+        eventSource: true
+      i-peer1.issuer.GOnetwork.com:
+        eventSource: true
+      h-peer0.hproducer.GOnetwork.com:
+        eventSource: true
+      h-peer1.hproducer.GOnetwork.com:
+        eventSource: true
+
+organizations:
+  Org1:
+    mspid: Org1MSP
+    peers:
+      - peer0.org1.example.com
+      - peer1.org1.example.com
+    certificateAuthorities:
+      - ca.org1.example.com
+    adminPrivateKey:
+      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk
+    signedCert:
+      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem
+
+  Org2:
+    mspid: Org2MSP
+    peers:
+      - peer0.org2.example.com
+      - peer1.org2.example.com
+    certificateAuthorities:
+      - ca.org2.example.com
+    adminPrivateKey:
+      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/keystore/priv_sk
+    signedCert:
+      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/signcerts/Admin@org2.example.com-cert.pem
+
+orderers:
+  orderer.example.com:
+    url: grpcs://localhost:7050
+    grpcOptions:
+      ssl-target-name-override: orderer.example.com
+    tlsCACerts:
+      path: networks/fabric/pavan-v2.1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+  orderer2.example.com:
+    url: grpcs://localhost:8050
+    grpcOptions:
+      ssl-target-name-override: orderer2.example.com
+    tlsCACerts:
+      path: networks/fabric/pavan-v2.1/crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+  orderer3.example.com:
+    url: grpcs://localhost:9050
+    grpcOptions:
+      ssl-target-name-override: orderer3.example.com
+    tlsCACerts:
+      path: networks/fabric/pavan-v2.1/crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+
+peers:
+  peer0.org1.example.com:
+    url: grpcs://localhost:7051
+    grpcOptions:
+      ssl-target-name-override: peer0.org1.example.com
+      grpc.keepalive_time_ms: 600000
+    tlsCACerts:
+      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp/tlscacerts/tlsca.org1.example.com-cert.pem
+
+  peer1.org1.example.com:
+    url: grpcs://localhost:8051
+    grpcOptions:
+      ssl-target-name-override: peer1.org1.example.com
+      grpc.keepalive_time_ms: 600000
+    tlsCACerts:
+      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/msp/tlscacerts/tlsca.org1.example.com-cert.pem
+
+  peer0.org2.example.com:
+    url: grpcs://localhost:9051
+    grpcOptions:
+      ssl-target-name-override: peer0.org2.example.com
+      grpc.keepalive_time_ms: 600000
+    tlsCACerts:
+      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/msp/tlscacerts/tlsca.org2.example.com-cert.pem
+  peer1.org2.example.com:
+    url: grpcs://localhost:10051
+    grpcOptions:
+      ssl-target-name-override: peer1.org2.example.com
+      grpc.keepalive_time_ms: 600000
+    tlsCACerts:
+      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/msp/tlscacerts/tlsca.org2.example.com-cert.pem
+
+certificateAuthorities:
+  ca.org1.example.com:
+    url: https://localhost:7054
+    httpOptions:
+      verify: false
+    tlsCACerts:
+      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem
+    registrar:
+      - enrollId: admin
+        enrollSecret: adminpw
+
+  ca.org2.example.com:
+    url: https://localhost:8054
+    httpOptions:
+      verify: false
+    tlsCACerts:
+      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org2.example.com/tlsca/tlsca.org2.example.com-cert.pem
+    registrar:
+      - enrollId: admin
+        enrollSecret: adminpw

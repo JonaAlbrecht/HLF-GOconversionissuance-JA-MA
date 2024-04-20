@@ -12,12 +12,37 @@ setGlobalsForPeer0eproducer() {
 }
 
 QueryPrivateeGOsbyAmountMWh() {
-    start=$(date +%s%N)
+    
     setGlobalsForPeer0eproducer
     export QueryInput=$(echo -n "{\"NeededAmount\":\"$1\",\"Collection\":\"privateDetails-$CORE_PEER_LOCALMSPID\"}" | base64 | tr -d \\n)
     peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "QueryPrivateeGOsbyAmountMWh", "Args":[]}' --transient "{\"QueryInput\":\"$QueryInput\"}"
+    
+}
+
+TransfereGO() {
+    start=$(date +%s%N)
+    setGlobalsForPeer0eproducer
+    peer chaincode invoke -o orderer2.GOnetwork.com:8050 \
+        --ordererTLSHostnameOverride orderer2.GOnetwork.com \
+        --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \
+        -C $CHANNEL_NAME -n ${CC_NAME} \
+        --peerAddresses e-peer0.eproducer.GOnetwork.com:9051 --tlsRootCertFiles $PEER0_EPRODUCER_CA \
+        --peerAddresses i-peer0.issuer.GOnetwork.com:11051 --tlsRootCertFiles $PEER0_ISSUER_CA \
+        -c '{"function": "TransfereGObyAmountMWh","Args":[]}' \
+        --transient "{\"TransferInput\":\"$TransferInput\"}" --waitForEvent
+    end=$(date +%s%N)
+    echo "ReadPubliceGO Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
+}
+
+
+TransferEGOsbyAmount() {
+    start=$(date +%s%N)
+    export input=$(QueryPrivateeGOsbyAmountMWh)
+    export TransferInput=$(echo -n "{\"EGOList\":\"$input\",\"Recipient\":\"$2\"}" | base64 | tr -d \\n)
+    TransfereGO
+
     end=$(date +%s%N)
     echo "QueryPrivateeGOsbyAmountMWh Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
 }
 
-QueryPrivateeGOsbyAmountMWh
+

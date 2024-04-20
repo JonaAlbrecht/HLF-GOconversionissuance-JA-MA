@@ -766,16 +766,7 @@ func (s *SmartContract) TransfereGO(ctx contractapi.TransactionContextInterface)
 		return fmt.Errorf("error while getting client ID:%v", err)
 	}
 
-	var senderCollectionID string
-	if ClientID == "eproducerMSP" {
-		senderCollectionID = "privateDetails-eGO"
-	} else if ClientID == "hproducerMSP" {
-		senderCollectionID = "privateDetails-eGO"
-	} else if ClientID == "buyerMSP" {
-		senderCollectionID = "privateDetails-buyer"
-	} else {
-		return fmt.Errorf("sender ID malformed - please try again")
-	}
+	senderCollectionID := "privateDetails-" + ClientID
 	var currentAsset ElectricityGOprivatedetails
 	currentAssetJSON, err := ctx.GetStub().GetPrivateData(senderCollectionID, TransfereGOtransientinput.EGO)
 	if err != nil {
@@ -871,7 +862,7 @@ func (s *SmartContract) TransfereGObyAmount(ctx contractapi.TransactionContextIn
 		return nil, fmt.Errorf("error while getting client ID:%v", err)
 	}
 	senderCollectionID := "privateDetails-" + ClientID
-	EGOList := strings.Split(TransfereGOtransientinput.EGOList, "+")
+	EGOList := strings.Split(TransfereGOtransientinput.EGOList, ",")
 	timestamp, err := ctx.GetStub().GetTxTimestamp()
 	if err != nil {
 		return nil, fmt.Errorf("failed to read timestamp: %v", err)

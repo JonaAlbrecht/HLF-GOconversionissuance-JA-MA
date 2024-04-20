@@ -34,7 +34,7 @@
   },
   {
     "name": "privateDetails-buyerMSP",
-    "policy": "OR('buyerMSP.member')",
+    "policy": "OR('buyerMSP.member', 'issuerMSP.member')",
     "requiredPeerCount": 0,
     "maxPeerCount": 3,
     "blockToLive": 0,

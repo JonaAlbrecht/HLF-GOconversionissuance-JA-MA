@@ -1,0 +1,10 @@
+{
+  "clients": {
+    "${ORG}-client": {
+      "certificate": {
+        "pem": "${CLIPEM}",
+        "private_key": "${CLISK}"
+      }
+    }
+  }
+}

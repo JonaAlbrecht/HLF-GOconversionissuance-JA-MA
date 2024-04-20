@@ -16,7 +16,7 @@ setGlobalsForPeer0eproducer() {
 
 #With this function we transfer electricity GOs to the hproducer.
 TransfereGO() {
-    
+    start=$(date +%s%N)
     setGlobalsForPeer0eproducer
     export TransferInput=$(echo -n "{\"EGO\":\"eGO1\",\"Recipient\":\"buyerMSP\"}" | base64 | tr -d \\n)
     peer chaincode invoke -o orderer2.GOnetwork.com:8050 \
@@ -27,7 +27,8 @@ TransfereGO() {
         --peerAddresses i-peer0.issuer.GOnetwork.com:11051 --tlsRootCertFiles $PEER0_ISSUER_CA \
         -c '{"function": "TransfereGO","Args":[]}' \
         --transient "{\"TransferInput\":\"$TransferInput\"}" --waitForEvent
-
+    end=$(date +%s%N)
+    echo "ReadPubliceGO Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
 }
 
 TransfereGO

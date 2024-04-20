@@ -6,3 +6,9 @@ ReadPubliceGO Elapsed time: 158 ms
 GetcurrenteGOsList Elapsed time: 131 ms
 GetcurrenteGOsList Elapsed time: 125 ms
 QueryPrivateeGOsbyAmountMWh Elapsed time: 94 ms
+ReadPubliceGO Elapsed time: 104 ms
+ReadPubliceGO Elapsed time: 2775 ms
+QueryPrivateeGOsbyAmountMWh Elapsed time: 85 ms
+GetcurrenteGOsList Elapsed time: 139 ms
+GetcurrenteGOsList Elapsed time: 103 ms
+GetcurrenteGOsList Elapsed time: 160 ms

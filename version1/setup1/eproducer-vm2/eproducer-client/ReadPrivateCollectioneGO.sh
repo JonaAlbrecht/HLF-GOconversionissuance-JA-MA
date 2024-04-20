@@ -14,7 +14,7 @@ setGlobalsForPeer0eproducer() {
 ReadPrivatefromCollectioneGO() {
     setGlobalsForPeer0eproducer
 
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPrivatefromCollectioneGO", "Args":["privateDetails-eproducerMSP", "eGO1"]}'
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPrivatefromCollectioneGO", "Args":["privateDetails-${CORE_PEER_LOCALMSPID}", "$1"]}'
 }
 
 ReadPrivatefromCollectioneGO

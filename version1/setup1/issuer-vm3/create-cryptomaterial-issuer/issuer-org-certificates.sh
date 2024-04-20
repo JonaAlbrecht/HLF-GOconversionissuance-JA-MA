@@ -55,7 +55,7 @@ createcertificatesForIssuer() {
 
   # this creates the Output Meter "measuring" the output electrolysis process x509 certificate with the attributes "trusted device = true, maxOutput = 10000 kilos of hydrogen per hour; kwhperkilo: varies between 50, i.e. the kilowatthours input needed per kilo hydrogen ouptut, conversion efficiency of 0.8 and the technology type, set to PEM electrolyser"
   # the Output Meter is registered with the Issuing Body Certificate Authority because as a data source to the blockchain network, in a real-world scenario, the attributes in the certificate would be based on an audit carried out by the Issuing Body or a representative 
-  fabric-ca-client register --caname ca.issuer.GOnetwork.com --id.name OutputMeter1 --id.secret OutputMeter1pw --id.type client --id.attrs 'organization=hydrogenMSP:ecert,hydrogentrustedDevice=true:ecert,maxOutput=10000:ecert,kwhperkilo=50:ecert,conversionEfficiency=0.8:ecert,technologyType=PEMelectrolyser:ecert,emissionIntensity=20:ecert' --tls.certfiles ${PWD}/fabric-ca/issuer/tls-cert.pem
+  fabric-ca-client register --caname ca.issuer.GOnetwork.com --id.name OutputMeter1 --id.secret OutputMeter1pw --id.type client --id.attrs 'organization=hproducerMSP:ecert,hydrogentrustedDevice=true:ecert,maxOutput=10000:ecert,kwhperkilo=50:ecert,conversionEfficiency=0.8:ecert,technologyType=PEMelectrolyser:ecert,emissionIntensity=20:ecert' --tls.certfiles ${PWD}/fabric-ca/issuer/tls-cert.pem
 
   echo
   echo "Register the org admin"
@@ -150,8 +150,9 @@ createcertificatesForIssuer() {
   fabric-ca-client enroll -u https://SmartMeter1:Meter1pw@localhost:10054 --caname ca.issuer.GOnetwork.com -M ${PWD}/../crypto-config/peerOrganizations/issuer.GOnetwork.com/SmartMeter/SmartMeter1@eproducer.GOnetwork.com/msp --tls.certfiles ${PWD}/fabric-ca/issuer/tls-cert.pem
 
   #copy the issuer Node Organisational Unit configuration file into the Smart Meter msp folder --> this is necessary for attribute-based chaincode invoke  
-  cp "${PWD}/../crypto-config/peerOrganizations/issuer.GOnetwork.com/msp/config.yaml" "${PWD}/../crypto-config/peerOrganizations/issuer.GOnetwork.com/SmartMeter/SmartMeter1@eproducer.GOnetwork.com/msp/config.yaml"
-  cp ${PWD}/../crypto-config/peerOrganizations/issuer.GOnetwork.com/SmartMeter/SmartMeter1@eproducer.GOnetwork/* ${PWD}/../../eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/SmartMeter/SmartMeter1@eproducer.GOnetwork.com
+  cp ${PWD}/../crypto-config/peerOrganizations/issuer.GOnetwork.com/msp/config.yaml ${PWD}/../crypto-config/peerOrganizations/issuer.GOnetwork.com/SmartMeter/SmartMeter1@eproducer.GOnetwork.com/msp/config.yaml
+  mkdir -p ${PWD}/../../eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/SmartMeter/SmartMeter1@eproducer.GOnetwork.com
+  cp -r ${PWD}/../crypto-config/peerOrganizations/issuer.GOnetwork.com/SmartMeter/SmartMeter1@eproducer.GOnetwork.com ${PWD}/../../eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/SmartMeter/SmartMeter1@eproducer.GOnetwork.com
 # -----------------------------------------------------------------------------------
 # Output Meter of hydrogen producer
 
@@ -168,8 +169,14 @@ createcertificatesForIssuer() {
   fabric-ca-client enroll -u https://OutputMeter1:OutputMeter1pw@localhost:10054 --caname ca.issuer.GOnetwork.com -M ${PWD}/../crypto-config/peerOrganizations/issuer.GOnetwork.com/OutputMeter/OutputMeter1@hproducer.GOnetwork.com/msp --tls.certfiles ${PWD}/fabric-ca/issuer/tls-cert.pem
 
   #copy the Node OU configuration file into the Output Meter msp folder --> this is necessary for attribute-based chaincode invoke  
-  cp "${PWD}/../crypto-config/peerOrganizations/issuer.GOnetwork.com/msp/config.yaml" "${PWD}/../crypto-config/peerOrganizations/issuer.GOnetwork.com/OutputMeter/OutputMeter1@hproducer.GOnetwork.com/msp/config.yaml"
-  cp ${PWD}/../crypto-config/peerOrganizations/issuer.GOnetwork.com/OutputMeter/OutputMeter1@hproducer.GOnetwork/* ${PWD}/../../hproducer-vm5/crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/OutputMeter1@hproducer.GOnetwork.com
+  cp ${PWD}/../crypto-config/peerOrganizations/issuer.GOnetwork.com/msp/config.yaml ${PWD}/../crypto-config/peerOrganizations/issuer.GOnetwork.com/OutputMeter/OutputMeter1@hproducer.GOnetwork.com/msp/config.yaml
+  mkdir -p ${PWD}/../../hproducer-vm5/crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/
+  cp -r ${PWD}/../crypto-config/peerOrganizations/issuer.GOnetwork.com/OutputMeter/OutputMeter1@hproducer.GOnetwork.com ${PWD}/../../hproducer-vm5/crypto-config/peerOrganizations/hproducer.GOnetwork.com/OutputMeter/
+
+# Caliper Testing
+  #if doing a caliper test run, uncomment the next line -- also uncomment lines in network-down script
+  cp -r ${PWD}/../crypto-config/peerOrganizations/issuer.GOnetwork.com/ ${PWD}/../../../../testing/crypto-config/peerOrganizations/
+
 }
 
 createcertificatesForIssuer

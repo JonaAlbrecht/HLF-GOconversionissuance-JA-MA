@@ -120,6 +120,11 @@ createcertificatesForBuyer() {
 
   cp ${PWD}/../crypto-config/peerOrganizations/buyer.GOnetwork.com/msp/config.yaml ${PWD}/../crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/Admin@buyer.GOnetwork.com/msp/config.yaml
 
+# Caliper Testing
+  #if doing a caliper test run, uncomment the next two lines -- also uncomment lines in network-down script
+  mkdir -p ${PWD}/../../../../testing/crypto-config/peerOrganizations/
+  cp -r ${PWD}/../crypto-config/peerOrganizations/buyer.GOnetwork.com/ ${PWD}/../../../../testing/crypto-config/peerOrganizations/
+
 }
 
 createcertificatesForBuyer

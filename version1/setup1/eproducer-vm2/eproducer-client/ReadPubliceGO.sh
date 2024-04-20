@@ -17,8 +17,8 @@ ReadPubliceGO() {
     start=$(date +%s%N)
 
     setGlobalsForPeer0eproducer
-
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPubliceGO","Args":["eGO2"]}'
+    export eGO=$1
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPubliceGO","Args":["${eGO}"]}'
     
     end=$(date +%s%N)
     echo "ReadPubliceGO Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt

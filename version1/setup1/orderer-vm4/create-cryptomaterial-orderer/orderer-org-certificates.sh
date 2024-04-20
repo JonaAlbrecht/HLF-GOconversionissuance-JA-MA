@@ -57,7 +57,6 @@ createCertificateForOrderer() {
   fabric-ca-client register --caname ca-orderer --id.name ordererAdmin --id.secret ordererAdminpw --id.type admin --tls.certfiles ${PWD}/fabric-ca/ordererOrg/tls-cert.pem
 
   mkdir -p ../crypto-config/ordererOrganizations/GOnetwork.com/orderers
-  # mkdir -p ../crypto-config/ordererOrganizations/GOnetwork.com/orderers/GOnetwork.com
 
   # ---------------------------------------------------------------------------
   #  Orderer
@@ -175,6 +174,11 @@ createCertificateForOrderer() {
   fabric-ca-client enroll -u https://ordererAdmin:ordererAdminpw@localhost:9054 --caname ca-orderer -M ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/msp --tls.certfiles ${PWD}/fabric-ca/ordererOrg/tls-cert.pem
 
   cp ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/msp/config.yaml ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/msp/config.yaml
+
+# Caliper Testing
+  #if doing a caliper test run, uncomment the next two lines -- also uncomment lines in network-down script
+  mkdir -p ${PWD}/../../../../testing/crypto-config/ordererOrganizations/
+  cp -r ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/ ${PWD}/../../../../testing/crypto-config/ordererOrganizations/
 
 }
 

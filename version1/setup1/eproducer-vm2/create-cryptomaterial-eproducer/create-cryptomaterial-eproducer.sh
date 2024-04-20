@@ -130,7 +130,10 @@ createCertificateForeproducer() {
 
   #copy the Node OU configuration of the eproducer file into the Trusted User msp folder --> this is necessary for attribute-based chaincode invoke  
   cp "${PWD}/../crypto-config/peerOrganizations/eproducer.GOnetwork.com/msp/config.yaml" "${PWD}/../crypto-config/peerOrganizations/eproducer.GOnetwork.com/TrustedUser/eTrustedUser@eproducer.GOnetwork.com/msp/config.yaml"
-
+  
+# Caliper Testing
+  #if doing a caliper test run, uncomment the next two lines -- also uncomment lines in network-down script
+  cp -r ${PWD}/../crypto-config/peerOrganizations/eproducer.GOnetwork.com/ ${PWD}/../../../../testing/crypto-config/peerOrganizations/
 }
 
 createCertificateForeproducer
