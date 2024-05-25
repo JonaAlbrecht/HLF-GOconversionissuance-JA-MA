@@ -151,10 +151,3 @@ sh ./joinChannel.sh
 #cd ${DIRECTORY}/hproducer-vm5
 #sudo chmod +x ./installAndApproveChaincode.sh
 #sh ./installAndApproveChaincode.sh
-
-#echo -e "${GREEN}Committing and invoking the chaincode from issuer org: ${ENDCOLOR}"
-#sleep 1
-
-#cd ${DIRECTORY}/issuer-vm3
-#sudo chmod +x ./commitChaincode.sh
-#sh ./commitChaincode.sh

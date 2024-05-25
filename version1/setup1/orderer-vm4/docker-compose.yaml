@@ -45,7 +45,7 @@ services:
     dns_search: .
     environment:
       - ORDERER_GENERAL_LOGLEVEL=debug
-      - FABRIC_LOGGING_SPEC=DEBUG
+      - FABRIC_LOGGING_SPEC=INFO
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
       - ORDERER_GENERAL_GENESISMETHOD=file
       - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
@@ -80,7 +80,7 @@ services:
     dns_search: .
     environment:
       - ORDERER_GENERAL_LOGLEVEL=debug
-      - FABRIC_LOGGING_SPEC=DEBUG
+      - FABRIC_LOGGING_SPEC=INFO
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
       - ORDERER_GENERAL_GENESISMETHOD=file
       - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
@@ -115,7 +115,7 @@ services:
     dns_search: .
     environment:
       - ORDERER_GENERAL_LOGLEVEL=debug
-      - FABRIC_LOGGING_SPEC=DEBUG
+      - FABRIC_LOGGING_SPEC=INFO
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
       - ORDERER_GENERAL_GENESISMETHOD=file
       - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block

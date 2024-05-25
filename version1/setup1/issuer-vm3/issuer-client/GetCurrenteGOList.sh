@@ -16,7 +16,7 @@ setGlobalsForPeer0issuer() {
 GetcurrenteGOsList() {
     start=$(date +%s%N)
     setGlobalsForPeer0issuer
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "GetcurrenteGOsList","Args":["eGO0", "eGO500"]}'
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "GetcurrenteGOsList","Args":["eGO0", "eGO99"]}'
     end=$(date +%s%N)
     echo "GetcurrenteGOsList Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
 }

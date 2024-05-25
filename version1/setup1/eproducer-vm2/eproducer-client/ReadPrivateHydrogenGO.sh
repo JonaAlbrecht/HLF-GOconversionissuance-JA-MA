@@ -3,6 +3,7 @@ export ORDERER_CA=/etc/hyperledger/channel/crypto-config/ordererOrganizations/GO
 export PEER0_EPRODUCER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer0.eproducer.GOnetwork.com/tls/ca.crt
 export CHANNEL_NAME=mychannel
 export CC_NAME="conversion"
+export hGOID=$1
 
 setGlobalsForPeer0eproducer() {
     export CORE_PEER_LOCALMSPID=eproducerMSP
@@ -11,10 +12,13 @@ setGlobalsForPeer0eproducer() {
     export CORE_PEER_ADDRESS=e-peer0.eproducer.GOnetwork.com:9051
 }
 
-ReadPrivatefromCollectioneGO() {
+ReadPrivatefromCollectionhGO() {
+     start=$(date +%s%N)
     setGlobalsForPeer0eproducer
-
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPrivatefromCollectioneGO", "Args":["privateDetails-${CORE_PEER_LOCALMSPID}", "$1"]}'
+    export QueryInput=$(echo -n "{\"Collection\":\"privateDetails-$CORE_PEER_LOCALMSPID\", \"hGOID\":\"$hGOID\"}" | base64 | tr -d \\n)
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPrivatefromCollectionhGO", "Args":[]}' --transient "{\"QueryInput\":\"$QueryInput\"}"
+    end=$(date +%s%N)
+    echo "ReadPrivatefromCollectioneGO Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
 }
 
-ReadPrivatefromCollectioneGO
+ReadPrivatefromCollectionhGO

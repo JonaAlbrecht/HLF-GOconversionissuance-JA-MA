@@ -14,3 +14,10 @@ GetcurrenteGOsList Elapsed time: 101 ms
 GetcurrenteGOsList Elapsed time: 74 ms
 GetcurrenteGOsList Elapsed time: 102 ms
 GetcurrenteGOsList Elapsed time: 77 ms
+GetcurrenteGOsList Elapsed time: 103 ms
+GetcurrenteGOsList Elapsed time: 93 ms
+GetcurrenteGOsList Elapsed time: 128 ms
+GetcurrenteGOsList Elapsed time: 101 ms
+GetcurrenteGOsList Elapsed time: 81 ms
+GetcurrenteGOsList Elapsed time: 95 ms
+GetcurrenteGOsList Elapsed time: 75 ms

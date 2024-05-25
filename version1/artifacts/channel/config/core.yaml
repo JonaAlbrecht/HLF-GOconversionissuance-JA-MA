@@ -534,7 +534,7 @@ chaincode:
 
   # The maximum duration to wait for the chaincode build and install process
   # to complete.
-  installTimeout: 2000s
+  installTimeout: 3000s
 
   # Timeout duration for starting up a container and waiting for Register
   # to come through.

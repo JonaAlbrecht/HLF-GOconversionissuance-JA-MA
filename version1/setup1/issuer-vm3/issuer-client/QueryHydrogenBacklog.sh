@@ -11,7 +11,7 @@ setGlobalsForPeer0issuer() {
     export CORE_PEER_ADDRESS=i-peer0.issuer.GOnetwork.com:11051
 }
 
-#Query the Hydrogen Backlog created by the OutputMeter 
+#Query the Hydrogen Backlog created by the OutputMeter - function should return permission denied
 QueryHydrogenBacklog() {
     start=$(date +%s%N)
 

@@ -11,14 +11,16 @@ setGlobalsForPeer0eproducer() {
     export CORE_PEER_ADDRESS=e-peer0.eproducer.GOnetwork.com:9051
 }
 
+export eGOID=$1
+
 
 #ReadPubliceGO.
 ReadPubliceGO() {
     start=$(date +%s%N)
 
     setGlobalsForPeer0eproducer
-    export eGO=$1
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPubliceGO","Args":["${eGO}"]}'
+    export QueryInput=$(echo -n "{\"eGOID\":\"$eGOID\"}" | base64 | tr -d \\n)
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPubliceGO", "Args":[]}' --transient "{\"QueryInput\":\"$QueryInput\"}"
     
     end=$(date +%s%N)
     echo "ReadPubliceGO Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt

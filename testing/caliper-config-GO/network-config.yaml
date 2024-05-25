@@ -21,7 +21,7 @@ clients:
         cryptoStore:
           path: /tmp/hfc-cvs/org1
       clientPrivateKey:
-        path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/b-User1@buyer.GOnetwork.com/msp/keystore/ed780c8e3c78d426aa9aa548d9f07be6171d608800b8d8e4e98fa2fa32bb2359_sk
+        path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/b-User1@buyer.GOnetwork.com/msp/keystore/*
       clientSignedCert:
         path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/b-User1@buyer.GOnetwork.com/msp/signcerts/cert.pem
 
@@ -29,13 +29,37 @@ clients:
     client:
       organization: eproducer
       credentialStore:
-        path: /tmp/hfc-kvs/org2
+        path: /tmp/hfc-kvs/eproducer
         cryptoStore:
-          path: /tmp/hfc-cvs/org2
+          path: /tmp/hfc-cvs/eproducer
       clientPrivateKey:
-        path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org2.example.com/users/User1@org2.example.com/msp/keystore/priv_sk
+        path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/eproducer.GOnetwork.com/TrustedUser/TrustedUser@eproducer.GOnetwork.com/msp/keystore/*
       clientSignedCert:
-        path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org2.example.com/users/User1@org2.example.com/msp/signcerts/User1@org2.example.com-cert.pem
+        path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/eproducer.GOnetwork.com/TrustedUser/TrustedUser@eproducer.GOnetwork.com/msp/signcerts/cert.pem
+
+  hproducer-client:
+    client:
+      organization: hproducer
+      credentialStore:
+        path: /tmp/hfc-kvs/hproducer
+        cryptoStore:
+          path: /tmp/hfc-cvs/hproducer
+      clientPrivateKey:
+        path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/hproducer.GOnetwork.com/TrustedUser/hTrustedUser@hproducer.GOnetwork.com/msp/keystore/*
+      clientSignedCert:
+        path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/hproducer.GOnetwork.com/TrustedUser/hTrustedUser@hproducer.GOnetwork.com/msp/signcerts/cert.pem
+
+  issuer-client:
+    client:
+      organization: issuer
+      credentialStore:
+        path: /tmp/hfc-kvs/issuer
+        cryptoStore:
+          path: /tmp/hfc-cvs/issuer
+      clientPrivateKey:
+        path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-users/i-User1@issuer.GOnetwork.com/msp/keystore/*
+      clientSignedCert:
+        path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-users/i-User1@issuer.GOnetwork.com/msp/signcerts/cert.pem
 
 channels:
   mychannel:
@@ -70,99 +94,165 @@ channels:
         eventSource: true
 
 organizations:
-  Org1:
-    mspid: Org1MSP
+  buyer:
+    mspid: buyerMSP
     peers:
-      - peer0.org1.example.com
-      - peer1.org1.example.com
+      - b-peer0.buyer.GOnetwork.com
+      - b-peer1.buyer.GOnetwork.com
     certificateAuthorities:
-      - ca.org1.example.com
+      - ca.buyer.GOnetwork.com
     adminPrivateKey:
-      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/Admin@buyer.GOnetwork.com/msp/keystore/*
     signedCert:
-      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/buyer-vm1/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/Admin@buyer.GOnetwork.com/msp/signcerts/cert.pem
 
-  Org2:
-    mspid: Org2MSP
+  eproducer:
+    mspid: eproducerMSP
     peers:
-      - peer0.org2.example.com
-      - peer1.org2.example.com
+      - e-peer0.eproducer.GOnetwork.com
+      - e-peer1.eproducer.GOnetwork.com
     certificateAuthorities:
-      - ca.org2.example.com
+      - ca.eproducer.GOnetwork.com
     adminPrivateKey:
-      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/keystore/priv_sk
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/Admin/Admin@eproducer.GOnetwork.com/msp/keystore/*
     signedCert:
-      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/signcerts/Admin@org2.example.com-cert.pem
-
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/Admin/Admin@eproducer.GOnetwork.com/msp/signcerts/cert.pem
 orderers:
-  orderer.example.com:
+  orderer.GOnetwork.com:
     url: grpcs://localhost:7050
     grpcOptions:
-      ssl-target-name-override: orderer.example.com
+      ssl-target-name-override: orderer.GOnetwork.com
     tlsCACerts:
-      path: networks/fabric/pavan-v2.1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
-  orderer2.example.com:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
+  orderer2.GOnetwork.com:
     url: grpcs://localhost:8050
     grpcOptions:
-      ssl-target-name-override: orderer2.example.com
+      ssl-target-name-override: orderer2.GOnetwork.com
     tlsCACerts:
-      path: networks/fabric/pavan-v2.1/crypto-config/ordererOrganizations/example.com/orderers/orderer2.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
-  orderer3.example.com:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
+  orderer3.GOnetwork.com:
     url: grpcs://localhost:9050
     grpcOptions:
-      ssl-target-name-override: orderer3.example.com
+      ssl-target-name-override: orderer3.GOnetwork.com
     tlsCACerts:
-      path: networks/fabric/pavan-v2.1/crypto-config/ordererOrganizations/example.com/orderers/orderer3.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
+  orderer4.GOnetwork.com:
+    url: grpcs://localhost:10050
+    grpcOptions:
+      ssl-target-name-override: orderer4.GOnetwork.com
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
 
 peers:
-  peer0.org1.example.com:
+  b-peer0.buyer.GOnetwork.com:
     url: grpcs://localhost:7051
     grpcOptions:
-      ssl-target-name-override: peer0.org1.example.com
+      ssl-target-name-override: b-peer0.buyer.GOnetwork.com
       grpc.keepalive_time_ms: 600000
     tlsCACerts:
-      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp/tlscacerts/tlsca.org1.example.com-cert.pem
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-peers/b-peer0.buyer.GOnetwork.com/tls/tlscacerts/tls-localhost-7054-ca-buyer-GOnetwork-com.pem
 
-  peer1.org1.example.com:
+  b-peer1.buyer.GOnetwork.com:
     url: grpcs://localhost:8051
     grpcOptions:
-      ssl-target-name-override: peer1.org1.example.com
+      ssl-target-name-override: b-peer1.buyer.GOnetwork.com
       grpc.keepalive_time_ms: 600000
     tlsCACerts:
-      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/msp/tlscacerts/tlsca.org1.example.com-cert.pem
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-peers/b-peer1.buyer.GOnetwork.com/tls/tlscacerts/tls-localhost-7054-ca-buyer-GOnetwork-com.pem
 
-  peer0.org2.example.com:
+  e-peer0.eproducer.GOnetwork.com:
     url: grpcs://localhost:9051
     grpcOptions:
-      ssl-target-name-override: peer0.org2.example.com
+      ssl-target-name-override: e-peer0.eproducer.GOnetwork.com
       grpc.keepalive_time_ms: 600000
     tlsCACerts:
-      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/msp/tlscacerts/tlsca.org2.example.com-cert.pem
-  peer1.org2.example.com:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer0.eproducer.GOnetwork.com/tls/tlscacerts/tls-localhost-8054-ca-eproducer-GOnetwork-com.pem
+
+  e-peer1.eproducer.GOnetwork.com:
     url: grpcs://localhost:10051
     grpcOptions:
-      ssl-target-name-override: peer1.org2.example.com
+      ssl-target-name-override: e-peer1.eproducer.GOnetwork.com
       grpc.keepalive_time_ms: 600000
     tlsCACerts:
-      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/msp/tlscacerts/tlsca.org2.example.com-cert.pem
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer1.eproducer.GOnetwork.com/tls/tlscacerts/tls-localhost-8054-ca-eproducer-GOnetwork-com.pem
+
+  i-peer0.issuer.GOnetwork.com:
+    url: grpcs://localhost:11051
+    grpcOptions:
+      ssl-target-name-override: i-peer0.issuer.GOnetwork.com
+      grpc.keepalive_time_ms: 600000
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer1.issuer.GOnetwork.com/tls/tlscacerts/tls-localhost-9054-ca-issuer-GOnetwork-com.pem
+
+  i-peer1.issuer.GOnetwork.com:
+    url: grpcs://localhost:12051
+    grpcOptions:
+      ssl-target-name-override: i-peer1.issuer.GOnetwork.com
+      grpc.keepalive_time_ms: 600000
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer1.issuer.GOnetwork.com/tls/tlscacerts/tls-localhost-9054-ca-issuer-GOnetwork-com.pem
+
+  h-peer0.hproducer.GOnetwork.com:
+    url: grpcs://localhost:13051
+    grpcOptions:
+      ssl-target-name-override: h-peer0.hproducer.GOnetwork.com
+      grpc.keepalive_time_ms: 600000
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/tlscacerts/tls-localhost-11054-ca-hproducer-GOnetwork-com.pem
+  
+  h-peer0.hproducer.GOnetwork.com:
+    url: grpcs://localhost:13051
+    grpcOptions:
+      ssl-target-name-override: h-peer0.hproducer.GOnetwork.com
+      grpc.keepalive_time_ms: 600000
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/tlscacerts/tls-localhost-11054-ca-hproducer-GOnetwork-com.pem
+  
+  h-peer1.hproducer.GOnetwork.com:
+    url: grpcs://localhost:14051
+    grpcOptions:
+      ssl-target-name-override: h-peer0.hproducer.GOnetwork.com
+      grpc.keepalive_time_ms: 600000
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/tlscacerts/tls-localhost-11054-ca-hproducer-GOnetwork-com.pem
 
 certificateAuthorities:
-  ca.org1.example.com:
+  ca.buyer.GOnetwork.com:
     url: https://localhost:7054
     httpOptions:
       verify: false
     tlsCACerts:
-      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/buyer.GOnetwork.com/tlsca/tlsca.buyer.GOnetwork.com-cert.pem
     registrar:
-      - enrollId: admin
-        enrollSecret: adminpw
+      - enrollId: buyeradmin
+        enrollSecret: buyeradminpw
 
-  ca.org2.example.com:
+  ca.eproducer.GOnetwork.com:
     url: https://localhost:8054
     httpOptions:
       verify: false
     tlsCACerts:
-      path: networks/fabric/pavan-v2.1/crypto-config/peerOrganizations/org2.example.com/tlsca/tlsca.org2.example.com-cert.pem
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/eproducer.GOnetwork.com/tlsca/tlsca.eproducer.GOnetwork.com-cert.pem
     registrar:
-      - enrollId: admin
-        enrollSecret: adminpw
+      - enrollId: eproduceradmin
+        enrollSecret: eproduceradminpw
+  
+  ca.issuer.GOnetwork.com:
+    url: https://localhost:9054
+    httpOptions:
+      verify: false
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/issuer.GOnetwork.com/tlsca/tlsca.issuer.GOnetwork.com-cert.pem
+    registrar:
+      - enrollId: issueradmin
+        enrollSecret: issueradminpw
+  
+  ca.hproducer.GOnetwork.com:
+    url: https://localhost:11054
+    httpOptions:
+      verify: false
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/hproducer.GOnetwork.com/tlsca/tlsca.hproducer.GOnetwork.com-cert.pem
+    registrar:
+      - enrollId: issueradmin
+        enrollSecret: issueradminpw

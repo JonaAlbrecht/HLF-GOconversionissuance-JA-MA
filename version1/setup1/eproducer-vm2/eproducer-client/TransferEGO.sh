@@ -6,6 +6,8 @@ export PEER0_BUYER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizations/b
 export PEER0_HPRODUCER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/ca.crt
 export CHANNEL_NAME=mychannel
 export CC_NAME="conversion"
+export eGO=$1
+export Recipient=$2
 
 setGlobalsForPeer0eproducer() {
     export CORE_PEER_LOCALMSPID=eproducerMSP
@@ -18,7 +20,7 @@ setGlobalsForPeer0eproducer() {
 TransfereGO() {
     start=$(date +%s%N)
     setGlobalsForPeer0eproducer
-    export TransferInput=$(echo -n "{\"EGO\":\"eGO1\",\"Recipient\":\"buyerMSP\"}" | base64 | tr -d \\n)
+    export TransferInput=$(echo -n "{\"EGO\":\"$eGO\",\"Recipient\":\"$Recipient\"}" | base64 | tr -d \\n)
     peer chaincode invoke -o orderer2.GOnetwork.com:8050 \
         --ordererTLSHostnameOverride orderer2.GOnetwork.com \
         --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \

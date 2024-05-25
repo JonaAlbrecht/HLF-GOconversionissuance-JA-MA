@@ -3,3 +3,12 @@ QueryHydrogenBacklog Elapsed time: 445 ms
 QueryHydrogenBacklog Elapsed time: 70 ms
 QueryHydrogenBacklog Elapsed time: 660 ms
 QueryHydrogenBacklog Elapsed time: 107 ms
+QueryHydrogenBacklog Elapsed time: 130 ms
+QueryPrivateeGOsbyAmountMWh Elapsed time: 60 ms
+QueryHydrogenBacklog Elapsed time: 98 ms
+QueryPrivateeGOsbyAmountMWh Elapsed time: 85 ms
+IssuehGO Elapsed time: 158 ms
+QueryHydrogenBacklog Elapsed time: 379 ms
+IssuehGO Elapsed time: 169 ms
+IssuehGO Elapsed time: 156 ms
+IssuehGO Elapsed time: 147 ms

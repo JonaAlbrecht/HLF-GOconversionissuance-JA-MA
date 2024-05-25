@@ -25,7 +25,7 @@ async function buildGateway(org, username) {
     await gateway.connect(ccp, {
       wallet: wallet,
       identity: username,
-      discovery: { enabled: true, asLocalhost: false },
+      discovery: { enabled: true, asLocalhost: true },
     });
 
     return gateway;

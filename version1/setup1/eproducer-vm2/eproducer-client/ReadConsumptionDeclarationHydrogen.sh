@@ -3,6 +3,7 @@ export ORDERER_CA=/etc/hyperledger/channel/crypto-config/ordererOrganizations/GO
 export PEER0_EPRODUCER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer0.eproducer.GOnetwork.com/tls/ca.crt
 export CHANNEL_NAME=mychannel
 export CC_NAME="conversion"
+export hConsumpID=$1
 
 setGlobalsForPeer0eproducer() {
     export CORE_PEER_LOCALMSPID=eproducerMSP
@@ -11,13 +12,13 @@ setGlobalsForPeer0eproducer() {
     export CORE_PEER_ADDRESS=e-peer0.eproducer.GOnetwork.com:9051
 }
 
-QueryPrivateeGOsbyAmountMWh() {
+ReadConsumptionDeclarationHydrogen() {
     start=$(date +%s%N)
     setGlobalsForPeer0eproducer
-    export QueryInput=$(echo -n "{\"NeededAmount\":\"$1\",\"Collection\":\"privateDetails-$CORE_PEER_LOCALMSPID\"}" | base64 | tr -d \\n)
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "QueryPrivateeGOsbyAmountMWh", "Args":[]}' --transient "{\"QueryInput\":\"$QueryInput\"}"
+    export QueryInput=$(echo -n "{\"Collection\":\"privateDetails-$CORE_PEER_LOCALMSPID\", \"eConsumpID\":\"$hConsumpID\"}" | base64 | tr -d \\n)
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadConsumptionDeclarationfromCollectionHydrogen", "Args":[]}' --transient "{\"QueryInput\":\"$QueryInput\"}"
     end=$(date +%s%N)
-    echo "QueryPrivateeGOsbyAmountMWh Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
+    echo "ReadConsumptionDeclarationElectricity Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
 }
 
-QueryPrivateeGOsbyAmountMWh
+ReadConsumptionDeclarationHydrogen

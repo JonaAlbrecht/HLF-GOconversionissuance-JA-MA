@@ -110,14 +110,15 @@ services:
       - test
   hproducer-client:
     container_name: hproducer-client
-    image: outputmeter:latest
+    image: hyperledger/fabric-tools
     tty: true
     environment:
       - GODEBUG=netdns=go
       - GOPATH=/opt/gopath
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - CORE_LOGGING_LEVEL=DEBUG
-      - CORE_PEER_ID=OutputMeter
+      #- FABRIC_LOGGING_SPEC=DEBUG --> switch to debug to see more details of transaction flow
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ID=cli
       - CORE_PEER_ADDRESS=h-peer0.hproducer.GOnetwork.com:13051
       - CORE_PEER_LOCALMSPID=hproducerMSP
       # - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/channel/crypto-config/buyerMSP

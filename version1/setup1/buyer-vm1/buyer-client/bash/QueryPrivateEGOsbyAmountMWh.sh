@@ -11,10 +11,16 @@ setGlobalsForPeer0buyer() {
     export CORE_PEER_ADDRESS=b-peer0.buyer.GOnetwork.com:7051
 }
 
+export NeededAmount=$1
+# MSP is parametrized for buyerorganisation such that one can check the access to other private collections of other organisations
+# this will throw "access denied" messages
+# to use functions as usual type "buyerMSP" in Position 2 after function invocation, type "eproducerMSP" or "hproducerMSP" otherwise 
+export MSP=$2
+
 QueryPrivateeGOsbyAmountMWh() {
     start=$(date +%s%N)
-    setGlobalsForPeer0eproducer
-    export QueryInput=$(echo -n "{\"NeededAmount\":\"200\",\"Collection\":\"privateDetails-buyerMSP\"}" | base64 | tr -d \\n)
+    setGlobalsForPeer0buyer
+    export QueryInput=$(echo -n "{\"NeededAmount\":\"$NeededAmount\",\"Collection\":\"privateDetails-$MSP\"}" | base64 | tr -d \\n)
     peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "QueryPrivateeGOsbyAmountMWh", "Args":[]}' --transient "{\"QueryInput\":\"$QueryInput\"}"
     end=$(date +%s%N)
     echo "QueryPrivateeGOsbyAmountMWh Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt

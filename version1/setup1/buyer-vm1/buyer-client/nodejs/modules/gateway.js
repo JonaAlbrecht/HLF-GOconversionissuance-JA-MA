@@ -31,13 +31,39 @@ const readCertificateintoWallet = async (org, username) => {
     return response;
   }
   const JSONNAME = "client-cert-" + org + ".json";
-  const CertNAME = org + "-client";
-  const certpath = path.resolve(process.cwd(), "ccpandcerts", JSONNAME);
-  const certread = fs.readFileSync(certpath, "utf-8");
-  const certs = JSON.parse(certread);
-  const PEMcert = certs.clients[CertNAME].certificate.pem;
-  const privkey = certs.clients[CertNAME].certificate.private_key;
+  //const CertNAME = org + "-client";
+  //const certpath = path.resolve(process.cwd(), "ccpandcerts", JSONNAME);
 
+  const certpath = path.resolve(
+    process.cwd(),
+    "..",
+    "..",
+    "crypto-config",
+    "peerOrganizations",
+    "buyer.GOnetwork.com",
+    "b-users",
+    "Admin@buyer.GOnetwork.com",
+    "msp"
+  );
+  const PEMpath = path.resolve(certpath, "signcerts", "cert.pem");
+  const PEMcert = fs.readFileSync(PEMpath).toString();
+
+  const privkeypath = path.resolve(certpath, "keystore");
+  var privkeyname = fs.readdirSync(privkeypath);
+  const privkey = fs
+    .readFileSync(path.join(privkeypath, privkeyname[0]))
+    .toString();
+
+  //const certread = fs.readFileSync(certpath, "utf-8");
+  //const certs = JSON.parse(certread);
+  //const PEMcert1 = certs.clients[CertNAME].certificate.pem;
+  //const privkey1 = certs.clients[CertNAME].certificate.private_key;
+  //const PEMcert = PEMcert1.toString();
+  //const privkey = privkey1.toString();
+  //const cert = fs
+  //.readFileSync(path.join(certpath, "signcerts/cert.pem"))
+  //.toString();
+  //const key = fs.readFileSync(path.join(certpath, "keystore/*"));
   const x509Identity = {
     credentials: {
       certificate: PEMcert,

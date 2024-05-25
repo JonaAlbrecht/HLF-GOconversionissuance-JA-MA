@@ -11,10 +11,16 @@ setGlobalsForPeer0buyer() {
     export CORE_PEER_ADDRESS=b-peer0.buyer.GOnetwork.com:7051
 }
 
-ReadPrivatefromCollectioneGO() {
-    setGlobalsForPeer0buyer
+export eGOID=$1
+export MSP=$2
 
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPrivatefromCollectioneGO", "Args":["privateDetails-buyerMSP", "eGO1"]}'
+ReadPrivatefromCollectioneGO() {
+    start=$(date +%s%N)
+    setGlobalsForPeer0buyer
+    export QueryInput=$(echo -n "{\"Collection\":\"privateDetails-$MSP\", \"eGOID\":\"$eGOID\"}" | base64 | tr -d \\n)
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPrivatefromCollectioneGO", "Args":[]}' --transient "{\"QueryInput\":\"$QueryInput\"}"
+    end=$(date +%s%N)
+    echo "ReadPrivatefromCollectioneGO Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
 }
 
 ReadPrivatefromCollectioneGO

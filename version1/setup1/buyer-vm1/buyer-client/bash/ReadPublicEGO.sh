@@ -11,13 +11,14 @@ setGlobalsForPeer0buyer() {
     export CORE_PEER_ADDRESS=b-peer0.buyer.GOnetwork.com:7051
 }
 
+export eGOID=$1
+
+#ReadPubliceGO.
 ReadPubliceGO() {
     start=$(date +%s%N)
-
     setGlobalsForPeer0buyer
-
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPubliceGO","Args":["eGO2"]}'
-    
+    export QueryInput=$(echo -n "{\"eGOID\":\"$eGOID\"}" | base64 | tr -d \\n)
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPubliceGO", "Args":[]}' --transient "{\"QueryInput\":\"$QueryInput\"}"
     end=$(date +%s%N)
     echo "ReadPubliceGO Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
 }

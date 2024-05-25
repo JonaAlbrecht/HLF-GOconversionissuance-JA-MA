@@ -862,7 +862,7 @@ func (s *SmartContract) TransfereGObyAmount(ctx contractapi.TransactionContextIn
 		return nil, fmt.Errorf("error while getting client ID:%v", err)
 	}
 	senderCollectionID := "privateDetails-" + ClientID
-	EGOList := strings.Split(TransfereGOtransientinput.EGOList, ",")
+	EGOList := strings.Split(TransfereGOtransientinput.EGOList, "+")
 	timestamp, err := ctx.GetStub().GetTxTimestamp()
 	if err != nil {
 		return nil, fmt.Errorf("failed to read timestamp: %v", err)
@@ -1004,7 +1004,7 @@ func (s *SmartContract) TransfereGObyAmount(ctx contractapi.TransactionContextIn
 			if err != nil {
 				return nil, fmt.Errorf("error marshaling the remainder private GO info: %v", err)
 			}
-			error2 := ctx.GetStub().PutPrivateData("privateDetails-eGO", partialassetsender.AssetID, partialasseteproducerasBytes)
+			error2 := ctx.GetStub().PutPrivateData(senderCollectionID, partialassetsender.AssetID, partialasseteproducerasBytes)
 			if error2 != nil {
 				return nil, fmt.Errorf("error putting partial electricity GO into sender private collection:%v", error2)
 			}
@@ -1089,7 +1089,7 @@ func (s *SmartContract) IssuehGO(ctx contractapi.TransactionContextInterface) er
 	for hydrogenGOprivate.UsedMWh < backlogtobeissued.UsedMWh {
 		currentID := EGOList[GOitemcounter]
 		GOitemcounter++
-		inputGOJSON, err := ctx.GetStub().GetPrivateData("privateDetails-hGO", currentID)
+		inputGOJSON, err := ctx.GetStub().GetPrivateData("privateDetails-hproducerMSP", currentID)
 		if err != nil {
 			return fmt.Errorf("error getting private Details for eGO %v:%v", currentID, err)
 		}
@@ -1120,7 +1120,7 @@ func (s *SmartContract) IssuehGO(ctx contractapi.TransactionContextInterface) er
 		if err != nil {
 			return fmt.Errorf("error marshalling consumption declaration: %v", err)
 		}
-		error2 := ctx.GetStub().PutPrivateData("privateDetails-hGO", Consumptionkey, ConsumptionDeclarationBytes)
+		error2 := ctx.GetStub().PutPrivateData("privateDetails-hproducerMSP", Consumptionkey, ConsumptionDeclarationBytes)
 		if error2 != nil {
 			return fmt.Errorf("error creating Consumption Declarations:%v", err)
 		}
@@ -1150,7 +1150,7 @@ func (s *SmartContract) IssuehGO(ctx contractapi.TransactionContextInterface) er
 	
 	deletioncounter := 0
 	for deletioncounter < len(tobedeleted) {
-		err = ctx.GetStub().DelPrivateData("privateDetails-hGO", tobedeleted[deletioncounter])
+		err = ctx.GetStub().DelPrivateData("privateDetails-hproducerMSP", tobedeleted[deletioncounter])
 		if err != nil {
 			return fmt.Errorf("error deleting transcribed electricity GO with ID %v from hydrogen producer private collection:%v", tobedeleted[deletioncounter], err)
 		}
@@ -1197,7 +1197,7 @@ func (s *SmartContract) IssuehGO(ctx contractapi.TransactionContextInterface) er
 	}
 
 	// Persist private immutable asset properties to hydrogen producer private data collection
-	err = ctx.GetStub().PutPrivateData("privateDetails-hGO", eGOID1, excesseGOprivateBytes)
+	err = ctx.GetStub().PutPrivateData("privateDetails-hproducerMSP", eGOID1, excesseGOprivateBytes)
 	if err != nil {
 		return fmt.Errorf("unable to create asset private data")
 	}
@@ -1219,7 +1219,7 @@ func (s *SmartContract) IssuehGO(ctx contractapi.TransactionContextInterface) er
 		return fmt.Errorf("failed to create eGO json")
 	}
 
-	err = ctx.GetStub().PutPrivateData("privateDetails-eGO", hGOID, hGOprivateBytes)
+	err = ctx.GetStub().PutPrivateData("privateDetails-hproducerMSP", hGOID, hGOprivateBytes)
 	if err != nil {
 		return fmt.Errorf("unable to create hydrogen GO private data")
 	}
@@ -1735,7 +1735,7 @@ func (s *SmartContract) ClaimRenewableattributesHydrogen(ctx contractapi.Transac
 	return nil
 }
 
-func (s *SmartContract) GetcurrenteGOsList(ctx contractapi.TransactionContextInterface, startKey, endKey string) ([]*ElectricityGO, error) {
+func (s *SmartContract) GetcurrenteGOsList(ctx contractapi.TransactionContextInterface, startKey string, endKey string) ([]*ElectricityGO, error) {
 	resultsIterator, err := ctx.GetStub().GetStateByRange(startKey, endKey)
 	if err != nil {
 		return nil, err
@@ -1744,7 +1744,7 @@ func (s *SmartContract) GetcurrenteGOsList(ctx contractapi.TransactionContextInt
 	return ConstructeGOFromIterator(resultsIterator)
 }
 
-func (s *SmartContract) GetcurrenthGOsList(ctx contractapi.TransactionContextInterface, startKey, endKey string) ([]*GreenHydrogenGO, error) {
+func (s *SmartContract) GetcurrenthGOsList(ctx contractapi.TransactionContextInterface, startKey string, endKey string) ([]*GreenHydrogenGO, error) {
 	resultsIterator, err := ctx.GetStub().GetStateByRange(startKey, endKey)
 	if err != nil {
 		return nil, err
@@ -1753,13 +1753,33 @@ func (s *SmartContract) GetcurrenthGOsList(ctx contractapi.TransactionContextInt
 	return ConstructhGOFromIterator(resultsIterator)
 }
 
-func (s *SmartContract) ReadPubliceGO(ctx contractapi.TransactionContextInterface, eGOID string) (*ElectricityGO, error) {
-	eGOJSON, err := ctx.GetStub().GetState(eGOID)
+func (s *SmartContract) ReadPubliceGO(ctx contractapi.TransactionContextInterface) (*ElectricityGO, error) {
+	type ElectricityGOquerytransientinputstruct struct {
+		EGOID string `json:"eGOID"`
+	}
+	transientMap, err := ctx.GetStub().GetTransient()
+	if err != nil {
+		return nil, fmt.Errorf("error getting transient: %v", err)
+	}
+	QueryInputDataAsBytes, ok := transientMap["QueryInput"]
+	if !ok {
+		return nil, fmt.Errorf("query Input must be a key in transient map:%v", ok)
+	}
+	if len(QueryInputDataAsBytes) == 0 {
+		return nil, fmt.Errorf("query Input must be non-empty")
+	}
+	var ElectricityGOquerytransientinput ElectricityGOquerytransientinputstruct
+	err = json.Unmarshal(QueryInputDataAsBytes, &ElectricityGOquerytransientinput)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode JSON input of: " + string(QueryInputDataAsBytes) + ". The error is: " + err.Error())
+	}
+	
+	eGOJSON, err := ctx.GetStub().GetState(ElectricityGOquerytransientinput.EGOID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read public eGO information:%v", err)
 	}
 	if eGOJSON == nil {
-		log.Printf("%v does not exist", eGOID)
+		log.Printf("%v does not exist", ElectricityGOquerytransientinput.EGOID)
 		return nil, nil
 	}
 	var eGO *ElectricityGO
@@ -1770,13 +1790,33 @@ func (s *SmartContract) ReadPubliceGO(ctx contractapi.TransactionContextInterfac
 	return eGO, nil
 }
 
-func (s *SmartContract) ReadPublichGO(ctx contractapi.TransactionContextInterface, hGOID string) (*GreenHydrogenGO, error) {
-	hGOJSON, err := ctx.GetStub().GetState(hGOID)
+func (s *SmartContract) ReadPublichGO(ctx contractapi.TransactionContextInterface) (*GreenHydrogenGO, error) {
+	type HydrogenGOquerytransientinputstruct struct {
+		HGOID string `json:"hGOID"`
+	}
+	transientMap, err := ctx.GetStub().GetTransient()
+	if err != nil {
+		return nil, fmt.Errorf("error getting transient: %v", err)
+	}
+	QueryInputDataAsBytes, ok := transientMap["QueryInput"]
+	if !ok {
+		return nil, fmt.Errorf("query Input must be a key in transient map:%v", ok)
+	}
+	if len(QueryInputDataAsBytes) == 0 {
+		return nil, fmt.Errorf("query Input must be non-empty")
+	}
+	var HydrogenGOquerytransientinput HydrogenGOquerytransientinputstruct
+	err = json.Unmarshal(QueryInputDataAsBytes, &HydrogenGOquerytransientinput)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode JSON input of: " + string(QueryInputDataAsBytes) + ". The error is: " + err.Error())
+	}
+	
+	hGOJSON, err := ctx.GetStub().GetState(HydrogenGOquerytransientinput.HGOID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read public hGO information:%v", err)
 	}
 	if hGOJSON == nil {
-		log.Printf("%v does not exist", hGOID)
+		log.Printf("%v does not exist", HydrogenGOquerytransientinput.HGOID)
 		return nil, nil
 	}
 	var hGO *GreenHydrogenGO
@@ -1787,8 +1827,30 @@ func (s *SmartContract) ReadPublichGO(ctx contractapi.TransactionContextInterfac
 	return hGO, nil
 }
 
-// need to put the reading into transient?
-func (s *SmartContract) ReadPrivatefromCollectioneGO(ctx contractapi.TransactionContextInterface, collection string, eGOID string) (*ElectricityGOprivatedetails, error) {
+func (s *SmartContract) ReadPrivatefromCollectioneGO(ctx contractapi.TransactionContextInterface) (*ElectricityGOprivatedetails, error) {
+	type ReadPrivateeGOtransientinputstruct struct {
+		Collection string `json:"Collection"`
+		EGOID string `json:"eGOID"`
+	}
+	transientMap, err := ctx.GetStub().GetTransient()
+	if err != nil {
+		return nil, fmt.Errorf("error getting transient: %v", err)
+	}
+	QueryInputDataAsBytes, ok := transientMap["QueryInput"]
+	if !ok {
+		return nil, fmt.Errorf("query Input must be a key in transient map:%v", ok)
+	}
+	if len(QueryInputDataAsBytes) == 0 {
+		return nil, fmt.Errorf("query Input must be non-empty")
+	}
+	var ReadPrivateeGOtransientinput ReadPrivateeGOtransientinputstruct
+	err = json.Unmarshal(QueryInputDataAsBytes, &ReadPrivateeGOtransientinput)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode JSON input of: " + string(QueryInputDataAsBytes) + ". The error is: " + err.Error())
+	}
+	collection := ReadPrivateeGOtransientinput.Collection
+	eGOID := ReadPrivateeGOtransientinput.EGOID
+
 	eGOprivateJSON, err := ctx.GetStub().GetPrivateData(collection, eGOID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read asset details: %v", err)
@@ -1805,7 +1867,30 @@ func (s *SmartContract) ReadPrivatefromCollectioneGO(ctx contractapi.Transaction
 	return eGOprivate, nil
 }
 
-func (s *SmartContract) ReadPrivatefromCollectionhGO(ctx contractapi.TransactionContextInterface, collection string, hGOID string) (*GreenHydrogenGOprivatedetails, error) {
+func (s *SmartContract) ReadPrivatefromCollectionhGO(ctx contractapi.TransactionContextInterface) (*GreenHydrogenGOprivatedetails, error) {
+	
+	type ReadPrivatehGOtransientinputstruct struct {
+		Collection string `json:"collection"`
+		HGOID string `json:"eGOID"`
+	}
+	transientMap, err := ctx.GetStub().GetTransient()
+	if err != nil {
+		return nil, fmt.Errorf("error getting transient: %v", err)
+	}
+	QueryInputDataAsBytes, ok := transientMap["QueryInput"]
+	if !ok {
+		return nil, fmt.Errorf("query Input must be a key in transient map:%v", ok)
+	}
+	if len(QueryInputDataAsBytes) == 0 {
+		return nil, fmt.Errorf("query Input must be non-empty")
+	}
+	var ReadPrivatehGOtransientinput ReadPrivatehGOtransientinputstruct
+	err = json.Unmarshal(QueryInputDataAsBytes, &ReadPrivatehGOtransientinput)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode JSON input of: " + string(QueryInputDataAsBytes) + ". The error is: " + err.Error())
+	}
+	collection := ReadPrivatehGOtransientinput.Collection
+	hGOID := ReadPrivatehGOtransientinput.HGOID
 	log.Printf("Reading private details of hGO with ID %v from collection %v", hGOID, collection)
 	hGOprivateJSON, err := ctx.GetStub().GetPrivateData(collection, hGOID)
 	if err != nil {
@@ -1821,6 +1906,166 @@ func (s *SmartContract) ReadPrivatefromCollectionhGO(ctx contractapi.Transaction
 		return nil, fmt.Errorf("failed to unmarshal JSON: %v", err)
 	}
 	return hGOprivate, nil
+}
+
+func (s *SmartContract) ReadCancelstatementfromCollectionElectricity(ctx contractapi.TransactionContextInterface) (*CancellationstatementElectricity, error) {
+	type ReadPrivateeCanceltransientinputstruct struct {
+		Collection string `json:"Collection"`
+		EcancelID string `json:"eCancelID"`
+	}
+	transientMap, err := ctx.GetStub().GetTransient()
+	if err != nil {
+		return nil, fmt.Errorf("error getting transient: %v", err)
+	}
+	QueryInputDataAsBytes, ok := transientMap["QueryInput"]
+	if !ok {
+		return nil, fmt.Errorf("query Input must be a key in transient map:%v", ok)
+	}
+	if len(QueryInputDataAsBytes) == 0 {
+		return nil, fmt.Errorf("query Input must be non-empty")
+	}
+	var ReadPrivateeCanceltransientinput ReadPrivateeCanceltransientinputstruct
+	err = json.Unmarshal(QueryInputDataAsBytes, &ReadPrivateeCanceltransientinput)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode JSON input of: " + string(QueryInputDataAsBytes) + ". The error is: " + err.Error())
+	}
+	collection := ReadPrivateeCanceltransientinput.Collection
+	ecancelID := ReadPrivateeCanceltransientinput.EcancelID
+
+	eCancelprivateJSON, err := ctx.GetStub().GetPrivateData(collection, ecancelID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read asset details: %v", err)
+	}
+	if eCancelprivateJSON == nil {
+		log.Printf("Private details for Electricity cancellation statement %v do not exist in collection %v", ecancelID, collection)
+		return nil, nil
+	}
+	var eCancelprivate *CancellationstatementElectricity
+	err = json.Unmarshal(eCancelprivateJSON, &eCancelprivate)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal JSON: %v", err)
+	}
+	return eCancelprivate, nil
+}
+
+func (s *SmartContract) ReadConsumptionDeclarationfromCollectionElectricity(ctx contractapi.TransactionContextInterface) (*ConsumptionDeclarationElectricity, error) {
+	type ReadPrivateeConsumptransientinputstruct struct {
+		Collection string `json:"Collection"`
+		EconsumpID string `json:"eConsumpID"`
+	}
+	transientMap, err := ctx.GetStub().GetTransient()
+	if err != nil {
+		return nil, fmt.Errorf("error getting transient: %v", err)
+	}
+	QueryInputDataAsBytes, ok := transientMap["QueryInput"]
+	if !ok {
+		return nil, fmt.Errorf("query Input must be a key in transient map:%v", ok)
+	}
+	if len(QueryInputDataAsBytes) == 0 {
+		return nil, fmt.Errorf("query Input must be non-empty")
+	}
+	var ReadPrivateeConsumptransientinput ReadPrivateeConsumptransientinputstruct
+	err = json.Unmarshal(QueryInputDataAsBytes, &ReadPrivateeConsumptransientinput)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode JSON input of: " + string(QueryInputDataAsBytes) + ". The error is: " + err.Error())
+	}
+	collection := ReadPrivateeConsumptransientinput.Collection
+	econsumpID := ReadPrivateeConsumptransientinput.EconsumpID
+
+	eConsumpprivateJSON, err := ctx.GetStub().GetPrivateData(collection, econsumpID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read asset details: %v", err)
+	}
+	if eConsumpprivateJSON == nil {
+		log.Printf("Private details for Electricity consumption declaration %v do not exist in collection %v", econsumpID, collection)
+		return nil, nil
+	}
+	var eConsumpprivate *ConsumptionDeclarationElectricity
+	err = json.Unmarshal(eConsumpprivateJSON, &eConsumpprivate)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal JSON: %v", err)
+	}
+	return eConsumpprivate, nil
+}
+
+func (s *SmartContract) ReadCancelstatementfromCollectionHydrogen(ctx contractapi.TransactionContextInterface) (*CancellationstatementHydrogen, error) {
+	type ReadPrivatehCanceltransientinputstruct struct {
+		Collection string `json:"Collection"`
+		HcancelID string `json:"hCancelID"`
+	}
+	transientMap, err := ctx.GetStub().GetTransient()
+	if err != nil {
+		return nil, fmt.Errorf("error getting transient: %v", err)
+	}
+	QueryInputDataAsBytes, ok := transientMap["QueryInput"]
+	if !ok {
+		return nil, fmt.Errorf("query Input must be a key in transient map:%v", ok)
+	}
+	if len(QueryInputDataAsBytes) == 0 {
+		return nil, fmt.Errorf("query Input must be non-empty")
+	}
+	var ReadPrivateeGOtransientinput ReadPrivatehCanceltransientinputstruct
+	err = json.Unmarshal(QueryInputDataAsBytes, &ReadPrivateeGOtransientinput)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode JSON input of: " + string(QueryInputDataAsBytes) + ". The error is: " + err.Error())
+	}
+	collection := ReadPrivateeGOtransientinput.Collection
+	hcancelID := ReadPrivateeGOtransientinput.HcancelID
+
+	hCancelprivateJSON, err := ctx.GetStub().GetPrivateData(collection, hcancelID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read asset details: %v", err)
+	}
+	if hCancelprivateJSON == nil {
+		log.Printf("Private details for Hydrogen cancellation statement %v do not exist in collection %v", hcancelID, collection)
+		return nil, nil
+	}
+	var hCancelprivate *CancellationstatementHydrogen
+	err = json.Unmarshal(hCancelprivateJSON, &hCancelprivate)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal JSON: %v", err)
+	}
+	return hCancelprivate, nil
+}
+
+func (s *SmartContract) ReadConsumptionDeclarationfromCollectionHydrogen(ctx contractapi.TransactionContextInterface) (*ConsumptionDeclarationHydrogen, error) {
+	type ReadPrivatehConsumptransientinputstruct struct {
+		Collection string `json:"Collection"`
+		HconsumpID string `json:"hConsumpID"`
+	}
+	transientMap, err := ctx.GetStub().GetTransient()
+	if err != nil {
+		return nil, fmt.Errorf("error getting transient: %v", err)
+	}
+	QueryInputDataAsBytes, ok := transientMap["QueryInput"]
+	if !ok {
+		return nil, fmt.Errorf("query Input must be a key in transient map:%v", ok)
+	}
+	if len(QueryInputDataAsBytes) == 0 {
+		return nil, fmt.Errorf("query Input must be non-empty")
+	}
+	var ReadPrivatehConsumptransientinput ReadPrivatehConsumptransientinputstruct
+	err = json.Unmarshal(QueryInputDataAsBytes, &ReadPrivatehConsumptransientinput)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode JSON input of: " + string(QueryInputDataAsBytes) + ". The error is: " + err.Error())
+	}
+	collection := ReadPrivatehConsumptransientinput.Collection
+	hconsumpID := ReadPrivatehConsumptransientinput.HconsumpID
+
+	hConsumpprivateJSON, err := ctx.GetStub().GetPrivateData(collection, hconsumpID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read asset details: %v", err)
+	}
+	if hConsumpprivateJSON == nil {
+		log.Printf("Private details for Electricity consumption declaration %v do not exist in collection %v", hconsumpID, collection)
+		return nil, nil
+	}
+	var hConsumpprivate *ConsumptionDeclarationHydrogen
+	err = json.Unmarshal(hConsumpprivateJSON, &hConsumpprivate)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal JSON: %v", err)
+	}
+	return hConsumpprivate, nil
 }
 
 func getOrgAttr(ctx contractapi.TransactionContextInterface) (string, error) {

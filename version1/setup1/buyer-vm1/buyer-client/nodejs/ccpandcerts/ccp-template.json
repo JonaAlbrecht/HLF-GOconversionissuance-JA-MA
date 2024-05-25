@@ -25,7 +25,7 @@
   },
   "peers": {
     "${prefix}-peer0.${ORG}.GOnetwork.com": {
-      "url": "grpcs://${prefix}-peer0.${ORG}.GOnetwork.com:${P0PORT}",
+      "url": "grpcs://localhost:${P0PORT}",
       "tlsCACerts": {
         "pem": "${PEER0PEM}"
       },
@@ -35,7 +35,7 @@
       }
     },
     "${prefix}-peer1.${ORG}.GOnetwork.com": {
-      "url": "grpcs://${prefix}-peer1.${ORG}.GOnetwork.com:${P1PORT}",
+      "url": "grpcs://localhost:${P1PORT}",
       "tlsCACerts": {
         "pem": "${PEER1PEM}"
       },
@@ -45,15 +45,19 @@
       }
     },
     "i-peer0.issuer.GOnetwork.com": {
-      "url": "grpcs://i-peer0.issuer.GOnetwork.com:11051",
+      "url": "grpcs://localhost:11051",
       "tlsCAcerts": {
         "pem": "${ISSPEM}"
+      },
+      "grpcOptions": {
+        "ssl-target-name-override": "i-peer0.issuer.GOnetwork.com",
+        "hostnameOverride": "i-peer0.issuer.GOnetwork.com"
       }
     }
   },
   "certificateAuthorities": {
     "ca.${ORG}.example.com": {
-      "url": "https://ca.${ORG}.GOnetwork.com:${CAPORT}",
+      "url": "https://localhost:${CAPORT}",
       "caName": "ca.${ORG}.GOnetwork.com",
       "tlsCACerts": {
         "pem": ["${CAPEM}"]
