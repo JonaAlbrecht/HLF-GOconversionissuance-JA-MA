@@ -40,13 +40,15 @@ We cant follow the normal [installation method](https://go.dev/doc/install) of d
 
 `wget -c https://go.dev/dl/go1.22.1.linux-amd64.tar.gz -O - | tar -xz`
 
-You can install go into /usr/local (recommended) or into /home/yourusername/
+Please install go into /usr/local/ as opposed to /home/yourusername/. It is a golang community recommendation to install into usr/local/go [see GO install](https://go.dev/doc/install) and the main.go and the go.mod file (HLF-GOconversionissuance-JA-MA/version1/artifacts/Mychaincode) of my project depend on this filepath. If you install into a different filepath, you will need to delete the go.mod file and reinstall using `go mod init`. It is also not certain that this will work at all as the conversion.go chaincode file gets modularized as a github module to be successfully imported from the GO website in the main.go file [online link of the conversion chaincode module](https://pkg.go.dev/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/artifacts/Mychaincode/GOnetwork).
 
-We need to set the GOPATH to the Go-Folder. Put the following lines into both your .bashrc and your .profile file, which configure the terminal.
+![Modularized chaincode](Modularized-chaincode.png)
+
+We need to set the GOPATH to the Go-Folder. Put the following lines into both your .bashrc and your .profile file, which configure the terminal. You might not be able to find the .bashrc file in usr/local/ and might have to swap to home/yourusername/ folder of the linux folder structure to find the file.
 
 `sudo nano ~/.profile`
 
-and then add the below lines into the ~/.profile file.
+and then add the below lines into the .bashrc and the .profile file.
 
 `export GOPATH=usr/local/go`
 
@@ -60,13 +62,11 @@ And then add the above lines into the ~/.bashrc file:
 
 `sudo nano ~/.bashrc`
 
-As you can see, we will be installing the fabric samples and the fabric binaries into the go folder and we will also download the git repo into the go folder. This is because the Smart Contract written in GO initializes correctly (initializes its relative dependencies) only if it is inside the GOPATH.
-
 **Fabric-Samples repo, Binaries and Docker Images**
 
 I follow the installation process in the [Fabric Documentation](https://hyperledger-fabric.readthedocs.io/en/latest/install.html).
 
-cd into the go/src folder: `cd /usr/local/go/src` and make a directory github.com `mkdir github.com` and then make a directory fabric `mkdir fabric`. Then: `cd fabric`
+cd into the go/src folder: `cd /usr/local/go/src` and make a directory github.com `mkdir github.com`, then `cd github.com`, then make a directory JonaAlbrecht `mkdir JonaAlbrecht`, `cd JonaAlbrecht` abd then make a directory fabric `mkdir fabric`. Then: `cd fabric`
 
 From within this folder, get the install script by running:
 
@@ -86,6 +86,6 @@ When running applications, do not click on the little pop-up in the bottom-left 
 
 # Clone the GO conversion issuance repo
 
-Lets clone the repo into /home/yourusername/go/src. Either, make a fork of the repo and then download or download the repo directly. You need to have git installed. Go to the repo and copy the http address. From /usr/local/go/src/github.com run:
+Lets clone the repo into /usr/local/go/src/github.com/JonaAlbrecht. from the fabric repo do `cd ../` Either, make a fork of the repo and then download or download the repo directly. You need to have git installed (type `git version` to see if its already installed, if not run `sudo apt-get update` and `sudo apt-get install git-all`) Go to the repo and copy the http address. From /usr/local/go/src/github.com run:
 
 `git clone https://github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA.git`

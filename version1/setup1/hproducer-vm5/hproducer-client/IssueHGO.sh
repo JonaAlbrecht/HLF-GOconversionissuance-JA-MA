@@ -25,9 +25,16 @@ IssuehGO() {
     start=$(date +%s%N)
     setGlobalsForPeer0hproducer
     export input=$(QueryPrivateeGOsbyAmountMWh)
+    echo $input
+    #remove brackets
     export intinput=${input:1:-1}
-    export finalinput="${intinput//,/+}"
-    export IssueInput=$(echo -n "{\"EGOList\":\"$finalinput\"}" | base64 | tr -d \\n)
+    #change commas into pluses
+    export int2input="${intinput//,/+}"
+    #remove quotation marks
+    export int3input="${int2input//\"/}"
+    #re-add outside quotationmarks
+    export finalinput="\"$int3input\""
+    export IssueInput=$(echo -n "{\"EGOList\":$finalinput}" | base64 | tr -d \\n)
     peer chaincode invoke -o orderer4.GOnetwork.com:10050 \
         --ordererTLSHostnameOverride orderer4.GOnetwork.com \
         --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \

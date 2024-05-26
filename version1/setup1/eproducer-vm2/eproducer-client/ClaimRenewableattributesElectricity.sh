@@ -35,7 +35,7 @@ ClaimRenewableattributesElectricity() {
     #re-add outside quotationmarks
     export finalinput="\"$int3input\""
     echo $finalinput
-    export ClaimRenewables=$(echo -n "{\"Collection\":\"privateDetails-$CORE_PEER_LOCALMSPID\",\"EGOList\":\"$finalinput\",\"Cancelamount\":\"$Cancelamount\"}" | base64 | tr -d \\n)
+    export ClaimRenewables=$(echo -n "{\"Collection\":\"privateDetails-$CORE_PEER_LOCALMSPID\",\"EGOList\":$finalinput,\"Cancelamount\":\"$Cancelamount\"}" | base64 | tr -d \\n)
     setGlobalsForPeer0eproducer
     peer chaincode invoke -o orderer2.GOnetwork.com:8050 \
         --ordererTLSHostnameOverride orderer2.GOnetwork.com \

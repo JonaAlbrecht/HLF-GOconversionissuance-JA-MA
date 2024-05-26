@@ -36,7 +36,7 @@ TransferHGOsbyAmount() {
     #re-add outside quotationmarks
     export finalinput="\"$int3input\""
     echo $finalinput
-    export TransferInput=$(echo -n "{\"HGOList\":\"$finalinput\",\"Recipient\":\"$Recipient\",\"NeededKilos\":\"$NeededAmount\"}" | base64 | tr -d \\n)
+    export TransferInput=$(echo -n "{\"HGOList\":$finalinput,\"Recipient\":\"$Recipient\",\"NeededKilos\":\"$NeededAmount\"}" | base64 | tr -d \\n)
     setGlobalsForPeer0eproducer
     peer chaincode invoke -o orderer4.GOnetwork.com:10050 \
         --ordererTLSHostnameOverride orderer4.GOnetwork.com \

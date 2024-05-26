@@ -12,3 +12,7 @@ QueryHydrogenBacklog Elapsed time: 379 ms
 IssuehGO Elapsed time: 169 ms
 IssuehGO Elapsed time: 156 ms
 IssuehGO Elapsed time: 147 ms
+IssuehGO Elapsed time: 166 ms
+IssuehGO Elapsed time: 2543 ms
+ReadPrivatefromCollectioneGO Elapsed time: 58 ms
+ReadPublichGO Elapsed time: 67 ms

@@ -1,2 +1,1 @@
 Installed chaincodes on peer:
-Package ID: conversion_1:205149281d43949717a716236b5ff2f9bbb772818c467eb4a33b33bca154b3d6, Label: conversion_1

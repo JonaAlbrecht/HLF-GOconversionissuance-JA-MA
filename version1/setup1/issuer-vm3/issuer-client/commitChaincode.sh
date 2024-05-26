@@ -11,7 +11,6 @@ export CHANNEL_NAME=mychannel
 CHANNEL_NAME="mychannel"
 CC_RUNTIME_LANGUAGE="golang"
 VERSION="1"
-CC_SRC_PATH="./../../artifacts/Mychaincode"
 CC_NAME="conversion" 
 
 setGlobalsForPeer0issuer() {
