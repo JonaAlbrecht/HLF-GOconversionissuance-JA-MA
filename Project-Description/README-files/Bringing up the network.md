@@ -1,3 +1,10 @@
+# Bringing up the network
+
+The network can be brought up and down using the network-up and network-down bash scripts. For a more detailed step-by-step guide on bringing up the network, follow the instructions on the rest of this page. **If you use the network-up script to bring up the network, do not execute any of the below commands** 
+
+Cd into /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/
+Run `./network-up.sh`to bring up the network. Once you are finished testing, bring the network back down using `./network-down.sh`
+
 ## Create all the crypto material
 
 cd into /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3/create-cryptomaterial-issuer
@@ -98,14 +105,28 @@ Next lets create the Channel Artifacts
 
 `cd ../../../artifacts/channel`
 
-**Run the bash script**
-
-This will:
+We run the create-artifacts bash script. This will:
 
 1. Generate the System Genesis block using the configtxgen tool with the orderergenesis profile from the configtx.yaml file and output a genesis.block file
 2. Generate the channel configuration block and set the anchor peers (Peer 0) for each organisation
 
 `./create-artifacts.sh`
+
+## Creating the SmartMeter and Output Meter docker images
+
+The Smart Meter and Output Meter docker containers simulate connected IoT devices sending verifiable data to the chain. Their certificates are issued as part of the issuer certificates, and the specific functions they invoke in the Smart Contract "CreateElectricityGO" and "AddHydrogentoBacklog" are protected by attribute-based access control such that they can only be invoked by them. To create the SmartMeter docker image we need to build the Smart Meter docker file which is in /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3/SmartMeter-config. 
+
+`cd /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3/SmartMeter-config`
+
+`docker build -t smartmeter .`
+
+To create the Output Meter docker image: 
+
+`cd /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3/OutputMeter-config`
+
+`docker build -t outputmeter .`
+
+The SmartMeter and OutputMeter docker containers are brought up together with the other issuer docker containers in the docker-compose up command in the next step, using the created images. To view their configuration, see the docker-compose.yaml file in HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3` Aside from their custom docker image, their remaining configuration is similar to a client container, however
 
 ## Bring up the peer and couchDB containers
 
@@ -141,6 +162,60 @@ You can only look at ports running couchDB, a peer node port will not return any
 To look at CouchDB, type into the google search bar http://localhost:6984 to look at couchdb1 instance from buyer organisation
 Or http://localhost:12984 to look at couchdb7 instance from hproducer organisation
 
+**Creating the SmartMeter and OutputMeter**
+
+
+
+## Bring up the channel
+
+First, cd into the issuer-vm3 folder:
+
+`cd /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3`
+
+We need to run the createChannel.sh bash script to create the channel. It is the Issuing Body which creates the Channel.
+The Script sets a number of environment variables and then uses the fabric commands 'peer channel create', 'peer channel join' and 'peer channel update' that are part of the fabric-binaries we downloaded at the beginning
+
+`./createChannel.sh`
+
+If you would like to look at the commands step by step (e.g. just execute peer channel create first) comment out the invocations of the bash functions 'joinChannel' and 'updateAnchorPeers' with the #
+
+Now, lets join all other organisations to the channel:
+
+`cd ../buyer-vm1`
+
+`./joinChannel.sh`
+
+`cd ../eproducer-vm2`
+
+`./joinChannel.sh`
+
+`cd ../hproducer-vm5`
+
+`./joinChannel.sh`
+
+## Deploy the chaincode
+
+Next, lets deploy the chaincode from the issuing body directory. It is the issuing body that deploys the chaincode but approval from all organisations is needed.
+
+`cd ../issuer-vm3`
+
+Comment out the invocation of all functions after approveformyorg if not already the case.
+
+`./deployChaincode.sh`
+
+`cd ../buyer-vm1`
+
+`./installAndApproveChaincode.sh`
+
+`cd ../eproducer-vm2`
+
+`./installAndApproveChaincode.sh`
+
+`cd ../hproducer-vm5`
+
+`./installAndApproveChaincode.sh`
+
+
 **Troubleshooting**
 
 `docker ps` should show you 23 docker containers. Run `docker ps -a` and see in the "Status" column whether any docker containers have status "exited with...". If that is so, try bringing up the specific docker container again with `docker container restart CONTAINER_ID`
@@ -155,3 +230,4 @@ You can also try removing the Docker images entirely:
 
 `docker image ls` and then copy the image name into:
 `docker rmi IMAGE_NAME`
+
