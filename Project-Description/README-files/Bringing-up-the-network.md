@@ -2,7 +2,7 @@
 
 The network can be brought up and down using the network-up and network-down bash scripts. For a more detailed step-by-step guide on bringing up the network, follow the instructions on the rest of this page. **If you use the network-up script to bring up the network, do not execute any of the below commands** 
 
-Cd into /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/
+Cd into /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/
 Run `./network-up.sh`to bring up the network. Once you are finished testing, bring the network back down using `./network-down.sh`
 
 ## Create all the crypto material
