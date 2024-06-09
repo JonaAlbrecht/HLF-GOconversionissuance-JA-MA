@@ -4,29 +4,11 @@ In this repo, you can find the source code for my Masters thesis project on the 
 
 ---
 
-## Project Description:
-
-**Requirements Analysis**
-
-[Energy Carrier Conversion](Project-Description/Literature-Review/Conversion-Issuance-basicinfo.md)
-
-[Requirements Analysis](Project-Description/Literature-Review/Requirements-Analysis.md)
-
-**Platform-agnostic architecture**
-
-[Platform-agnostic architecture](Project-Description/platform-agnostic-architecture/platform-agnostic-architecture.md)
-
-**Prototype-description**
-
-Not finished, but all the source code is available in the version 1 folder.
-
----
-
 **Step 1**
-[Installing Prerequisites and Fabric Binaries](Project-Description/README-files/Step1.md)
+[Installing Prerequisites and Fabric Binaries](Project-Description/README-files/Installing Prerequisites.md)
 
 **Step 2**
-[Bringing up the network](Project-Description/README-files/Step2.md)
+[Bringing up the network](Project-Description/README-files/Bringing up the network.md)
 
 **Step 3**
 [Executing the transaction flow](Project-Description/README-files/Step3.md)
