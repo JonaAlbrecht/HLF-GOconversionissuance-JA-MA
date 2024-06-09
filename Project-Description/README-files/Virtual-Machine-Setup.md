@@ -9,11 +9,11 @@ I used the Google Cloud test version which includes 3 months free access and 300
 Steps:
 
 1. Navigate to Compute Engine/VM instances; Click on Create Instance and specify:
-   1. Name: I kept name as VM1
-   2. Machine Type: e2-standard-2 (2 vCPU, 4 GB memory)
+   1. Name: Suggestion is to name the instance "vm1" however a different name is possibe
+   2. Machine Type: e2-standard-2 (2 vCPU, 8 GB memory). For the first VM, used for simulating deployment on a single machine, I chose an 8GB RAM machine and for the other machines, used during multi-host deployment, I chose 4GB RAM
    3. Boot Disk:
       1. Operating System: Ubuntu
-      2. Version: Ubuntu 18.04 LTS
+      2. Version: Ubuntu 22.04 LTS
       3. Size (GB): 30 GB
    4. Firewall: tick 'allow HTTP traffic' and 'allow HTTPS traffic'
 2. We create a custom firewall setting thas exposes all ports of the VM. In a real-world deployment, this would not be secure and it would be better to single-handedly expose all the ports that are needed.
@@ -51,7 +51,7 @@ Now add the following lines into the .bashrc file (/home/username/.bashrc) which
 
 Since we will need this as well, also add this line to .bashrc:
 
-`export PATH="/home/yourusername/fabric-samples/bin:$PATH"*`
+`export PATH="/usr/local/go/src/fabric-samples/bin:$PATH"*`
 
 # Creating the other VMs
 
