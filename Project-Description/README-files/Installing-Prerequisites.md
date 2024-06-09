@@ -1,6 +1,6 @@
 ## 1. Installing all Prequisites, Fabric-Sample, Binaries and Docker Images
 
-Im using ubuntu version 24.04, docker version 25.0.4, docker-compose version 1.26.2, go 1.22.1, npm 10.2.4, python 2.7.18
+Im using ubuntu version 24.04, docker version 25.0.4, docker-compose version 1.26.2, nodejs 18.X, go 1.22.1, npm 10.2.4, python 2.7.18
 
 Open a terminal on your WSL:Ubuntu connection.
 If you do not have WSL installed, you need to execute `wsl --install` in a Windows Powershell terminal OR first [create a virtual machine](Virtual-Machine-Setup) and setup the single machine network on there. 
@@ -8,7 +8,17 @@ If you do not have WSL installed, you need to execute `wsl --install` in a Windo
 We now need to install all the prerequisites:
 
 `sudo apt-get install curl`
+
+Lets first install Nodejs. You can skip this step if you already have Nodejs installed. We need to download the correct APT repository using:
+
+`curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -`
+
+And then running: 
+
 `sudo apt-get install nodejs`
+
+Next we need to install npm, the package manager for Node using: 
+
 `sudo apt-get install npm`
 
 **Docker**
