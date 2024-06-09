@@ -2,8 +2,8 @@
 
 Im using ubuntu version 24.04, docker version 25.0.4, docker-compose version 1.26.2, nodejs 18.X, go 1.22.1, npm 10.2.4, python 2.7.18
 
-Open a terminal on your WSL:Ubuntu connection.
-If you do not have WSL installed, you need to execute `wsl --install` in a Windows Powershell terminal OR first [create a virtual machine](Virtual-Machine-Setup) and setup the single machine network on there. 
+Open a terminal on your WSL:Ubuntu connection. And open the folder /usr/local when prompted to select a directory
+If you do not have WSL installed, you need to execute `wsl --install` in a Windows Powershell terminal OR first [create a virtual machine](Virtual-Machine-Setup.md) and setup the single machine network on there. 
 
 We now need to install all the prerequisites:
 
@@ -17,9 +17,9 @@ And then running:
 
 `sudo apt-get install nodejs`
 
-Next we need to install npm, the package manager for Node using: 
+Using this method to install node, it should also include an installation of npm, the package manager for Node. Check NPM is installed by running `npm --version`.
 
-`sudo apt-get install npm`
+If it is not installed, you can do so by running: `sudo apt-get install npm`
 
 **Docker**
 
@@ -42,26 +42,33 @@ In this next command, make sure there are no line-breaks when copying it into th
 
 `sudo apt-get update`
 
-`sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin`
+`sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-compose`
 
 `docker --version`
 `docker-compose --version`
 
 **Golang Installation**
 
+
 We cant follow the normal [installation method](https://go.dev/doc/install) of downloading the tar ball onto our machine bc we are in a virtual environment. This command downloads the appropriate tar ball and installs it:
 
-`wget -c https://go.dev/dl/go1.22.1.linux-amd64.tar.gz -O - | tar -xz`
+`sudo wget -c https://go.dev/dl/go1.22.1.linux-amd64.tar.gz -O - | tar -xz`
+
+If this returns a permission denied error, try to split into two steps: `sudo wget https://go.dev/dl/go1.22.1.linux-amd64.tar.gz -O go.tar.gz` and then `tar -xvzf go.tar.gz`
 
 Please install go into /usr/local/ as opposed to /home/yourusername/. It is a golang community recommendation to install into usr/local/go [see GO install](https://go.dev/doc/install) and the main.go and the go.mod file (HLF-GOconversionissuance-JA-MA/version1/artifacts/Mychaincode) of my project depend on this filepath. If you install into a different filepath, you will need to delete the go.mod file and reinstall using `go mod init`. It is also not certain that this will work at all as the conversion.go chaincode file gets modularized as a github module to be successfully imported from the GO website in the main.go file [online link of the conversion chaincode module](https://pkg.go.dev/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/artifacts/Mychaincode/GOnetwork).
 
 ![Modularized chaincode](Modularized-chaincode.png)
 
-We need to set the GOPATH to the Go-Folder. Put the following lines into both your .bashrc and your .profile file, which configure the terminal. You might not be able to find the .bashrc file in usr/local/ and might have to swap to home/yourusername/ folder of the linux folder structure to find the file.
+We need to set the GOPATH to the Go-Folder. Put the following lines into both your .bashrc and your .profile file, which configure the terminal. You might not be able to find the .bashrc file in usr/local/ and might have to swap to home/yourusername/ folder of the linux folder structure using 
+
+`cd ../../home/yourusername`
+
+Then open the .profile file in an editor using: 
 
 `sudo nano ~/.profile`
 
-and then add the below lines into the .bashrc and the .profile file.
+and then add the below lines into the .bashrc and the .profile file at the bottom.
 
 `export GOPATH=usr/local/go`
 
@@ -71,7 +78,8 @@ Since later on we will need this as well, also add this line to .bashrc:
 
 `export PATH="/usr/local/go/src/github.com/fabric/fabric-samples/bin:$PATH"`
 
-And then add the above lines into the ~/.bashrc file:
+Exit the editor using "ctrl + x" , confirm the changes with "y" and hit enter to exit
+Next, open the .bashrc file using the nano editor and enter all above lines at the bottom of this file as well:
 
 `sudo nano ~/.bashrc`
 
@@ -87,9 +95,9 @@ From within this folder, get the install script by running:
 
 Run without any flag to install all docker images, binaries and the samples repository:
 
-`./install-fabric.sh`
+`sudo ./install-fabric.sh`
 
-**The [Fabric Documentation](https://hyperledger-fabric.readthedocs.io/en/latest/index.html) provides excellent tutorials on how to use the fabric-samples.**
+**The [Fabric Documentation](https://hyperledger-fabric.readthedocs.io/en/latest/index.html) provides tutorials on how to use the fabric-samples and many of the concepts as well as several code snippets from Fabric-Samples are used in this repository (cited where appropriate).**
 
 # Download google-chrome for Linux Ubuntu VM
 
@@ -99,6 +107,6 @@ When running applications, do not click on the little pop-up in the bottom-left 
 
 # Clone the GO conversion issuance repo
 
-Lets clone the repo into /usr/local/go/src/github.com/JonaAlbrecht. from the fabric repo do `cd ../` Either, make a fork of the repo and then download or download the repo directly. You need to have git installed (type `git version` to see if its already installed, if not run `sudo apt-get update` and `sudo apt-get install git-all`) Go to the repo and copy the http address. From /usr/local/go/src/github.com run:
+Lets clone the repo into /usr/local/go/src/github.com/JonaAlbrecht. from the fabric repo do `cd ../` Either, make a fork of the repo and then download or download the repo directly. You need to have git installed (type `git version` to see if its already installed, if not run `sudo apt-get update` and `sudo apt-get install git-all`) Go to the repo and copy the http address. From /usr/local/go/src/github.com/JonaAlbrecht run:
 
 `git clone https://github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA.git`
