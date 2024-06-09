@@ -74,9 +74,9 @@ and then add the below lines into the .bashrc and the .profile file at the botto
 
 `export PATH=$PATH:/usr/local/go/bin`
 
-Since later on we will need this as well, also add this line to .bashrc:
+Since later on we will need this as well, also add this line to .profile and .bashrc:
 
-`export PATH="/usr/local/go/src/github.com/fabric/fabric-samples/bin:$PATH"`
+`export PATH="/usr/local/go/src/github.com/JonaAlbrecht/fabric/fabric-samples/bin:$PATH"`
 
 Exit the editor using "ctrl + x" , confirm the changes with "y" and hit enter to exit
 Next, open the .bashrc file using the nano editor and enter all above lines at the bottom of this file as well:
