@@ -5,10 +5,10 @@ In this repo, you can find the source code for my Masters thesis project on the 
 ---
 
 **Step 1**
-[Installing Prerequisites and Fabric Binaries](Project-Description/README-files/Installing Prerequisites.md)
+[Installing Prerequisites and Fabric Binaries](Project-Description/README-files/Installing-Prerequisites.md)
 
 **Step 2**
-[Bringing up the network](Project-Description/README-files/Bringing up the network.md)
+[Bringing up the network](Project-Description/README-files/Bringing-up-the-network.md)
 
 **Step 3**
 [Executing the transaction flow](Project-Description/README-files/Step3.md)
