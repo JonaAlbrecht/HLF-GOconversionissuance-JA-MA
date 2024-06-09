@@ -2,7 +2,10 @@
 
 Im using docker version 25.0.4, docker-compose version 1.26.2, go 1.22.1, npm 10.2.4, python 2.7.18
 
-Open a terminal on your WSL:Ubuntu connection. We now need to install all the prerequisites:
+Open a terminal on your WSL:Ubuntu connection.
+If you do not have WSL installed, you need to execute `wsl --install` in a Windows Powershell terminal.
+
+We now need to install all the prerequisites:
 
 `sudo apt-get install curl`
 `sudo apt-get install nodejs`
