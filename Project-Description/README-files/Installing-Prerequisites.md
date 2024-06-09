@@ -76,7 +76,7 @@ and then add the below lines into the .bashrc and the .profile file at the botto
 
 Since later on we will need this as well, also add this line to .profile and .bashrc:
 
-`export PATH="/usr/local/go/src/github.com/JonaAlbrecht/fabric/fabric-samples/bin:$PATH"`
+`export PATH=$PATH:/usr/local/go/src/github.com/JonaAlbrecht/fabric/fabric-samples/bin`
 
 We need to add the fabric binary executables that we will download in a minute to our path variable.
 
