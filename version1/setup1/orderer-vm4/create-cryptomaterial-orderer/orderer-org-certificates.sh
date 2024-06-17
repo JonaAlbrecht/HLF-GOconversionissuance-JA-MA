@@ -1,6 +1,8 @@
 #this creates the crypto material for the orderer organisation using fabric-samples binary "fabric-ca-client"
 #the orderer gets enrolled with its own certificate authority
 
+cd $(dirname $0)
+
 createCertificateForOrderer() {
   echo
   echo "Enroll the CA admin"

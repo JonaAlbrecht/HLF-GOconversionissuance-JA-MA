@@ -14,8 +14,8 @@ setGlobalsForPeer0hproducer() {
 export hGOID=$1
 
 ReadPrivatefromCollectionhGO() {
-     start=$(date +%s%N)
-    setGlobalsForPeer0eproducer
+    start=$(date +%s%N)
+    setGlobalsForPeer0hproducer
     export QueryInput=$(echo -n "{\"Collection\":\"privateDetails-$CORE_PEER_LOCALMSPID\", \"hGOID\":\"$hGOID\"}" | base64 | tr -d \\n)
     peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadPrivatefromCollectionhGO", "Args":[]}' --transient "{\"QueryInput\":\"$QueryInput\"}"
     end=$(date +%s%N)

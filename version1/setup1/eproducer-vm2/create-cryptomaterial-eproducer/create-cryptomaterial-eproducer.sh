@@ -1,6 +1,8 @@
 #this creates the crypto material for eproducer organisation using fabric-samples binary "fabric-ca-client"
 #and using the root certificate authority of the issuing body 
 
+cd $(dirname $0)
+
 createCertificateForeproducer() {
   
   mkdir -p ../crypto-config/peerOrganizations/eproducer.GOnetwork.com/

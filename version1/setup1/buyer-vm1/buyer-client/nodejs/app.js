@@ -23,8 +23,8 @@ async function buildGateway(org, username) {
   try {
     const gateway = new Gateway();
     await gateway.connect(ccp, {
-      wallet: wallet,
       identity: username,
+      wallet: wallet,
       discovery: { enabled: true, asLocalhost: true },
     });
 

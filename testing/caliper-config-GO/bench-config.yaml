@@ -3,26 +3,17 @@ test:
     type: local
     number: 5
   rounds:
-    - label: TransfereGO
+    - label: Create eGOs
       txNumber: 1000
       rateControl:
         type: fixed-rate
         opts:
           tps: 40
       workload:
-        module: benchmarks/scenario/GOconversion/transfereGO.js
-    # - label: Query a car.
-    #   rateControl:
-    #     - type: fixed-load
-    #       opts:
-    #         transactionLoad: 5
-    #   workload:
-    #     module: benchmarks/samples/fabric/pavan-v2.2/queryCar.js
-    #     arguments:
-    #       assets: 1000
-    - label: Query a specific eGO
-      description: Query a specific eGO.
-      txNumber: 2000
+        module: benchmarks/scenario/GOconversion/createElectricityGO.js
+    - label: Query a specific public eGO
+      description: Query a specific public eGO.
+      txNumber: 1000
       rateControl:
         type: fixed-rate
         opts:

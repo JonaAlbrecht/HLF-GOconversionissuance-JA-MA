@@ -22,3 +22,6 @@ GetcurrenteGOsList Elapsed time: 81 ms
 GetcurrenteGOsList Elapsed time: 95 ms
 GetcurrenteGOsList Elapsed time: 75 ms
 GetcurrenteGOsList Elapsed time: 65 ms
+GetcurrenteGOsList Elapsed time: 270 ms
+ReadPrivatefromCollectioneGO Elapsed time: 133 ms
+ReadPrivatefromCollectioneGO Elapsed time: 165 ms

@@ -1,5 +1,6 @@
 #this creates the crypto material for issuer organisation using fabric-samples binary "fabric-ca-client"
 #entity names use the prefix i- because all identities of all organisations are being registered on the same root certificate autority
+cd $(dirname $0)
 
 createcertificatesForIssuer() {
   echo

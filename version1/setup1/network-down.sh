@@ -3,6 +3,7 @@
 RED="\e[31m"
 ENDCOLOR="\e[0m"
 
+# setting read, write, execute permissions on all files in the repository such that they can all be deleted
 
 echo -e "${RED}Stopping docker containers${ENDCOLOR}"
 sleep 1
@@ -62,4 +63,4 @@ rm -rf ./../artifacts/Mychaincode/vendor
 
 # Uncomment these lines if doing caliper test run
 echo -e "${RED}Removing crypto config in testing folder"
-rm -rf ./../../testing/crypto-config
+cd ${PWD}/../../ && sudo chmod 777 -R * && rm -rf ./testing/crypto-config

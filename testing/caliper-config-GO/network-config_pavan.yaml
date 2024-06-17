@@ -1,5 +1,6 @@
-name: Caliper Test
-version: "2.0.0"
+name: Fabric
+version: "1.0"
+mutual-tls: false
 
 caliper:
   blockchain: fabric
@@ -11,27 +12,103 @@ info:
   Distribution: Single Host
   StateDB: CouchDB
 
+clients:
+  buyer-client:
+    client:
+      organization: buyer
+      credentialStore:
+        path: /tmp/hfc-kvs/org1
+        cryptoStore:
+          path: /tmp/hfc-cvs/org1
+      clientPrivateKey:
+        path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/b-User1@buyer.GOnetwork.com/msp/keystore/*
+      clientSignedCert:
+        path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/b-User1@buyer.GOnetwork.com/msp/signcerts/cert.pem
+
+  eproducer-client:
+    client:
+      organization: eproducer
+      credentialStore:
+        path: /tmp/hfc-kvs/eproducer
+        cryptoStore:
+          path: /tmp/hfc-cvs/eproducer
+      clientPrivateKey:
+        path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/eproducer.GOnetwork.com/TrustedUser/TrustedUser@eproducer.GOnetwork.com/msp/keystore/*
+      clientSignedCert:
+        path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/eproducer.GOnetwork.com/TrustedUser/TrustedUser@eproducer.GOnetwork.com/msp/signcerts/cert.pem
+
+  hproducer-client:
+    client:
+      organization: hproducer
+      credentialStore:
+        path: /tmp/hfc-kvs/hproducer
+        cryptoStore:
+          path: /tmp/hfc-cvs/hproducer
+      clientPrivateKey:
+        path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/hproducer.GOnetwork.com/TrustedUser/hTrustedUser@hproducer.GOnetwork.com/msp/keystore/*
+      clientSignedCert:
+        path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/hproducer.GOnetwork.com/TrustedUser/hTrustedUser@hproducer.GOnetwork.com/msp/signcerts/cert.pem
+
+  issuer-client:
+    client:
+      organization: issuer
+      credentialStore:
+        path: /tmp/hfc-kvs/issuer
+        cryptoStore:
+          path: /tmp/hfc-cvs/issuer
+      clientPrivateKey:
+        path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-users/i-User1@issuer.GOnetwork.com/msp/keystore/*
+      clientSignedCert:
+        path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-users/i-User1@issuer.GOnetwork.com/msp/signcerts/cert.pem
+
 channels:
-  - channelName: mychannel
-    contracts:
-    - id: conversion
+  mychannel:
+    created: true
+    contracts: [{ "id": "conversion", "version": "1" }]
+    definition:
+      capabilities: []
+      consortium: "SampleConsortium"
+      msps: ["buyerMSP", "eproducerMSP", "issuerMSP", "hproducerMSP"]
+      version: 0
+    orderers:
+      - orderer.GOnetwork.com
+      - orderer2.GOnetwork.com
+      - orderer3.GOnetwork.com
+      - orderer4.GOnetwork.com
+    peers:
+      b-peer0.buyer.GOnetwork.com:
+        eventSource: true
+      b-peer1.buyer.GOnetwork.com:
+        eventSource: true
+      e-peer0.eproducer.GOnetwork.com:
+        eventSource: true
+      e-peer1.eproducer.GOnetwork.com:
+        eventSource: true
+      i-peer0.issuer.GOnetwork.com:
+        eventSource: true
+      i-peer1.issuer.GOnetwork.com:
+        eventSource: true
+      h-peer0.hproducer.GOnetwork.com:
+        eventSource: true
+      h-peer1.hproducer.GOnetwork.com:
+        eventSource: true
 
 organizations:
-  mspid: issuerMSP
+  buyer:
+    mspid: buyerMSP
     peers:
-      - i-peer0.issuer.GOnetwork.com
-      - b-peer1.issuer.GOnetwork.com
+      - b-peer0.buyer.GOnetwork.com
+      - b-peer1.buyer.GOnetwork.com
     certificateAuthorities:
-      - ca.issuer.GOnetwork.com
+      - ca.buyer.GOnetwork.com
     adminPrivateKey:
-      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/issuer.GOnetwork.com/SmartMeter/Admin@buyer.GOnetwork.com/msp/keystore/*
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/testing/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/Admin@buyer.GOnetwork.com/msp/keystore/*
     signedCert:
       path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/buyer-vm1/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/Admin@buyer.GOnetwork.com/msp/signcerts/cert.pem
 
   eproducer:
     mspid: eproducerMSP
     peers:
-    
       - e-peer0.eproducer.GOnetwork.com
       - e-peer1.eproducer.GOnetwork.com
     certificateAuthorities:
