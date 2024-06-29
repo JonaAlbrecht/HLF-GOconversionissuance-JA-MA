@@ -3,23 +3,23 @@ test:
     type: local
     number: 5
   rounds:
-    - label: Create eGOs
+    - label: Read Public eGOs
       txNumber: 1000
       rateControl:
         type: fixed-rate
         opts:
           tps: 40
       workload:
-        module: benchmarks/scenario/GOconversion/createElectricityGO.js
-    - label: Query a specific public eGO
-      description: Query a specific public eGO.
-      txNumber: 1000
-      rateControl:
-        type: fixed-rate
-        opts:
-          tps: 220
-      workload:
-        module: benchmarks/scenario/GOconversion/queryeGO.js
+        module: benchmarks/scenario/GOconversion/ReadPubliceGO.js
+  #  - label: Query a specific public eGO
+  #    description: Query a specific public eGO.
+  #    txNumber: 1000
+  #    rateControl:
+  #      type: fixed-rate
+  #      opts:
+  #        tps: 220
+  #    workload:
+  #      module: benchmarks/scenario/GOconversion/ReadPubliceGO.js
     # - label: Query_Car_1
     #   txDuration:
     #   - 30

@@ -2,6 +2,9 @@ export CORE_PEER_TLS_ENABLED=true
 export ORDERER_CA=/etc/hyperledger/channel/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
 export PEER0_EPRODUCER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer0.eproducer.GOnetwork.com/tls/ca.crt
 export PEER0_ISSUER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer0.issuer.GOnetwork.com/tls/ca.crt
+#added hproducer and buyer as part of second design cycle
+export PEER0_HPRODUCER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/ca.crt
+export PEER0_BUYER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-peers/b-peer0.buyer.GOnetwork.com/tls/ca.crt
 export CHANNEL_NAME=mychannel
 export CC_NAME="conversion"
 export NeededAmount=$1
@@ -44,6 +47,8 @@ TransferEGOsbyAmount() {
         -C $CHANNEL_NAME -n ${CC_NAME} \
         --peerAddresses e-peer0.eproducer.GOnetwork.com:9051 --tlsRootCertFiles $PEER0_EPRODUCER_CA \
         --peerAddresses i-peer0.issuer.GOnetwork.com:11051 --tlsRootCertFiles $PEER0_ISSUER_CA \
+        --peerAddresses h-peer0.hproducer.GOnetwork.com:13051 --tlsRootCertFiles $PEER0_HPRODUCER_CA \
+        --peerAddresses b-peer0.buyer.GOnetwork.com:9051 --tlsRootCertFiles $PEER0_BUYER_CA \
         -c '{"function": "TransfereGObyAmount","Args":[]}' \
         --transient "{\"TransferInput\":\"$TransferInput\"}" --waitForEvent
     end=$(date +%s%N)

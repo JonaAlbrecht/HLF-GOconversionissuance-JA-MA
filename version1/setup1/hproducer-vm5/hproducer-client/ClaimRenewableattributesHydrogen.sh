@@ -44,6 +44,7 @@ ClaimRenewableattributesHydrogen() {
         -C $CHANNEL_NAME -n ${CC_NAME} \
         --peerAddresses h-peer0.hproducer.GOnetwork.com:13051 --tlsRootCertFiles $PEER0_HPRODUCER_CA \
         --peerAddresses i-peer0.issuer.GOnetwork.com:11051 --tlsRootCertFiles $PEER0_ISSUER_CA \
+        --peerAddresses e-peer0.eproducer.GOnetwork.com:9051 --tlsRootCertFiles 
         -c '{"function": "ClaimRenewableattributesHydrogen","Args":[]}' \
         --transient "{\"ClaimRenewables\":\"$ClaimRenewables\"}" --waitForEvent
     end=$(date +%s%N)
