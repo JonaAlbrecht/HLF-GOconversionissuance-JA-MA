@@ -146,3 +146,4 @@ ReadPrivatefromCollectioneGO Elapsed time: 134 ms
 ReadPrivatefromCollectioneGO Elapsed time: 149 ms
 GetcurrenteGOsList Elapsed time: 148 ms
 GetcurrenteGOsList Elapsed time: 207 ms
+GetcurrenteGOsList Elapsed time: 102 ms

@@ -1,0 +1,127 @@
+name: "Network"
+version: "1.1"
+
+channels:
+  mychannel:
+    orderers:
+      - orderer.GOnetwork.com
+      - orderer2.GOnetwork.com
+      - orderer3.GOnetwork.com
+      - orderer4.GOnetwork.com
+    peers:
+      - b-peer0.buyer.GOnetwork.com
+      - b-peer1.buyer.GOnetwork.com
+      - e-peer0.eproducer.GOnetwork.com
+      - e-peer1.eproducer.GOnetwork.com
+      - i-peer0.issuer.GOnetwork.com
+      - i-peer0.issuer.GOnetwork.com
+      - h-peer0.hproducer.GOnetwork.com
+      - h-peer1.hproducer.GOnetwork.com
+
+organizations:
+  buyer:
+    mspid: buyerMSP
+    peers:
+      - b-peer0.buyer.GOnetwork.com
+      - b-peer1.buyer.GOnetwork.com
+
+  eproducer:
+    mspid: eproducerMSP
+    peers:
+      - e-peer0.eproducer.GOnetwork.com
+      - e-peer1.eproducer.GOnetwork.com
+  
+  issuer:
+    mspid: issuerMSP
+    peers:
+      - i-peer0.issuer.GOnetwork.com
+      - i-peer0.issuer.GOnetwork.com
+  
+  hproducer:
+    mspid: hproducerMSP
+    peers:
+      - h-peer0.hproducer.GOnetwork.com
+      - h-peer1.hproducer.GOnetwork.com
+
+orderers:
+  orderer.GOnetwork.com:
+    url: grpcs://localhost:7050
+    grpcOptions:
+      ssl-target-name-override: orderer.GOnetwork.com
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/tls/tlscacerts/tls-localhost-9054-ca-orderer.pem
+  orderer2.GOnetwork.com:
+    url: grpcs://localhost:8050
+    grpcOptions:
+      ssl-target-name-override: orderer2.GOnetwork.com
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/tls/tlscacerts/tls-localhost-9054-ca-orderer.pem
+  orderer3.GOnetwork.com:
+    url: grpcs://localhost:9050
+    grpcOptions:
+      ssl-target-name-override: orderer3.GOnetwork.com
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/tls/tlscacerts/tls-localhost-9054-ca-orderer.pem
+  orderer4.GOnetwork.com:
+    url: grpcs://localhost:10050
+    grpcOptions:
+      ssl-target-name-override: orderer4.GOnetwork.com
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls/tlscacerts/tls-localhost-9054-ca-orderer.pem
+
+peers:
+  b-peer0.buyer.GOnetwork.com:
+    url: grpcs://localhost:7051
+    grpcOptions:
+      ssl-target-name-override: b-peer0.buyer.GOnetwork.com
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/buyer-vm1/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-peers/b-peer0.buyer.GOnetwork.com/tls/tlscacerts/tls-localhost-7054-ca-buyer-GOnetwork-com.pem
+
+  b-peer1.buyer.GOnetwork.com:
+    url: grpcs://localhost:8051
+    grpcOptions:
+      ssl-target-name-override: b-peer1.buyer.GOnetwork.com
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/buyer-vm1/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-peers/b-peer1.buyer.GOnetwork.com/tls/tlscacerts/tls-localhost-7054-ca-buyer-GOnetwork-com.pem
+
+  e-peer0.eproducer.GOnetwork.com:
+    url: grpcs://localhost:9051
+    grpcOptions:
+      ssl-target-name-override: e-peer0.eproducer.GOnetwork.com
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer0.eproducer.GOnetwork.com/tls/tlscacerts/tls-localhost-8054-ca-eproducer-GOnetwork-com.pem
+  
+  e-peer1.eproducer.GOnetwork.com:
+    url: grpcs://localhost:10051
+    grpcOptions:
+      ssl-target-name-override: e-peer1.eproducer.GOnetwork.com
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer1.eproducer.GOnetwork.com/tls/tlscacerts/tls-localhost-8054-ca-eproducer-GOnetwork-com.pem
+  
+  i-peer0.issuer.GOnetwork.com:
+    url: grpcs://localhost:11051
+    grpcOptions:
+      ssl-target-name-override: i-peer0.issuer.GOnetwork.com
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer0.issuer.GOnetwork.com/tls/tlscacerts/tls-localhost-10054-ca-issuer-GOnetwork-com.pem
+  
+  i-peer1.issuer.GOnetwork.com:
+    url: grpcs://localhost:12051
+    grpcOptions:
+      ssl-target-name-override: i-peer1.issuer.GOnetwork.com
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer1.issuer.GOnetwork.com/tls/tlscacerts/tls-localhost-10054-ca-issuer-GOnetwork-com.pem
+      
+  h-peer0.eproducer.GOnetwork.com:
+    url: grpcs://localhost:13051
+    grpcOptions:
+      ssl-target-name-override: h-peer0.hproducer.GOnetwork.com
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/hproducer-vm5/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/tlscacerts/tls-localhost-11054-ca-hproducer-GOnetwork-com.pem
+  
+  h-peer1.hproducer.GOnetwork.com:
+    url: grpcs://localhost:14051
+    grpcOptions:
+      ssl-target-name-override: h-peer1.hproducer.GOnetwork.com
+    tlsCACerts:
+      path: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/hproducer-vm5/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer1.hproducer.GOnetwork.com/tls/tlscacerts/tls-localhost-11054-ca-hproducer-GOnetwork-com.pem
