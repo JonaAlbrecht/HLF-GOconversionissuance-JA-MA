@@ -11,7 +11,7 @@ In this repo, you can find the source code for my Masters thesis project on the 
 [Bringing up the network](Project-Description/README-files/Bringing-up-the-network.md)
 
 **Step 3**
-[Executing the transaction flow](Project-Description/README-files/Step3.md)
+[Executing the transaction flow](Project-Description/README-files/Deploying-and-committing the Chaincode.md)
 
 **Step 4**
 [Deploying on Multi-host (not yet finished)](Project-Description/README-files/Step5.md)
