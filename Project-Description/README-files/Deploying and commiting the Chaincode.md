@@ -1,4 +1,4 @@
-# Deploying and committing the Chaincode
+# Deploying and commiting the Chaincode
 
 Unfortunately, the next few steps could not be included into the convenience script because for some reason, artificially setting the current working directory does not work for the peer chaincode install command and this command can only be executed from the correct working directory (i.e the directory, the shell script invoking the command is actually in). 
 
