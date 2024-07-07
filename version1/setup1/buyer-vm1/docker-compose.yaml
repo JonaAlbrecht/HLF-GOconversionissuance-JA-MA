@@ -116,7 +116,7 @@ services:
 
   buyer-client:
     container_name: buyer-client
-    image: hyperledger/fabric-tools
+    image: hyperledger/fabric-tools:latest
     tty: true
     environment:
       - GODEBUG=netdns=go

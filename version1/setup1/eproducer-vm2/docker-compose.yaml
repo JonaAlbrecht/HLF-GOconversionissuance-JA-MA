@@ -114,7 +114,7 @@ services:
 
   eproducer-client:
     container_name: eproducer-client
-    image: hyperledger/fabric-tools
+    image: hyperledger/fabric-tools:latest
     tty: true
     environment:
       - GODEBUG=netdns=go

@@ -31,14 +31,14 @@ createChannel(){
     --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
 }
 
-createChannel
+#createChannel
 
 joinChannel(){
     setGlobalsForPeer0issuer
-    peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
+    peer channel join -b ./../../artifacts/channel/genesis.block
     
     setGlobalsForPeer1issuer
-    peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
+    peer channel join -b ./../../artifacts/channel/genesis.block
     
 }
 
@@ -51,4 +51,8 @@ updateAnchorPeers(){
     
 }
 
-updateAnchorPeers
+#updateAnchorPeers
+
+
+#setGlobalsForPeer1issuer
+#peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block

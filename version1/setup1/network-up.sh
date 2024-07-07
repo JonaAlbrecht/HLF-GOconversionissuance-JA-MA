@@ -73,6 +73,11 @@ sleep 1
 
 cd ${DIRECTORY}/issuer-vm3/OutputMeter-config && docker build -t outputmeter .
 echo
+
+echo -e "${GREEN}Creating the orderer docker containers ${ENDCOLOR}"
+sleep 1
+cd ${DIRECTORY}/orderer-vm4 && docker-compose up -d
+
 echo -e "${GREEN}Creating the peer, couchDB and client docker container for buyer org ${ENDCOLOR}"
 sleep 1
 cd ${DIRECTORY}/buyer-vm1 && docker-compose up -d
@@ -89,9 +94,7 @@ echo -e "${GREEN}Creating the peer, couchDB and Output Meter docker container fo
 sleep 1
 cd ${DIRECTORY}/hproducer-vm5 && docker-compose up -d
 echo
-echo -e "${GREEN}Creating the orderer docker containers ${ENDCOLOR}"
-sleep 1
-cd ${DIRECTORY}/orderer-vm4 && docker-compose up -d
+
 echo
 echo -e "${GREEN}Creating the channel: ${ENDCOLOR}"
 sleep 1

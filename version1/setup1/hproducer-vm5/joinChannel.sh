@@ -33,15 +33,14 @@ fetchChannelBlock() {
         -c $CHANNEL_NAME --tls --cafile $ORDERER_CA
 }
 
-fetchChannelBlock
+#fetchChannelBlock
 
 joinChannel() {
     setGlobalsForPeer0hproducer
-    peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
-
+    peer channel join -b ./../../artifacts/channel/genesis.block
+    
     setGlobalsForPeer1hproducer
-    peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
-
+    peer channel join -b ./../../artifacts/channel/genesis.block
 }
 
 joinChannel
@@ -56,4 +55,4 @@ updateAnchorPeers() {
 
 }
 
-updateAnchorPeers
+#updateAnchorPeers

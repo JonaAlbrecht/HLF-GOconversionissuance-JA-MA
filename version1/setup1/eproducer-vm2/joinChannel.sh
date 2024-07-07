@@ -35,10 +35,10 @@ fetchChannelBlock() {
 
 joinChannel() {
     setGlobalsForPeer0eproducer
-    peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
+    peer channel join -b ./../../artifacts/channel/genesis.block
 
     setGlobalsForPeer1eproducer
-    peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
+    peer channel join -b ./../../artifacts/channel/genesis.block
 
 }
 
@@ -55,7 +55,3 @@ updateAnchorPeers() {
 }
 
 #updateAnchorPeers
-
-fetchChannelBlock
-joinChannel
-updateAnchorPeers
