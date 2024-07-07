@@ -1,9 +1,21 @@
 # Bringing up the network
 
-The network can be brought up and down using the network-up and network-down bash scripts. For a more detailed step-by-step guide on bringing up the network, follow the instructions on the rest of this page. **If you use the network-up script to bring up the network, do not execute any of the below commands** 
+The network can be brought up and down using the network-up and network-down bash scripts. For a more detailed step-by-step guide on bringing up the network, follow the instructions on the rest of this page. **If you use the network-up script to bring up the network, do not execute any of the commands below this first section** 
 
 Cd into /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/
+First, we need to set some docker permissions: 
+
+`sudo groupadd docker`
+
+`sudo usermod -aG docker $USER`
+
+`newgrp docker`
+
 Run `./network-up.sh`to bring up the network. Once you are finished testing, bring the network back down using `./network-down.sh` If docker-compose up returns an error "permission denied while trying to connect to the Docker daemon socket" you need to run the commands listed in the "run docker compose file" section and you should also install the Docker VS code extension
+
+The last step that should have been executed is "Hproducer Org joining the channel", please check a little bit that none of the steps here returned an error. Next, we will deploy and commit the chaincode.  
+
+If you would like to understand the network setup in more detail, follow the below steps and look at the involved files.
 
 ## Create all the crypto material
 
