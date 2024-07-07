@@ -11,9 +11,15 @@ In this repo, you can find the source code for my Masters thesis project on the 
 [Bringing up the network](Project-Description/README-files/Bringing-up-the-network.md)
 
 **Step 3**
-[Executing the transaction flow](Project-Description/README-files/Step3.md)
+[Executing the transaction flow](Project-Description/README-files/Deploying-and-commiting-the-Chaincode.md)
 
 **Step 4**
+[Executing network functions](Project-Description/README-files/Executing-network-functions.md)
+
+**Step 5**
+[Connecting the Caliper performance testing environment](Project-Description/README-files/Connect-Caliper.md)
+
+**Step 6**
 [Deploying on Multi-host (not yet finished)](Project-Description/README-files/Step5.md)
 
 **Which problems of GO schemes relating to energy carrier conversion have I identified?**
