@@ -1,5 +1,7 @@
 Mostly, the below steps follow the caliper tutorial found here: [Caliper Tutorial](https://hyperledger.github.io/caliper/v0.6.0/fabric-tutorial/tutorials-fabric-existing/)
 
+The correct files for the caliper config are in the most recent commit and not in the roll back to the second design cycle, so if you rolled back please find the name of the most recent commit and run `git checkout commitname`
+
 First, we need to cd into `cd /usr/local/go/src/github.com/JonaAlbrecht` and here `mkdir caliper-workspace`
 
 within the caliper-workspace folder, create three folders named networks, benchmarks, and workload respectively
