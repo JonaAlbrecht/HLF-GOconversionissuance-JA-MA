@@ -11,15 +11,15 @@ First, we need to set some docker permissions:
 
 `newgrp docker`
 
+Assuming you rolled back to design cycle 2 using the `git checkout 8639a2f` command, we can bring the network up by navigating to: `cd usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1` and running `./network-up.sh`. You are all done here and can navigate to the next section on deploying and committing the chaincode
 
-Run `./network-upsplit1.sh`to bring up the network. Now, navigate into the crypto material of the orderer, to: usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls/keystore/ 
-Right-click on the name of the privatekey file, choose the option "Copy Path", navigate in the file explorer (not in the terminal) to artifacts/channel/create-artifacts.sh, click on the file and replace the value of the first environment variable, i.e. export ORDERER_ADMIN_TLS_PRIVATE_KEY=, with the value of the path you just copied. 
+Once you are finished testing, bring the network back down using `./network-down.sh` If docker-compose up returns an error "permission denied while trying to connect to the Docker daemon socket" you need to run the commands listed in the "run docker compose file" section and you should also install the Docker VS code extensio
 
-Now, execute `./network-upsplit2.sh`. Whenever you bring up the network, you will need to repeat this step of posting the orderer admin private key
+
+If you didnt roll back the network to the second design cycle and would like to test out the channel creation mechanism of the third design cycle, run `./network-upsplit1.sh`to bring up the network. Now, navigate into the crypto material of the orderer, to: usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls/keystore/ 
+Right-click on the name of the privatekey file, choose the option "Copy Path", navigate in the file explorer (not in the terminal) to artifacts/channel/create-artifacts.sh, click on the file and replace the value of the first environment variable, i.e. export ORDERER_ADMIN_TLS_PRIVATE_KEY=, with the value of the path you just copied. Now, execute `./network-upsplit2.sh`. Whenever you bring up the network, you will need to repeat this step of posting the orderer admin private key
 
 The last step that should have been executed is "Setting anchor peer for issuer", please check a little bit that none of the steps here returned an error. Next, we will deploy and commit the chaincode. Please switch to the deploying and committing the chaincode md file next. The below explanations are only necessary when you bring up the network a second time.   
-
-Once you are finished testing, bring the network back down using `./network-down.sh` If docker-compose up returns an error "permission denied while trying to connect to the Docker daemon socket" you need to run the commands listed in the "run docker compose file" section and you should also install the Docker VS code extension
 
 For the first channel, you do not need to update the channel name. If you bring up a second channel (even after deleting the first one) you need to set the channel environment variable to a new channel name. To do this find the line saying `export CHANNEL_NAME=mychannel` and change mychannel to e.g. mychannel1. This needs to be done in the network-upsplit1.sh and network-upsplit2.sh scripts, in the deployChaincode.sh script in issuer-vm3, in the execute.sh script of issuer-vm3/SmartMeter-config, in the execute-hproducer.sh script of issuer-vm3/OutputMeter-config, in the installAndApproveChaincode.sh script of hproducer-vm5,  in the installAndApproveChaincode.sh script of eproducer-vm2 and in the installAndApproveChaincode.sh script of buyer-vm1.
 
@@ -125,14 +125,15 @@ And then execute the bash script:
 
 ## Create Channel Artifacts
 
-Next lets create the Channel Artifacts. To do so, given that in the third design cycle, we bring up the channel using the osnadmin command, we first need to cd into the orderer-vm4 directory and run `docker-compose up -d`
-
-Next, we want to do `cd ../../../artifacts/channel`. in the file explorer, navigate into the crypto material of the orderer, to: usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls/keystore/ 
-Right-click on the name of the privatekey file, choose the option "Copy Path", navigate in the file explorer to artifacts/channel/create-artifacts.sh, click on the file and replace the value of the first environment variable, i.e. export ORDERER_ADMIN_TLS_PRIVATE_KEY=, with the value of the path you just copied.
-
 We run the create-artifacts bash script.
 
 `./create-artifacts.sh`
+
+IF you are using the third design cycle channel creation method, before you execute the create artifacts script do the following: 
+Given that in the third design cycle, we bring up the channel using the osnadmin command, we first need to cd into the orderer-vm4 directory and run `docker-compose up -d`
+
+Next, we want to do `cd ../../../artifacts/channel`. in the file explorer, navigate into the crypto material of the orderer, to: usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls/keystore/ 
+Right-click on the name of the privatekey file, choose the option "Copy Path", navigate in the file explorer to artifacts/channel/create-artifacts.sh, click on the file and replace the value of the first environment variable, i.e. export ORDERER_ADMIN_TLS_PRIVATE_KEY=, with the value of the path you just copied.
 
 ## Creating the SmartMeter and Output Meter docker images
 
@@ -205,7 +206,7 @@ Now, lets join all other organisations to the channel:
 
 `./joinChannel.sh`
 
-Now, we need to set the anchor peers. To this end do
+IF you are using the method of design cycle three, you now, we need to set the anchor peers. To this end do
 
 `cd /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/artifacts/channel/buyerAnchor`
 
