@@ -116,3 +116,10 @@ When running applications, do not click on the little pop-up in the bottom-left 
 Lets clone the repo into /usr/local/go/src/github.com/JonaAlbrecht. from the fabric repo do `cd ../` Either, make a fork of the repo and then download or download the repo directly. You need to have git installed (type `git version` to see if its already installed, if not run `sudo apt-get update` and `sudo apt-get install git-all`) Go to the repo and copy the http address. From /usr/local/go/src/github.com/JonaAlbrecht run:
 
 `git clone https://github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA.git`
+
+Unfortunately, as part of the third design cycle, a new channel creation method was attempted that did not improve upon the design. This new state was already pushed to the Github repository before the decision to roll back was made. 
+As a result, we need to actually use a previous version of the github repository by running the command: 
+
+`git checkout 8639a2f`
+
+
