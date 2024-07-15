@@ -12,6 +12,10 @@ class ReadPubliceGOWorkload extends WorkloadModuleBase {
     constructor() {
         super();
         this.txIndex = 0;
+        this.chaincodeID = '';
+        this.assets = [];
+        this.byteSize = 0;
+        this.consensus = false;
     }
     /**
      * Initialize the workload module with the given parameters.
@@ -26,7 +30,7 @@ class ReadPubliceGOWorkload extends WorkloadModuleBase {
     async initializeWorkloadModule(workerIndex, totalWorkers, roundIndex, roundArguments, sutAdapter, sutContext) {
         await super.initializeWorkloadModule(workerIndex, totalWorkers, roundIndex, roundArguments, sutAdapter, sutContext);
 
-        this.limitIndex = this.roundArguments.assets;
+        //this.limitIndex = this.roundArguments.assets;
        // await helper.createCar(this.sutAdapter, this.workerIndex, this.roundArguments);
     }
 
@@ -47,7 +51,6 @@ class ReadPubliceGOWorkload extends WorkloadModuleBase {
             contractVersion: '1',
             contractFunction: 'ReadPubliceGO',
             contractArguments: [],
-            timeout: 30,
             transientMap: {QueryInput: JSON.stringify(this.query)} 
         };
 

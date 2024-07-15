@@ -15,6 +15,12 @@ Organizations:
         Type: Signature
         Rule: "OR('OrdererMSP.admin')"
 
+    OrdererEndpoints:
+      - "orderer.GOnetwork.com:7050"
+      - "orderer2.GOnetwork.com:8050"
+      - "orderer3.GOnetwork.com:9050"
+      - "orderer4.GOnetwork.com:10050"
+
   - &buyer
     Name: buyerMSP
     ID: buyerMSP
@@ -24,16 +30,16 @@ Organizations:
     Policies:
       Readers:
         Type: Signature
-        Rule: "OR('buyerMSP.admin', 'buyerMSP.peer', 'buyerMSP.client')"
+        Rule: "OR('buyerMSP.member')"
       Writers:
         Type: Signature
-        Rule: "OR('buyerMSP.admin', 'buyerMSP.client')"
+        Rule: "OR('buyerMSP.member')"
       Admins:
         Type: Signature
         Rule: "OR('buyerMSP.admin')"
       Endorsement:
         Type: Signature
-        Rule: "OR('buyerMSP.peer', 'issuerMSP.peer')"
+        Rule: "OR('buyerMSP.member')"
 
     AnchorPeers:
       - Host: b-peer0.buyer.GOnetwork.com
@@ -49,16 +55,16 @@ Organizations:
     Policies:
       Readers:
         Type: Signature
-        Rule: "OR('eproducerMSP.admin', 'eproducerMSP.peer', 'eproducerMSP.client')"
+        Rule: "OR('eproducerMSP.member')"
       Writers:
         Type: Signature
-        Rule: "OR('eproducerMSP.admin', 'eproducerMSP.client')"
+        Rule: "OR('eproducerMSP.member')"
       Admins:
         Type: Signature
         Rule: "OR('eproducerMSP.admin')"
       Endorsement:
         Type: Signature
-        Rule: "OR('eproducerMSP.peer', 'issuerMSP.peer')"
+        Rule: "OR('eproducerMSP.member')"
 
     AnchorPeers:
       - Host: e-peer0.eproducer.GOnetwork.com
@@ -74,20 +80,20 @@ Organizations:
     Policies:
       Readers:
         Type: Signature
-        Rule: "OR('issuerMSP.admin', 'issuerMSP.peer', 'issuerMSP.client')"
+        Rule: "OR('issuerMSP.member')"
       Writers:
         Type: Signature
-        Rule: "OR('issuerMSP.admin', 'issuerMSP.client')"
+        Rule: "OR('issuerMSP.member')"
       Admins:
         Type: Signature
         Rule: "OR('issuerMSP.admin')"
       Endorsement:
         Type: Signature
-        Rule: "OR('issuerMSP.peer')"
+        Rule: "OR('issuerMSP.member')"
 
     AnchorPeers:
       - Host: i-peer0.issuer.GOnetwork.com
-        Port: 9051
+        Port: 11051
 
   - &hproducer
     Name: hproducerMSP
@@ -99,16 +105,16 @@ Organizations:
     Policies:
       Readers:
         Type: Signature
-        Rule: "OR('hproducerMSP.admin', 'hproducerMSP.peer', 'hproducerMSP.client')"
+        Rule: "OR('hproducerMSP.member')"
       Writers:
         Type: Signature
-        Rule: "OR('hproducerMSP.admin', 'hproducerMSP.client')"
+        Rule: "OR('hproducerMSP.member')"
       Admins:
         Type: Signature
         Rule: "OR('hproducerMSP.admin')"
       Endorsement:
         Type: Signature
-        Rule: "OR('hproducerMSP.peer', 'issuerMSP.peer')"
+        Rule: "OR('hproducerMSP.member')"
 
     AnchorPeers:
       - Host: h-peer0.hproducer.GOnetwork.com
@@ -116,10 +122,10 @@ Organizations:
 
 Capabilities:
   Channel: &ChannelCapabilities
-    V2_5: true
+    V2_0: true
 
   Orderer: &OrdererCapabilities
-    V2_5: true
+    V2_0: true
 
   Application: &ApplicationCapabilities
     V2_5: true
@@ -156,8 +162,23 @@ Orderer: &OrdererDefaults
         Port: 7050
         ClientTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/tls/server.crt
         ServerTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/tls/server.crt
+      - Host: orderer2.GOnetwork.com
+        Port: 8050
+        ClientTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/tls/server.crt
+        ServerTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/tls/server.crt
+      - Host: orderer3.GOnetwork.com
+        Port: 9050
+        ClientTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/tls/server.crt
+        ServerTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/tls/server.crt
+      - Host: orderer4.GOnetwork.com
+        Port: 10050
+        ClientTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls/server.crt
+        ServerTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls/server.crt
   Addresses:
     - orderer.GOnetwork.com:7050
+    - orderer2.GOnetwork.com:8050
+    - orderer3.GOnetwork.com:9050
+    - orderer4.GOnetwork.com:10050
 
   BatchTimeout: 2s
   BatchSize:
@@ -196,23 +217,8 @@ Channel: &ChannelDefaults
     <<: *ChannelCapabilities
 
 Profiles:
-  BasicChannel:
-    Consortium: SampleConsortium
+  ChannelUsingRaft:
     <<: *ChannelDefaults
-    Application:
-      <<: *ApplicationDefaults
-      Organizations:
-        - *buyer
-        - *eproducer
-        - *issuer
-        - *hproducer
-      Capabilities:
-        <<: *ApplicationCapabilities
-
-  OrdererGenesis:
-    <<: *ChannelDefaults
-    Capabilities:
-      <<: *ChannelCapabilities
     Orderer:
       <<: *OrdererDefaults
       OrdererType: etcdraft
@@ -234,19 +240,15 @@ Profiles:
             Port: 10050
             ClientTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls/server.crt
             ServerTLSCert: ../../setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls/server.crt
-      Addresses:
-        - orderer.GOnetwork.com:7050
-        - orderer2.GOnetwork.com:8050
-        - orderer3.GOnetwork.com:9050
-        - orderer4.GOnetwork.com:10050
       Organizations:
-        - *OrdererOrg
+        - <<: *OrdererOrg
       Capabilities:
-        <<: *OrdererCapabilities
-    Consortiums:
-      SampleConsortium:
-        Organizations:
-          - *buyer
-          - *eproducer
-          - *issuer
-          - *hproducer
+        - <<: *OrdererCapabilities
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *buyer
+        - *eproducer
+        - *issuer
+        - *hproducer
+      Capabilities: *ApplicationCapabilities

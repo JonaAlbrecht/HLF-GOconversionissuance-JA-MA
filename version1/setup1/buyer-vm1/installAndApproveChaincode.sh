@@ -7,7 +7,7 @@ export FABRIC_CFG_PATH=${PWD}/../../artifacts/channel/config/
 export COLLECTION_CONFIGPATH=${PWD}/../../artifacts/private-data-collections/collection-config.json
 
 
-export CHANNEL_NAME=mychannel
+export CHANNEL_NAME=mychannel28
 
 setGlobalsForPeer0buyer() {
     export CORE_PEER_LOCALMSPID=buyerMSP
@@ -34,7 +34,6 @@ presetup() {
 }
 # presetup
 
-CHANNEL_NAME="mychannel"
 CC_RUNTIME_LANGUAGE="golang"
 VERSION="1"
 CC_SRC_PATH="./../../artifacts/Mychaincode"

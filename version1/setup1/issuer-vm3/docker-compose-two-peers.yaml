@@ -1,0 +1,217 @@
+version: "3.8"
+
+networks:
+  test:
+
+services:
+  couchdb4:
+    container_name: couchdb4
+    image: hyperledger/fabric-couchdb:latest
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - 9984:5984
+    networks:
+      - test
+
+  couchdb5:
+    container_name: couchdb5
+    image: hyperledger/fabric-couchdb:latest
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - 10984:5984
+    networks:
+      - test
+
+  i-peer0.issuer.GOnetwork.com:
+    container_name: i-peer0.issuer.GOnetwork.com
+    extends:
+      file: base.yaml
+      service: peer-base
+    environment:
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - ORDERER_GENERAL_LOGLEVEL=DEBUG
+      - CORE_PEER_LOCALMSPID=issuerMSP
+
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_test
+
+      - CORE_PEER_ID=i-peer0.issuer.GOnetwork.com
+      - CORE_PEER_ADDRESS=i-peer0.issuer.GOnetwork.com:11051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:11051
+      - CORE_PEER_CHAINCODEADDRESS=i-peer0.issuer.GOnetwork.com:11052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:11052
+      # Peer used to bootstrap gossip within organisation
+      - CORE_PEER_GOSSIP_BOOTSTRAP=i-peer0.issuer.GOnetwork.com:11051
+      # Exposed for discovery Service
+      - CORE_PEER_GOSSIP_ENDPOINT=i-peer0.issuer.GOnetwork.com:11051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=i-peer0.issuer.GOnetwork.com:11051
+      - CORE_OPERATIONS_LISTENADDRESS=i-peer0.issuer.GOnetwork.com:11444
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb4:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+      - CORE_METRICS_PROVIDER=prometheus
+      - CORE_PEER_TLS_ENABLED=true
+      #- CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/crypto/peer/tls/server.crt
+      #- CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/crypto/peer/tls/server.key
+      #- CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/crypto/peer/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/crypto/peer/msp
+    depends_on:
+      - couchdb4
+    ports:
+      - 11051:11051
+      - 11444:11444
+    volumes:
+      - ./crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer0.issuer.GOnetwork.com/msp:/etc/hyperledger/crypto/peer/msp
+      - ./crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer0.issuer.GOnetwork.com/tls:/etc/hyperledger/crypto/peer/tls
+      - /var/run/:/host/var/run/
+      - ./:/etc/hyperledger/channel/
+      #- unix:///host/var/run/docker.sock:/host/var/run/docker.sock
+    networks:
+      - test
+
+  i-peer1.issuer.GOnetwork.com:
+    container_name: i-peer1.issuer.GOnetwork.com
+    extends:
+      file: base.yaml
+      service: peer-base
+    environment:
+      - GODEBUG=netdns=go
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - CORE_PEER_LOCALMSPID=issuerMSP
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/crypto/peer/tls/server.key
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/crypto/peer/tls/server.crt
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/crypto/peer/tls/ca.crt
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_test
+
+      - CORE_PEER_ID=i-peer1.issuer.GOnetwork.com
+      - CORE_PEER_ADDRESS=i-peer1.issuer.GOnetwork.com:12051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:12051
+      - CORE_PEER_CHAINCODEADDRESS=i-peer1.issuer.GOnetwork.com:12052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:12052
+      # Exposed for discovery Service
+      - CORE_PEER_GOSSIP_ENDPOINT=i-peer1.issuer.GOnetwork.com:12051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=i-peer1.issuer.GOnetwork.com:12051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=i-peer1.issuer.GOnetwork.com:12051
+      - CORE_OPERATIONS_LISTENADDRESS=i-peer1.issuer.GOnetwork.com:12444
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb5:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+      - CORE_PEER_TLS_ENABLED=true
+      #- CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/crypto/peer/tls/server.crt
+      #- CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/crypto/peer/tls/server.key
+      #- CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/crypto/peer/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/crypto/peer/msp
+    ports:
+      - 12051:12051
+      - 12444:12444
+    volumes:
+      - ./crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer1.issuer.GOnetwork.com/msp:/etc/hyperledger/crypto/peer/msp
+      - ./crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer1.issuer.GOnetwork.com/tls:/etc/hyperledger/crypto/peer/tls
+      - /var/run/:/host/var/run/
+      - ./:/etc/hyperledger/channel/
+      #- unix:///host/var/run/docker.sock:/host/var/run/docker.sock
+    networks:
+      - test
+
+  issuer-client:
+    container_name: issuer-client
+    image: hyperledger/fabric-tools
+    tty: true
+    environment:
+      - GODEBUG=netdns=go
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      #- FABRIC_LOGGING_SPEC=DEBUG --> switch to debug to see more details of transaction flow
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=i-peer0.issuer.GOnetwork.com:11051
+      - CORE_PEER_LOCALMSPID=issuerMSP
+      # - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/channel/crypto-config/buyerMSP
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer0.issuer.GOnetwork.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer0.issuer.GOnetwork.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer0.issuer.GOnetwork.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-users/Admin@issuer.GOnetwork.com/msp
+
+      - CORE_CHAINCODE_KEEPALIVE=10
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    networks:
+      - test
+    volumes:
+      - /var/run/:/host/var/run/
+      # - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+      - ./../buyer-vm1/crypto-config/peerOrganizations/buyer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/buyer.GOnetwork.com/
+      - ./../eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/eproducer.GOnetwork.com/
+      - ./crypto-config/peerOrganizations/issuer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/
+      - ./../orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/:/etc/hyperledger/channel/crypto-config/ordererOrganizations/GOnetwork.com/
+      - ./../hproducer-vm5/crypto-config/peerOrganizations/hproducer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com
+      - ./issuer-client/:/opt/gopath/src/github.com/hyperledger/fabric/peer/
+      - ./../../artifacts/private-data-collections/:/etc/hyperledger/channel/private-data-collections/
+  SmartMeter:
+    container_name: SmartMeter
+    image: smartmeter:latest
+    tty: true
+    environment:
+      - GODEBUG=netdns=go
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_ID=SmartMeter
+      - CORE_PEER_ADDRESS=i-peer0.issuer.GOnetwork.com:11051
+      - CORE_PEER_LOCALMSPID=issuerMSP
+      # - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/channel/crypto-config/eproducerMSP
+
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/channel/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer0.eproducer.GOnetwork.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/channel/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer0.eproducer.GOnetwork.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/channel/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer0.eproducer.GOnetwork.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/channel/crypto-config/peerOrganizations/eproducer.GOnetwork.com/SmartMeter/SmartMeter1@eproducer.GOnetwork.com/msp
+
+      - CORE_CHAINCODE_KEEPALIVE=10
+    networks:
+      - test
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./../eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/eproducer.GOnetwork.com/
+      - ./../buyer-vm1/crypto-config/peerOrganizations/buyer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/buyer.GOnetwork.com/
+      - ./crypto-config/peerOrganizations/issuer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/
+      - ./../orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/:/etc/hyperledger/channel/crypto-config/ordererOrganizations/GOnetwork.com/
+      - ./../hproducer-vm5/crypto-config/peerOrganizations/hproducer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com
+
+  OutputMeter:
+    container_name: OutputMeter
+    image: outputmeter:latest
+    tty: true
+    environment:
+      - GODEBUG=netdns=go
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_ID=OutputMeter
+      - CORE_PEER_ADDRESS=i-peer0.issuer.GOnetwork.com:11051
+      - CORE_PEER_LOCALMSPID=issuerMSP
+      # - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/channel/crypto-config/buyerMSP
+
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer0.issuer.GOnetwork.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer0.issuer.GOnetwork.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer0.issuer.GOnetwork.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/OutputMeter/OutputMeter@issuer.GOnetwork.com/msp
+
+      - CORE_CHAINCODE_KEEPALIVE=10
+    networks:
+      - test
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./../eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/eproducer.GOnetwork.com/
+      - ./../buyer-vm1/crypto-config/peerOrganizations/buyer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/buyer.GOnetwork.com/
+      - ./crypto-config/peerOrganizations/issuer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/
+      - ./../orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/:/etc/hyperledger/channel/crypto-config/ordererOrganizations/GOnetwork.com/
+      - ./../hproducer-vm5/crypto-config/peerOrganizations/hproducer.GOnetwork.com/:/etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com

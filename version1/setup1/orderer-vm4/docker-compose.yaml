@@ -3,143 +3,201 @@ version: "3.8"
 networks:
   test:
 
+volumes: 
+  orderer.GOnetwork.com:
+  orderer2.GOnetwork.com:
+  orderer3.GOnetwork.com:
+  orderer4.GOnetwork.com:
+
 services:
   orderer.GOnetwork.com:
     container_name: orderer.GOnetwork.com
     image: hyperledger/fabric-orderer:latest
-    dns_search: .
+    labels:
+      service: hyperledger-fabric
     environment:
       - ORDERER_GENERAL_LOGLEVEL=info
       - FABRIC_LOGGING_SPEC=INFO
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
-      - ORDERER_GENERAL_GENESISMETHOD=file
-      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/genesis.block
+      - ORDERER_GENERAL_GENESISMETHOD=none
+      #- ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/genesis.block
       - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
       - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
       - ORDERER_GENERAL_TLS_ENABLED=true
       - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
       - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
       - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
-      - ORDERER_KAFKA_VERBOSE=true
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
       - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
       - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
       - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
       - ORDERER_METRICS_PROVIDER=prometheus
-      - ORDERER_OPERATIONS_LISTENADDRESS=0.0.0.0:8443
+      - ORDERER_OPERATIONS_LISTENADDRESS=orderer.GOnetwork.com:7443
       - ORDERER_GENERAL_LISTENPORT=7050
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderers
+      - ORDERER_CHANNELPARTICIPATION_ENABLED=true
+      - ORDERER_ADMIN_LISTENADDRESS=0.0.0.0:7053
+      - ORDERER_ADMIN_TLS_ENABLED=true
+      - ORDERER_ADMIN_TLS_PRIVATEKEY=/var/hyperledger/users/tls/server.key
+      - ORDERER_ADMIN_TLS_CERTIFICATE=/var/hyperledger/users/tls/server.crt
+      #- ORDERER_ADMIN_CLIENTAUTHREQUIRED=true
+      - ORDERER_ADMIN_TLS_CLIENTROOTCAS=[/var/hyperledger/users/tls/ca.crt]
+      - ORDERER_ADMIN_TLS_ROOTCAS=[/var/hyperledger/users/tls/ca.crt]
+    working_dir: /root
     command: orderer
     ports:
       - 7050:7050
-      - 8443:8443
+      - 7053:7053
+      - 7443:7443
     networks:
       - test
     volumes:
-      - ../../artifacts/channel/genesis.block:/var/hyperledger/orderer/genesis.block
+      #- ../../artifacts/channel/genesis.block:/var/hyperledger/orderer/genesis.block
       - ./crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/msp:/var/hyperledger/orderer/msp
       - ./crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/tls:/var/hyperledger/orderer/tls
+      - ./crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/msp:/var/hyperledger/users/msp
+      - ./crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls:/var/hyperledger/users/tls
+      - orderer.GOnetwork.com:/var/hyperledger/production/orderer
 
   orderer2.GOnetwork.com:
     container_name: orderer2.GOnetwork.com
     image: hyperledger/fabric-orderer:latest
-    dns_search: .
+    labels:
+      service: hyperledger-fabric
     environment:
       - ORDERER_GENERAL_LOGLEVEL=debug
       - FABRIC_LOGGING_SPEC=INFO
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
-      - ORDERER_GENERAL_GENESISMETHOD=file
-      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_GENESISMETHOD=none
+      #- ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
       - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
       - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
       - ORDERER_GENERAL_TLS_ENABLED=true
       - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
       - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
       - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
-      - ORDERER_KAFKA_VERBOSE=true
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
       - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
       - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
       - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
       - ORDERER_METRICS_PROVIDER=prometheus
-      - ORDERER_OPERATIONS_LISTENADDRESS=0.0.0.0:8443
+      - ORDERER_OPERATIONS_LISTENADDRESS=orderer2.GOnetwork.com:8443
       - ORDERER_GENERAL_LISTENPORT=8050
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderers
+      - ORDERER_CHANNELPARTICIPATION_ENABLED=true
+      - ORDERER_ADMIN_LISTENADDRESS=0.0.0.0:8053
+      - ORDERER_ADMIN_TLS_ENABLED=true
+      - ORDERER_ADMIN_TLS_PRIVATEKEY=/var/hyperledger/users/tls/server.key
+      - ORDERER_ADMIN_TLS_CERTIFICATE=/var/hyperledger/users/tls/server.crt
+      #- ORDERER_ADMIN_CLIENTAUTHREQUIRED=true
+      - ORDERER_ADMIN_TLS_CLIENTROOTCAS=[/var/hyperledger/users/tls/ca.crt]
+      - ORDERER_ADMIN_TLS_ROOTCAS=[/var/hyperledger/users/tls/ca.crt]
+    working_dir: /root
     command: orderer
     ports:
       - 8050:8050
-      - 8444:8443
+      - 8053:8053
+      - 8443:8443
     networks:
       - test
     volumes:
-      - ../../artifacts/channel/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+      #- ../../artifacts/channel/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
       - ./crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/msp:/var/hyperledger/orderer/msp
       - ./crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/tls:/var/hyperledger/orderer/tls
+      - ./crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/msp:/var/hyperledger/users/msp
+      - ./crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls:/var/hyperledger/users/tls
+      - orderer2.GOnetwork.com:/var/hyperledger/production/orderer
 
   orderer3.GOnetwork.com:
     container_name: orderer3.GOnetwork.com
     image: hyperledger/fabric-orderer:latest
-    dns_search: .
+    labels:
+      service: hyperledger-fabric
     environment:
       - ORDERER_GENERAL_LOGLEVEL=debug
       - FABRIC_LOGGING_SPEC=INFO
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
-      - ORDERER_GENERAL_GENESISMETHOD=file
-      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_GENESISMETHOD=none
+      #- ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
       - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
       - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
       - ORDERER_GENERAL_TLS_ENABLED=true
       - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
       - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
       - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
-      - ORDERER_KAFKA_VERBOSE=true
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
       - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
       - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
       - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
       - ORDERER_METRICS_PROVIDER=prometheus
-      - ORDERER_OPERATIONS_LISTENADDRESS=0.0.0.0:8443
+      - ORDERER_OPERATIONS_LISTENADDRESS=orderer3.GOnetwork.com:9443
       - ORDERER_GENERAL_LISTENPORT=9050
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderers
+      - ORDERER_CHANNELPARTICIPATION_ENABLED=true
+      - ORDERER_ADMIN_LISTENADDRESS=0.0.0.0:9053
+      - ORDERER_ADMIN_TLS_ENABLED=true
+      - ORDERER_ADMIN_TLS_PRIVATEKEY=/var/hyperledger/users/tls/server.key
+      - ORDERER_ADMIN_TLS_CERTIFICATE=/var/hyperledger/users/tls/server.crt
+      #- ORDERER_ADMIN_CLIENTAUTHREQUIRED=true
+      - ORDERER_ADMIN_TLS_CLIENTROOTCAS=[/var/hyperledger/users/tls/ca.crt]
+      - ORDERER_ADMIN_TLS_ROOTCAS=[/var/hyperledger/users/tls/ca.crt]
+    working_dir: /root
     command: orderer
     ports:
       - 9050:9050
-      - 8445:8443
+      - 9053:9053
+      - 9443:9443
     networks:
       - test
     volumes:
-      - ../../artifacts/channel/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+      #- ../../artifacts/channel/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
       - ./crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/msp:/var/hyperledger/orderer/msp
       - ./crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/tls:/var/hyperledger/orderer/tls
+      - ./crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/msp:/var/hyperledger/users/msp
+      - ./crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls:/var/hyperledger/users/tls
+      - orderer3.GOnetwork.com:/var/hyperledger/production/orderer
 
   orderer4.GOnetwork.com:
     container_name: orderer4.GOnetwork.com
     image: hyperledger/fabric-orderer:latest
-    dns_search: .
+    labels:
+      service: hyperledger-fabric
     environment:
-      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_LOGLEVEL=info
       - FABRIC_LOGGING_SPEC=INFO
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
-      - ORDERER_GENERAL_GENESISMETHOD=file
-      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_GENESISMETHOD=none
+      #- ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
       - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
       - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
       - ORDERER_GENERAL_TLS_ENABLED=true
       - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
       - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
       - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
-      - ORDERER_KAFKA_VERBOSE=true
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
       - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
       - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
       - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
       - ORDERER_METRICS_PROVIDER=prometheus
-      - ORDERER_OPERATIONS_LISTENADDRESS=0.0.0.0:8443
+      - ORDERER_OPERATIONS_LISTENADDRESS=orderer4.GOnetwork.com:10443
       - ORDERER_GENERAL_LISTENPORT=10050
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderers
+      - ORDERER_CHANNELPARTICIPATION_ENABLED=true
+      - ORDERER_ADMIN_LISTENADDRESS=0.0.0.0:10053
+      - ORDERER_ADMIN_TLS_ENABLED=true
+      - ORDERER_ADMIN_TLS_PRIVATEKEY=/var/hyperledger/users/tls/server.key
+      - ORDERER_ADMIN_TLS_CERTIFICATE=/var/hyperledger/users/tls/server.crt
+      #- ORDERER_ADMIN_CLIENTAUTHREQUIRED=true
+      - ORDERER_ADMIN_TLS_CLIENTROOTCAS=[/var/hyperledger/users/tls/ca.crt]
+      - ORDERER_ADMIN_TLS_ROOTCAS=[/var/hyperledger/users/tls/ca.crt]
+    working_dir: /root
     command: orderer
     ports:
       - 10050:10050
-      - 8446:8443
+      - 10053:10053
+      - 10443:10443
     networks:
       - test
     volumes:
-      - ../../artifacts/channel/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+      #- ../../artifacts/channel/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
       - ./crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/msp:/var/hyperledger/orderer/msp
       - ./crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls:/var/hyperledger/orderer/tls
+      - ./crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/msp:/var/hyperledger/users/msp
+      - ./crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls:/var/hyperledger/users/tls
+      - orderer4.GOnetwork.com:/var/hyperledger/production/orderer

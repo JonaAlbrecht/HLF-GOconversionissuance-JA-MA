@@ -1,0 +1,10 @@
+version: 0
+tlsconfig:
+  certpath: ""
+  keypath: ""
+  peercacertpath: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/buyer-vm1/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-peers/b-peer0.buyer.GOnetwork.com/tls/tlscacerts/tls-localhost-7054-ca-buyer-GOnetwork-com.pem
+  timeout: 0s
+signerconfig:
+  mspid: buyerMSP
+  identitypath: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/buyer-vm1/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/Admin@buyer.GOnetwork.com/msp/signcerts/cert.pem
+  keypath: /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/buyer-vm1/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/Admin@buyer.GOnetwork.com/msp/keystore/225b777ddb3b2a0e68d6009d6f64511ff89925cb66e2e1d6bb6b7dbd0b42fc6a_sk

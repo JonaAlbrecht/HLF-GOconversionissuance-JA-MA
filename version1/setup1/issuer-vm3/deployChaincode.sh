@@ -5,7 +5,7 @@ export PEER0_ISSUER_CA=${PWD}/crypto-config/peerOrganizations/issuer.GOnetwork.c
 export FABRIC_CFG_PATH=${PWD}/../../artifacts/channel/config/
 export COLLECTION_CONFIGPATH=${PWD}/../../artifacts/private-data-collections/collection-config.json
 
-export CHANNEL_NAME=mychannel
+export CHANNEL_NAME=mychannel28
 
 setGlobalsForPeer0issuer() {
     export CORE_PEER_LOCALMSPID=issuerMSP

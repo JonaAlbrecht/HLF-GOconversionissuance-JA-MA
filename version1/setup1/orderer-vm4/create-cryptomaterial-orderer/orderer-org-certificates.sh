@@ -47,7 +47,7 @@ createCertificateForOrderer() {
   fabric-ca-client register --caname ca-orderer --id.name orderer3 --id.secret ordererpw --id.type orderer --tls.certfiles ${PWD}/fabric-ca/ordererOrg/tls-cert.pem
 
   echo
-  echo "Register orderer3"
+  echo "Register orderer4"
   echo
 
   fabric-ca-client register --caname ca-orderer --id.name orderer4 --id.secret ordererpw --id.type orderer --tls.certfiles ${PWD}/fabric-ca/ordererOrg/tls-cert.pem
@@ -173,9 +173,22 @@ createCertificateForOrderer() {
   echo "## Generate the admin msp"
   echo
 
-  fabric-ca-client enroll -u https://ordererAdmin:ordererAdminpw@localhost:9054 --caname ca-orderer -M ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/msp --tls.certfiles ${PWD}/fabric-ca/ordererOrg/tls-cert.pem
+  fabric-ca-client enroll -u https://ordererAdmin:ordererAdminpw@localhost:9054 --caname ca-orderer -M ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/msp --csr.hosts admin.GOnetwork.com --csr.hosts localhost --tls.certfiles ${PWD}/fabric-ca/ordererOrg/tls-cert.pem
 
   cp ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/msp/config.yaml ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/msp/config.yaml
+
+  echo
+  echo "## Generate the admin-tls certificates"
+  echo
+
+  fabric-ca-client enroll -u https://ordererAdmin:ordererAdminpw@localhost:9054 --caname ca-orderer -M ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls --enrollment.profile tls --csr.hosts admin.GOnetwork.com --csr.hosts localhost --tls.certfiles ${PWD}/fabric-ca/ordererOrg/tls-cert.pem
+
+  cp ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls/tlscacerts/* ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls/ca.crt
+  cp ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls/signcerts/* ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls/server.crt
+  cp ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls/keystore/* ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls/server.key
+
+  mkdir ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/msp/tlscacerts
+  cp ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls/tlscacerts/* ${PWD}/../crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
 
 # Caliper Testing
   #if doing a caliper test run, uncomment the next two lines -- also uncomment lines in network-down script

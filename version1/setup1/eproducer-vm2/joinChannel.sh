@@ -3,7 +3,7 @@ export ORDERER_CA=${PWD}/../orderer-vm4/crypto-config/ordererOrganizations/GOnet
 export PEER0_EPRODUCER_CA=${PWD}/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer0.eproducer.GOnetwork.com/tls/ca.crt
 export FABRIC_CFG_PATH=${PWD}/../../artifacts/channel/config/
 
-export CHANNEL_NAME=mychannel
+export CHANNEL_NAME=$1
 
 setGlobalsForPeer0eproducer() {
     export CORE_PEER_LOCALMSPID=eproducerMSP
@@ -22,27 +22,26 @@ setGlobalsForPeer1eproducer() {
 }
 
 fetchChannelBlock() {
-    rm -rf ./channel-artifacts/*
     setGlobalsForPeer0eproducer
     #replace given IP address with IP address of the orderer vm
     # If deploying on single machine, replace orderer's vm IP address with "localhost"
-    peer channel fetch 0 ./channel-artifacts/$CHANNEL_NAME.block -o localhost:8050 \
+    peer channel fetch oldest -o localhost:8050 \
         --ordererTLSHostnameOverride orderer2.GOnetwork.com \
         -c $CHANNEL_NAME --tls --cafile $ORDERER_CA
 }
 
-# fetchChannelBlock
+#fetchChannelBlock
 
 joinChannel() {
     setGlobalsForPeer0eproducer
-    peer channel join -b ./../../artifacts/channel/genesis.block
+    peer channel join -b ./../../artifacts/channel/${CHANNEL_NAME}.block
 
-    setGlobalsForPeer1eproducer
-    peer channel join -b ./../../artifacts/channel/genesis.block
+    #setGlobalsForPeer1eproducer
+    #peer channel join -b ./../../artifacts/channel/${CHANNEL_NAME}.block
 
 }
 
-# joinChannel
+joinChannel
 
 updateAnchorPeers() {
     setGlobalsForPeer0eproducer

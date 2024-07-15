@@ -4,10 +4,10 @@ export PEER0_EPRODUCER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizatio
 export PEER0_ISSUER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer0.issuer.GOnetwork.com/tls/ca.crt
 export PEER0_BUYER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-peers/b-peer0.buyer.GOnetwork.com/tls/ca.crt
 export PEER0_HPRODUCER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/ca.crt
-export CHANNEL_NAME=mychannel
+export CHANNEL_NAME=$1
 export CC_NAME="conversion"
-export eGO=$1
-export Recipient=$2
+export eGO=$2
+export Recipient=$3
 
 setGlobalsForPeer0eproducer() {
     export CORE_PEER_LOCALMSPID=eproducerMSP
@@ -30,11 +30,10 @@ TransfereGO() {
         -c '{"function": "TransfereGO","Args":[]}' \
         --transient "{\"TransferInput\":\"$TransferInput\"}" --waitForEvent
     end=$(date +%s%N)
-    echo "ReadPubliceGO Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
+    echo "TransferEGO Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
 }
 
 TransfereGO
-
 
 #--peerAddresses b-peer0.buyer.GOnetwork.com:7051 --tlsRootCertFiles $PEER0_BUYER_CA \
 #--peerAddresses h-peer0.hproducer.GOnetwork.com:13051 --tlsRootCertFiles $PEER0_HPRODUCER_CA \

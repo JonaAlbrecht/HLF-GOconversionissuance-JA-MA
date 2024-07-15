@@ -4,9 +4,9 @@ export PEER0_HPRODUCER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizatio
 export PEER0_ISSUER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer0.issuer.GOnetwork.com/tls/ca.crt
 export PEER0_EPRODUCER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer0.eproducer.GOnetwork.com/tls/ca.crt
 export PEER0_BUYER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-peers/b-peer0.buyer.GOnetwork.com/tls/ca.crt
-export CHANNEL_NAME=mychannel
+export CHANNEL_NAME=$1
 export CC_NAME="conversion"
-export NeededAmount=$1
+export NeededAmount=$2
 
 setGlobalsForPeer0hproducer() {
     export CORE_PEER_LOCALMSPID=hproducerMSP

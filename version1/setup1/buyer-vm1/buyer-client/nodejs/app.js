@@ -6,7 +6,7 @@ const {
   readCertificateintoWallet,
 } = require("./modules/gateway.js");
 
-const channelname = "mychannel";
+const channelname = "mychannel15";
 const chaincode = "conversion";
 
 async function buildGateway(org, username) {
@@ -68,7 +68,7 @@ async function ReadPublicEGO(assetKey) {
 async function GetCurrenteGOList(startKey, endKey) {
   try {
     const resultBuffer = await contract.evaluateTransaction(
-      "ReadPublicEGO",
+      "GetCurrenteGOList",
       startKey,
       endKey
     );

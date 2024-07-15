@@ -12,7 +12,7 @@ info:
   StateDB: CouchDB
 
 channels:
-  - channelName: mychannel
+  - channelName: mychannel25
     contracts:
     - id: conversion
 
@@ -22,8 +22,8 @@ organizations:
       certificates:
         - name: 'buyer-client'
           clientPrivateKey:
-            path: '../crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/Admin@buyer.GOnetwork.com/msp/keystore/*'
+            path: '/usr/local/go/src/github.com/JonaAlbrecht/caliper-workspace/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/Admin@buyer.GOnetwork.com/msp/keystore/dfafb76bc66fadc433e1f0f52d399bdbb8eb6b00c50535ddcb439571ecd21db0_sk'
           clientSignedCert:
-            path: '../crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/Admin@buyer.GOnetwork.com/msp/signcerts/cert.pem'
+            path: './crypto-config/peerOrganizations/buyer.GOnetwork.com/b-users/Admin@buyer.GOnetwork.com/msp/signcerts/cert.pem'
     connectionProfile:
-      path: './connection_profiles/ccp-buyer.json'    
+      path: './networks/connection_profiles/ccp-buyer.yaml'    

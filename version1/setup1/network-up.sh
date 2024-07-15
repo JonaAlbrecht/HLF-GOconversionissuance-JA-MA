@@ -6,6 +6,9 @@ export DIRECTORY=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissua
 
 sudo chmod 777 -R *
 
+export CHANNEL_NAME=mychannel22
+
+
 GREEN="\e[32m"
 ENDCOLOR="\e[0m"
 echo
@@ -56,12 +59,16 @@ cd ${DIRECTORY}/issuer-vm3/create-cryptomaterial-issuer
 sudo chmod +x ./issuer-org-certificates.sh
 sh ./issuer-org-certificates.sh
 
+echo -e "${GREEN}Creating the orderer docker containers ${ENDCOLOR}"
+sleep 1
+cd ${DIRECTORY}/orderer-vm4 && docker-compose up -d
+
 echo -e "${GREEN}Creating the channel artefacts ${ENDCOLOR}"
 sleep 1
 
 cd ${DIRECTORY}/../artifacts/channel
 sudo chmod +x ./create-artifacts.sh
-sh ./create-artifacts.sh
+sh ./create-artifacts.sh $CHANNEL_NAME
 
 echo -e "${GREEN}Creating the Smart Meter docker image ${ENDCOLOR}"
 sleep 1
@@ -74,9 +81,7 @@ sleep 1
 cd ${DIRECTORY}/issuer-vm3/OutputMeter-config && docker build -t outputmeter .
 echo
 
-echo -e "${GREEN}Creating the orderer docker containers ${ENDCOLOR}"
-sleep 1
-cd ${DIRECTORY}/orderer-vm4 && docker-compose up -d
+
 
 echo -e "${GREEN}Creating the peer, couchDB and client docker container for buyer org ${ENDCOLOR}"
 sleep 1
@@ -104,28 +109,56 @@ sleep 1
 
 cd ${DIRECTORY}/issuer-vm3
 sudo chmod +x ./createChannel.sh
-sh ./createChannel.sh
+sh ./createChannel.sh $CHANNEL_NAME
 echo
 echo -e "${GREEN}Buyer org joining the channel: ${ENDCOLOR}"
 sleep 1
 
 cd ${DIRECTORY}/buyer-vm1
 sudo chmod +x ./joinChannel.sh
-sh ./joinChannel.sh
+sh ./joinChannel.sh $CHANNEL_NAME
 echo
 echo -e "${GREEN}Eproducer org joining the channel: ${ENDCOLOR}"
 sleep 1
 
 cd ${DIRECTORY}/eproducer-vm2
 sudo chmod +x ./joinChannel.sh
-sh ./joinChannel.sh
+sh ./joinChannel.sh $CHANNEL_NAME
 echo
 echo -e "${GREEN}Hproducer org joining the channel: ${ENDCOLOR}"
 sleep 1
 
 cd ${DIRECTORY}/hproducer-vm5
 sudo chmod +x ./joinChannel.sh
-sh ./joinChannel.sh
+sh ./joinChannel.sh $CHANNEL_NAME
+
+echo -e "${GREEN}Setting anchor peer for buyer: ${ENDCOLOR}"
+sleep 1
+
+cd ${DIRECTORY}/../artifacts/channel/buyerAnchor
+sudo chmod +x ./AnchorUpdatebuyer.sh
+sh ./AnchorUpdatebuyer.sh $CHANNEL_NAME
+
+echo -e "${GREEN}Setting anchor peer for eproducer: ${ENDCOLOR}"
+sleep 1
+
+cd ${DIRECTORY}/../artifacts/channel/eproducerAnchor
+sudo chmod +x ./AnchorUpdateeproducer.sh
+sh ./AnchorUpdateeproducer.sh $CHANNEL_NAME
+
+echo -e "${GREEN}Setting anchor peer for hproducer: ${ENDCOLOR}"
+sleep 1
+
+cd ${DIRECTORY}/../artifacts/channel/hproducerAnchor
+sudo chmod +x ./AnchorUpdatehproducer.sh
+sh ./AnchorUpdatehproducer.sh $CHANNEL_NAME
+
+echo -e "${GREEN}Setting anchor peer for issuer: ${ENDCOLOR}"
+sleep 1
+
+cd ${DIRECTORY}/../artifacts/channel/issuerAnchor
+sudo chmod +x ./AnchorUpdateissuer.sh
+sh ./AnchorUpdateissuer.sh $CHANNEL_NAME
 
 #echo -e "${GREEN}Deploying the chaincode from issuer org: ${ENDCOLOR}"
 #sleep 1

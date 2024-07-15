@@ -1,7 +1,7 @@
 export CORE_PEER_TLS_ENABLED=true
 export ORDERER_CA=/etc/hyperledger/channel/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
 export PEER0_HPRODUCER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/ca.crt
-export CHANNEL_NAME=mychannel
+export CHANNEL_NAME=$1
 export CC_NAME="conversion"
 
 setGlobalsForPeer0hproducer() {

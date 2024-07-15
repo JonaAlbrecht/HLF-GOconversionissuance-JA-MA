@@ -7,8 +7,7 @@ export PEER0_HPRODUCER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizatio
 export COLLECTION_CONFIGPATH=/etc/hyperledger/channel/private-data-collections/collection-config.json
 
 
-export CHANNEL_NAME=mychannel
-CHANNEL_NAME="mychannel"
+export CHANNEL_NAME=$1
 CC_RUNTIME_LANGUAGE="golang"
 VERSION="1"
 CC_NAME="conversion" 

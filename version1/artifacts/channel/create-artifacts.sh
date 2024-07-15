@@ -1,36 +1,31 @@
+export ORDERER_ADMIN_TLS_PRIVATE_KEY=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls/keystore/7034cadc9b745eaa8efaaec9c3077b2f234cfa0ca118dcc03d597239f2bcd178_sk
+
 setGlobalsOrderer1() {
-    export ORDERER_CA=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/tls/tlscacerts/tls-localhost-9054-ca-orderer.pem
-    export ORDERER_ADMIN_TLS_SIGN_CERT=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/tls/server.crt
-    export ORDERER_ADMIN_TLS_PRIVATE_KEY=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/tls/server.key
+    export ORDERER_CA=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/tls/ca.crt
+    export ORDERER_ADMIN_TLS_SIGN_CERT=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls/signcerts/cert.pem
 }
 
+
 setGlobalsOrderer2() {
-    export ORDERER_CA=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/tls/tlscacerts/tls-localhost-9054-ca-orderer.pem
-    export ORDERER_ADMIN_TLS_SIGN_CERT=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/tls/server.crt
-    export ORDERER_ADMIN_TLS_PRIVATE_KEY=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/tls/server.key
+    export ORDERER_CA=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/tls/ca.crt
+    export ORDERER_ADMIN_TLS_SIGN_CERT=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls/signcerts/cert.pem
 }
 
 setGlobalsOrderer3() {
-    export ORDERER_CA=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/tls/tlscacerts/tls-localhost-9054-ca-orderer.pem
-    export ORDERER_ADMIN_TLS_SIGN_CERT=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/tls/server.crt
-    export ORDERER_ADMIN_TLS_PRIVATE_KEY=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/tls/server.key
+    export ORDERER_CA=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/tls/ca.crt
+    export ORDERER_ADMIN_TLS_SIGN_CERT=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls/signcerts/cert.pem
 }
 
 setGlobalsOrderer4() {
-    export ORDERER_CA=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls/tlscacerts/tls-localhost-9054-ca-orderer.pem
-    export ORDERER_ADMIN_TLS_SIGN_CERT=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls/server.crt
-    export ORDERER_ADMIN_TLS_PRIVATE_KEY=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls/server.key
+    export ORDERER_CA=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls/ca.crt
+    export ORDERER_ADMIN_TLS_SIGN_CERT=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls/signcerts/cert.pem
 }
 
 # Delete existing artifacts --> if this has been forgotten
-rm genesis.block mychannel.tx
+rm mychannel.block mychannel.tx
 rm -rf ../../channel-artifacts/*
 
-
-# System channel
-SYS_CHANNEL="sys-channel"
-
-CHANNEL_NAME="mychannel"
+export CHANNEL_NAME=$1
 
 echo $CHANNEL_NAME
 
@@ -38,36 +33,33 @@ echo $CHANNEL_NAME
 # -profile from the configtx.yaml file to use for genesis block
 # -configPath path to the configtx.yaml file
 # -outputBlock path to write the genesis block to
-configtxgen -profile OrdererGenesis -configPath . -channelID $SYS_CHANNEL  -outputBlock ./genesis.block
+configtxgen -profile ChannelUsingRaft -channelID $CHANNEL_NAME  -outputBlock ./${CHANNEL_NAME}.block
 
-
-# Generate channel configuration block, anchor peers with flags:
-configtxgen -profile BasicChannel -configPath . -outputCreateChannelTx ./mychannel.tx -channelID $CHANNEL_NAME
-
-Orderer1() {
+orderer1() {
     setGlobalsOrderer1
-    osnadmin channel join --channelID $SYS_CHANNEL --config-block ./genesis.block -o orderer.GOnetwork.com:7050 --ca-file "$ORDERER_CA" --client-cert "$ORDERER_ADMIN_TLS_SIGN_CERT" --client-key "$ORDERER_ADMIN_TLS_PRIVATE_KEY"
+    osnadmin channel join --channelID $CHANNEL_NAME -o localhost:7053 --config-block ./${CHANNEL_NAME}.block --ca-file "$ORDERER_CA" --client-cert "$ORDERER_ADMIN_TLS_SIGN_CERT" --client-key "$ORDERER_ADMIN_TLS_PRIVATE_KEY"
 }
 
-Orderer2() {
+orderer2() {
     setGlobalsOrderer2
-    osnadmin channel join --channelID $SYS_CHANNEL --config-block ./genesis.block -o orderer2.GOnetwork.com:8050 --ca-file "$ORDERER_CA" --client-cert "$ORDERER_ADMIN_TLS_SIGN_CERT" --client-key "$ORDERER_ADMIN_TLS_PRIVATE_KEY"
+    osnadmin channel join --channelID $CHANNEL_NAME -o localhost:8053 --config-block ./${CHANNEL_NAME}.block --ca-file "$ORDERER_CA" --client-cert "$ORDERER_ADMIN_TLS_SIGN_CERT" --client-key "$ORDERER_ADMIN_TLS_PRIVATE_KEY"
 }
 
-Orderer3() {
+orderer3() {
     setGlobalsOrderer3
-    osnadmin channel join --channelID $SYS_CHANNEL --config-block ./genesis.block -o orderer3.GOnetwork.com:9050 --ca-file "$ORDERER_CA" --client-cert "$ORDERER_ADMIN_TLS_SIGN_CERT" --client-key "$ORDERER_ADMIN_TLS_PRIVATE_KEY"
+    osnadmin channel join --channelID $CHANNEL_NAME -o localhost:9053 --config-block ./${CHANNEL_NAME}.block  --ca-file "$ORDERER_CA" --client-cert "$ORDERER_ADMIN_TLS_SIGN_CERT" --client-key "$ORDERER_ADMIN_TLS_PRIVATE_KEY"
 }
 
-Orderer4() {
+orderer4() {
     setGlobalsOrderer4
-    osnadmin channel join --channelID $SYS_CHANNEL --config-block ./genesis.block -o orderer4.GOnetwork.com:10050 --ca-file "$ORDERER_CA" --client-cert "$ORDERER_ADMIN_TLS_SIGN_CERT" --client-key "$ORDERER_ADMIN_TLS_PRIVATE_KEY"
+    osnadmin channel join --channelID $CHANNEL_NAME -o localhost:10053 --config-block ./${CHANNEL_NAME}.block  --ca-file "$ORDERER_CA" --client-cert "$ORDERER_ADMIN_TLS_SIGN_CERT" --client-key "$ORDERER_ADMIN_TLS_PRIVATE_KEY"
 }
 
-Orderer1
-Orderer2
-Orderer3
-Orderer4
+orderer1
+orderer2
+orderer3
+orderer4
+
 
 #echo "#######    Generating anchor peer update for buyerMSP  ##########"
 #configtxgen -profile BasicChannel -configPath . -outputAnchorPeersUpdate ./buyerMSPanchors.tx -channelID $CHANNEL_NAME -asOrg buyerMSP
@@ -80,3 +72,29 @@ Orderer4
 
 #echo "#######    Generating anchor peer update for hproducerMSP  ##########"
 #configtxgen -profile BasicChannel -configPath . -outputAnchorPeersUpdate ./hproducerMSPanchors.tx -channelID $CHANNEL_NAME -asOrg hproducerMSP
+
+
+oldsetGlobalsOrderer1() {
+    export ORDERER_CA=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
+    export ORDERER_ADMIN_TLS_SIGN_CERT=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/tls/server.crt
+    export ORDERER_ADMIN_TLS_PRIVATE_KEY=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/tls/server.key
+}
+
+
+oldsetGlobalsOrderer2() {
+    export ORDERER_CA=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
+    export ORDERER_ADMIN_TLS_SIGN_CERT=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/tls/server.crt
+    export ORDERER_ADMIN_TLS_PRIVATE_KEY=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer2.GOnetwork.com/tls/server.key
+}
+
+oldsetGlobalsOrderer3() {
+    export ORDERER_CA=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
+    export ORDERER_ADMIN_TLS_SIGN_CERT=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/tls/server.crt
+    export ORDERER_ADMIN_TLS_PRIVATE_KEY=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer3.GOnetwork.com/tls/server.key
+}
+
+oldsetGlobalsOrderer4() {
+    export ORDERER_CA=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
+    export ORDERER_ADMIN_TLS_SIGN_CERT=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls/server.crt
+    export ORDERER_ADMIN_TLS_PRIVATE_KEY=/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/tls/server.key
+}

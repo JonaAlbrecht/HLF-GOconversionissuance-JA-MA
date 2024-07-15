@@ -5,10 +5,10 @@ export PEER0_ISSUER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizations/
 #added hproducer and buyer as part of second design cycle
 export PEER0_HPRODUCER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/ca.crt
 export PEER0_BUYER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-peers/b-peer0.buyer.GOnetwork.com/tls/ca.crt
-export CHANNEL_NAME=mychannel
+export CHANNEL_NAME=$1
 export CC_NAME="conversion"
-export NeededAmount=$1
-export Recipient=$2
+export NeededAmount=$2
+export Recipient=$3
 
 setGlobalsForPeer0eproducer() {
     export CORE_PEER_LOCALMSPID=eproducerMSP
@@ -45,16 +45,16 @@ TransferEGOsbyAmount() {
         --ordererTLSHostnameOverride orderer2.GOnetwork.com \
         --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \
         -C $CHANNEL_NAME -n ${CC_NAME} \
-        --peerAddresses e-peer0.eproducer.GOnetwork.com:9051 --tlsRootCertFiles $PEER0_EPRODUCER_CA \
         --peerAddresses i-peer0.issuer.GOnetwork.com:11051 --tlsRootCertFiles $PEER0_ISSUER_CA \
-        --peerAddresses h-peer0.hproducer.GOnetwork.com:13051 --tlsRootCertFiles $PEER0_HPRODUCER_CA \
-        --peerAddresses b-peer0.buyer.GOnetwork.com:9051 --tlsRootCertFiles $PEER0_BUYER_CA \
         -c '{"function": "TransfereGObyAmount","Args":[]}' \
         --transient "{\"TransferInput\":\"$TransferInput\"}" --waitForEvent
     end=$(date +%s%N)
-    echo "ReadPubliceGO Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
+    echo "TransferEGObyAmount Elapsed time: $(($(($end-$start))/1000000)) ms" >> time.txt
 }
 
 TransferEGOsbyAmount
 
 
+#--peerAddresses h-peer0.hproducer.GOnetwork.com:13051 --tlsRootCertFiles $PEER0_HPRODUCER_CA \
+#--peerAddresses b-peer0.buyer.GOnetwork.com:7051 --tlsRootCertFiles $PEER0_BUYER_CA \
+#--peerAddresses e-peer0.eproducer.GOnetwork.com:9051 --tlsRootCertFiles $PEER0_EPRODUCER_CA \

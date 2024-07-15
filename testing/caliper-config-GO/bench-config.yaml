@@ -4,13 +4,30 @@ test:
     number: 5
   rounds:
     - label: Read Public eGOs
-      txNumber: 1000
+      txNumber: 100
       rateControl:
         type: fixed-rate
         opts:
           tps: 40
       workload:
-        module: benchmarks/scenario/GOconversion/ReadPubliceGO.js
+        module: workload/ReadPubliceGO.js
+    - label: Read Private eGOs
+      txNumber: 100
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 40
+      workload:
+        module: workload/ReadPrivateeGO.js
+    - label: Get current eGO list
+      txNumber: 100
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 40
+      workload:
+        module: workload/GetcurrenteGOlist.js
+    
   #  - label: Query a specific public eGO
   #    description: Query a specific public eGO.
   #    txNumber: 1000

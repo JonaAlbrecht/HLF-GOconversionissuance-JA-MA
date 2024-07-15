@@ -1,7 +1,7 @@
 export CORE_PEER_TLS_ENABLED=true
 export ORDERER_CA=/etc/hyperledger/channel/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
 export PEER0_BUYER_CA=/etc/hyperledger/channel/crypto-config/peerOrganizations/buyer.GOnetwork.com/b-peers/b-peer0.buyer.GOnetwork.com/tls/ca.crt
-export CHANNEL_NAME=mychannel
+export CHANNEL_NAME=$1
 export CC_NAME="conversion"
 
 setGlobalsForPeer0buyer() {
@@ -11,7 +11,7 @@ setGlobalsForPeer0buyer() {
     export CORE_PEER_ADDRESS=b-peer0.buyer.GOnetwork.com:7051
 }
 
-export eGOID=$1
+export eGOID=$2
 
 #ReadPubliceGO.
 ReadPubliceGO() {

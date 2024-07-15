@@ -1,6 +1,6 @@
 # Bringing up the network
 
-The network can be brought up and down using the network-up and network-down bash scripts. For a more detailed step-by-step guide on bringing up the network, follow the instructions on the rest of this page. **If you use the network-up script to bring up the network, do not execute any of the commands below this first section** 
+As of the second design cycle, the network could be brought up and down using the network-up and network-down bash scripts. As part of the third design cycle, the convenience script had to be split into two parts.  
 
 Cd into /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/
 First, we need to set some docker permissions: 
@@ -11,11 +11,23 @@ First, we need to set some docker permissions:
 
 `newgrp docker`
 
-Run `./network-up.sh`to bring up the network. Once you are finished testing, bring the network back down using `./network-down.sh` If docker-compose up returns an error "permission denied while trying to connect to the Docker daemon socket" you need to run the commands listed in the "run docker compose file" section and you should also install the Docker VS code extension
 
-The last step that should have been executed is "Hproducer Org joining the channel", please check a little bit that none of the steps here returned an error. Next, we will deploy and commit the chaincode.  
+Run `./network-upsplit1.sh`to bring up the network. Now, navigate into the crypto material of the orderer, to: usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls/keystore/ 
+Right-click on the name of the privatekey file, choose the option "Copy Path", navigate in the file explorer (not in the terminal) to artifacts/channel/create-artifacts.sh, click on the file and replace the value of the first environment variable, i.e. export ORDERER_ADMIN_TLS_PRIVATE_KEY=, with the value of the path you just copied. 
+
+Now, execute `./network-upsplit2.sh`. Whenever you bring up the network, you will need to repeat this step of posting the orderer admin private key
+
+The last step that should have been executed is "Setting anchor peer for issuer", please check a little bit that none of the steps here returned an error. Next, we will deploy and commit the chaincode. Please switch to the deploying and committing the chaincode md file next. The below explanations are only necessary when you bring up the network a second time.   
+
+Once you are finished testing, bring the network back down using `./network-down.sh` If docker-compose up returns an error "permission denied while trying to connect to the Docker daemon socket" you need to run the commands listed in the "run docker compose file" section and you should also install the Docker VS code extension
+
+For the first channel, you do not need to update the channel name. If you bring up a second channel (even after deleting the first one) you need to set the channel environment variable to a new channel name. To do this find the line saying `export CHANNEL_NAME=mychannel` and change mychannel to e.g. mychannel1. This needs to be done in the network-upsplit1.sh and network-upsplit2.sh scripts, in the deployChaincode.sh script in issuer-vm3, in the execute.sh script of issuer-vm3/SmartMeter-config, in the execute-hproducer.sh script of issuer-vm3/OutputMeter-config, in the installAndApproveChaincode.sh script of hproducer-vm5,  in the installAndApproveChaincode.sh script of eproducer-vm2 and in the installAndApproveChaincode.sh script of buyer-vm1.
+
+When bringing this new channel down, make sure to set `export CHANNEL_NAME=mychannel` also equal to the channel name you just worked with in the network-down.sh script.  
 
 If you would like to understand the network setup in more detail, follow the below steps and look at the involved files.
+
+If you bring up the network step-by-step following the below steps, do not also bring up the network using the convenience script
 
 ## Create all the crypto material
 
@@ -113,14 +125,12 @@ And then execute the bash script:
 
 ## Create Channel Artifacts
 
-Next lets create the Channel Artifacts
+Next lets create the Channel Artifacts. To do so, given that in the third design cycle, we bring up the channel using the osnadmin command, we first need to cd into the orderer-vm4 directory and run `docker-compose up -d`
 
-`cd ../../../artifacts/channel`
+Next, we want to do `cd ../../../artifacts/channel`. in the file explorer, navigate into the crypto material of the orderer, to: usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/orderer-vm4/crypto-config/ordererOrganizations/GOnetwork.com/users/Admin@GOnetwork.com/tls/keystore/ 
+Right-click on the name of the privatekey file, choose the option "Copy Path", navigate in the file explorer to artifacts/channel/create-artifacts.sh, click on the file and replace the value of the first environment variable, i.e. export ORDERER_ADMIN_TLS_PRIVATE_KEY=, with the value of the path you just copied.
 
-We run the create-artifacts bash script. This will:
-
-1. Generate the System Genesis block using the configtxgen tool with the orderergenesis profile from the configtx.yaml file and output a genesis.block file
-2. Generate the channel configuration block and set the anchor peers (Peer 0) for each organisation
+We run the create-artifacts bash script.
 
 `./create-artifacts.sh`
 
@@ -166,16 +176,6 @@ The first time it is run, this command will pull the fabric Docker images from t
 
 This last command is going to pull the fabric-orderer Docker image from Docker hub.
 
-**Looking at some of the ports**
-
-Open a new terminal and open a google-chrome instance with `google-chrome-stable` (this is necessary assuming you are using a WSL Ubuntu VM on Windows). If your native system is linux, it might suffice to just open google chrome.
-
-You can only look at ports running couchDB, a peer node port will not return anything (try it out by typing e.g. http://localhost:7051)
-To look at CouchDB, type into the google search bar http://localhost:6984 to look at couchdb1 instance from buyer organisation
-Or http://localhost:12984 to look at couchdb7 instance from hproducer organisation
-
-**Creating the SmartMeter and OutputMeter**
-
 
 
 ## Bring up the channel
@@ -184,7 +184,7 @@ First, cd into the issuer-vm3 folder:
 
 `cd /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/issuer-vm3`
 
-We need to run the createChannel.sh bash script to create the channel. It is the Issuing Body which creates the Channel.
+We need to run the createChannel.sh bash script to create the channel.
 The Script sets a number of environment variables and then uses the fabric commands 'peer channel create', 'peer channel join' and 'peer channel update' that are part of the fabric-binaries we downloaded at the beginning
 
 `./createChannel.sh`
@@ -205,27 +205,17 @@ Now, lets join all other organisations to the channel:
 
 `./joinChannel.sh`
 
-## Deploy the chaincode
+Now, we need to set the anchor peers. To this end do
 
-Next, lets deploy the chaincode from the issuing body directory. It is the issuing body that deploys the chaincode but approval from all organisations is needed.
+`cd /usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/artifacts/channel/buyerAnchor`
 
-`cd ../issuer-vm3`
+and execute `./AnchorUpdatebuyer.sh`
 
-Comment out the invocation of all functions after approveformyorg if not already the case.
+then `cd ../eproducerAnchor` and execute `./AnchorUpdateeproducer.sh`
 
-`./deployChaincode.sh`
+then `cd ../hproducerAnchor` and execute `./AnchorUpdatehproducer.sh`
 
-`cd ../buyer-vm1`
-
-`./installAndApproveChaincode.sh`
-
-`cd ../eproducer-vm2`
-
-`./installAndApproveChaincode.sh`
-
-`cd ../hproducer-vm5`
-
-`./installAndApproveChaincode.sh`
+then `cd ../issuerAnchor` and execute `./AnchorUpdateissuer.sh`
 
 
 **Troubleshooting**
@@ -243,3 +233,11 @@ You can also try removing the Docker images entirely:
 `docker image ls` and then copy the image name into:
 `docker rmi IMAGE_NAME`
 
+
+**Looking at some of the ports**
+
+Open a new terminal and open a google-chrome instance with `google-chrome-stable` (this is necessary assuming you are using a WSL Ubuntu VM on Windows). If your native system is linux, it might suffice to just open google chrome.
+
+You can only look at ports running couchDB, a peer node port will not return anything (try it out by typing e.g. http://localhost:7051)
+To look at CouchDB, type into the google search bar http://localhost:6984 to look at couchdb1 instance from buyer organisation
+Or http://localhost:12984 to look at couchdb7 instance from hproducer organisation

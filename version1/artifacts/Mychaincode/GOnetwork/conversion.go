@@ -215,12 +215,12 @@ func (s *SmartContract) CreateElectricityGO(ctx contractapi.TransactionContextIn
 	}
 
 	//check if the GO AssetID is already in use
-	testifexist, err := ctx.GetStub().GetPrivateData("privateDetails-eproducerMSP", eGOID)
-	if err != nil {
-		return fmt.Errorf("Failed to get data: " + err.Error())
-	} else if testifexist != nil {
-		return fmt.Errorf("This GO Asset ID already exists: " + eGOID)
-	}
+	//testifexist, err := ctx.GetStub().GetPrivateData("privateDetails-eproducerMSP", eGOID)
+	//if err != nil {
+	//	return fmt.Errorf("Failed to get data: " + err.Error())
+	//} else if testifexist != nil {
+	//	return fmt.Errorf("This GO Asset ID already exists: " + eGOID)
+	//}
 
 	// need to change this such that eproducerMSP is an attribute in the certificate.
 	//get ID of submitting Client Identity

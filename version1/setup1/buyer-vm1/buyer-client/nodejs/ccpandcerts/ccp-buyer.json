@@ -139,16 +139,43 @@
         "ssl-target-name-override": "e-peer0.eproducer.GOnetwork.com"
       },
       "tlsCAcerts": {
-        "path": ""
+        "path": "/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer0.eproducer.GOnetwork.com/tls/tlscacerts/tls-localhost-8054-ca-eproducer-GOnetwork-com.pem"
+      }
+    },
+    "e-peer1.eproducer.GOnetwork.com": {
+      "url": "grpcs://localhost:10051",
+      "grpcOptions": {
+        "ssl-target-name-override": "e-peer1.eproducer.GOnetwork.com"
+      },
+      "tlsCAcerts": {
+        "path": "/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/eproducer-vm2/crypto-config/peerOrganizations/eproducer.GOnetwork.com/e-peers/e-peer1.eproducer.GOnetwork.com/tls/tlscacerts/tls-localhost-8054-ca-eproducer-GOnetwork-com.pem"
+      }
+    },
+    "h-peer0.hproducer.GOnetwork.com": {
+      "url": "grpcs://localhost:13051",
+      "grpcOptions": {
+        "ssl-target-name-override": "h-peer0.hproducer.GOnetwork.com"
+      },
+      "tlsCAcerts": {
+        "path": "/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/hproducer-vm5/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/tlscacerts/tls-localhost-11054-ca-hproducer-GOnetwork-com.pem"
+      }
+    },
+    "h-peer1.hproducer.GOnetwork.com": {
+      "url": "grpcs://localhost:14051",
+      "grpcOptions": {
+        "ssl-target-name-override": "h-peer1.hproducer.GOnetwork.com"
+      },
+      "tlsCAcerts": {
+        "path": "/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/hproducer-vm5/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer1.hproducer.GOnetwork.com/tls/tlscacerts/tls-localhost-11054-ca-hproducer-GOnetwork-com.pem"
       }
     }
   },
   "certificateAuthorities": {
-    "ca.${ORG}.example.com": {
-      "url": "https://localhost:${CAPORT}",
-      "caName": "ca.${ORG}.GOnetwork.com",
+    "ca.buyer.example.com": {
+      "url": "https://localhost:7054",
+      "caName": "ca.buyer.GOnetwork.com",
       "tlsCACerts": {
-        "pem": ["${CAPEM}"]
+        "path": "/usr/local/go/src/github.com/JonaAlbrecht/HLF-GOconversionissuance-JA-MA/version1/setup1/buyer-vm1/crypto-config/peerOrganizations/buyer.GOnetwork.com/ca/ca.buyer.GOnetwork.com-cert.pem"
       },
       "httpOptions": {
         "verify": false

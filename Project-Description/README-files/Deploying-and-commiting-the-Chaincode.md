@@ -30,3 +30,15 @@ Having installed the chaincode on one peer per organisation and each organisatio
 
 If this returns a permission denied error we need to re-run the docker permission commands from the last section: 
 
+`sudo groupadd docker`
+
+`sudo usermod -aG docker $USER`
+
+`newgrp docker`
+
+
+From within the issuer-client docker container run:
+
+`./commitChaincode.sh mychannel`
+
+Finally, lets execute some commands of the network in the Executing network commands file. 

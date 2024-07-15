@@ -56,3 +56,6 @@ IssuehGO Elapsed time: 3428 ms
 ReadPrivatefromCollectioneGO Elapsed time: 179 ms
 ReadPrivatefromCollectioneGO Elapsed time: 155 ms
 QueryHydrogenBacklog Elapsed time: 162 ms
+QueryHydrogenBacklog Elapsed time: 87 ms
+QueryHydrogenBacklog Elapsed time: 100 ms
+QueryHydrogenBacklog Elapsed time: 97 ms

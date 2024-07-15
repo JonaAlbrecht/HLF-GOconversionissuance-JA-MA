@@ -5,7 +5,7 @@ export ORDERER_CA=${PWD}/../orderer-vm4/crypto-config/ordererOrganizations/GOnet
 export PEER0_ISSUER_CA=${PWD}/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer0.issuer.GOnetwork.com/tls/ca.crt
 export FABRIC_CFG_PATH=${PWD}/../../artifacts/channel/config/
 
-export CHANNEL_NAME=mychannel
+export CHANNEL_NAME=$1
 
 setGlobalsForPeer0issuer(){
     export CORE_PEER_LOCALMSPID=issuerMSP
@@ -21,24 +21,23 @@ setGlobalsForPeer1issuer(){
     export CORE_PEER_ADDRESS=localhost:12051
 }
 
-createChannel(){
-    rm -rf ./channel-artifacts/*
+fetchChannelBlock() {
     setGlobalsForPeer0issuer
-    # If deploying on multiple VMs, replace "localhost" with orderer's vm IP address
-    peer channel create -o localhost:9050 -c $CHANNEL_NAME \
-    --ordererTLSHostnameOverride orderer3.GOnetwork.com \
-    -f ./../../artifacts/channel/${CHANNEL_NAME}.tx --outputBlock ./channel-artifacts/${CHANNEL_NAME}.block \
-    --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
+    #replace given IP address with IP address of the orderer vm
+    # If deploying on single machine, replace orderer's vm IP address with "localhost"
+    peer channel fetch oldest -o localhost:9050 \
+        --ordererTLSHostnameOverride orderer3.GOnetwork.com \
+        -c $CHANNEL_NAME --tls --cafile $ORDERER_CA
 }
 
-#createChannel
+#fetchChannelBlock
 
 joinChannel(){
     setGlobalsForPeer0issuer
-    peer channel join -b ./../../artifacts/channel/genesis.block
+    peer channel join -b ./../../artifacts/channel/${CHANNEL_NAME}.block
     
-    setGlobalsForPeer1issuer
-    peer channel join -b ./../../artifacts/channel/genesis.block
+    #setGlobalsForPeer1issuer
+    #peer channel join -b ./../../artifacts/channel/${CHANNEL_NAME}.block
     
 }
 

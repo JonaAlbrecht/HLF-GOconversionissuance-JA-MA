@@ -20,7 +20,7 @@ execute () {
     export CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/OutputMeter/OutputMeter1@hproducer.GOnetwork.com/msp
     export CORE_PEER_ADDRESS=i-peer0.issuer.GOnetwork.com:11051
     export ORDERER_CA=/etc/hyperledger/channel/crypto-config/ordererOrganizations/GOnetwork.com/orderers/orderer4.GOnetwork.com/msp/tlscacerts/tlsca.GOnetwork.com-cert.pem
-    export CHANNEL_NAME=mychannel
+    export CHANNEL_NAME=mychannel28
     export CC_NAME="conversion" 
 
     peer chaincode invoke -o orderer3.GOnetwork.com:9050 \
@@ -28,7 +28,6 @@ execute () {
      --tls $CORE_PEER_TLS_ENABLED \
      --cafile $ORDERER_CA -C $CHANNEL_NAME -n ${CC_NAME} \
      --peerAddresses i-peer0.issuer.GOnetwork.com:11051 --tlsRootCertFiles /etc/hyperledger/channel/crypto-config/peerOrganizations/issuer.GOnetwork.com/i-peers/i-peer0.issuer.GOnetwork.com/tls/ca.crt \
-     --peerAddresses h-peer0.hproducer.GOnetwork.com:13051 --tlsRootCertFiles /etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/ca.crt \
      -c '{"function": "addHydrogentoBacklog", "Args":[]}' \
      --transient "{\"hGO\":\"$hGO\"}" --waitForEvent
     
@@ -37,3 +36,5 @@ execute () {
 }
 
 execute
+
+#--peerAddresses h-peer0.hproducer.GOnetwork.com:13051 --tlsRootCertFiles /etc/hyperledger/channel/crypto-config/peerOrganizations/hproducer.GOnetwork.com/h-peers/h-peer0.hproducer.GOnetwork.com/tls/ca.crt \
