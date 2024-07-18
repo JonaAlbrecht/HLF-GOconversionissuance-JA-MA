@@ -11,7 +11,7 @@ First, lets obtain a list of all available GOs using:
 
 `./GetCurrenteGOList.sh`
 
-IGNORE 3rd Design Cycle: We have to set the channel name command. The first time we bring up a network, this channel name is set to mychannel. The next time, you will have to define a different channel name during the channel creation process. therefore, because the channel name is a variable in the bash script, we have to pass the current channel name as an argument. If you try to reproduce the results of the third design cycle you will have to do this IGNORE END 
+IGNORE 3rd Design Cycle: We have to set the channel name command. The first time we bring up a network, this channel name is set to mychannel. The next time, you will have to define a different channel name during the channel creation process. therefore, because the channel name is a variable in the bash script, we have to pass the current channel name as an argument. If you try to reproduce the results of the third design cycle you will have to execute the command "./ReadPubliceGO mychannel eGO1"  instead of "./ReadPubliceGO eGO1" IGNORE END 
 
 This might return an empty list given that the Smart Meter cronjob is set such that an electricity GO is created only once a minute. so wait a little before you retry. 
 
