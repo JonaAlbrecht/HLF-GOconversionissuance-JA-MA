@@ -1,6 +1,6 @@
 # Bringing up the network
 
-As of the second design cycle, the network could be brought up and down using the network-up and network-down bash scripts. As part of the third design cycle, the convenience script had to be split into two parts.  
+As of the second design cycle, the network could be brought up and down using the network-up and network-down bash scripts. As part of the third design cycle, the convenience script had to be split into two parts. Unfortunately, the network of the third design cycle ultimately is functioning worse than that of the second. Therefore we need to roll back to commit 8639a2f using the `git checkout 8639a2f` command to set up the most functional version of the prototype. 
 
 Cd into /usr/local/go/src/github.com/HLF-GOconversionissuance-JA-MA/version1/setup1/
 First, we need to set some docker permissions: 
