@@ -1,6 +1,6 @@
 # HLF GO conversion issuance Masters thesis Jona Albrecht
 
-In this repo, you can find the source code for my Masters thesis project on the potential of Blockchain technology for data sharing between Guarantee of Origin schemes during energy carrier conversion issuance. The Masters thesis is still ongoing, wherefore the source code, documentation and project description in this repository are not final.
+In this repo, you can find the source code for my Masters thesis project on the potential of Blockchain technology for data sharing between Guarantee of Origin schemes during energy carrier conversion issuance. The Masters thesis is still ongoing, wherefore the source code, documentation and project description in this repository are not.Click on the below links to go through the different files on how to bring up the network. Their order can always be found by returning to this view. Within the READme folder of the Project Description folder they are sorted alphabetically and not by order. To view the second design cycle repository, which is the main code that we will be using in the setup tutorial click on branch and select 2nd design cycle. The final text version, clicking through all the README files in order of the below steps, however, needs to be viewed on this branch. 
 
 ---
 
