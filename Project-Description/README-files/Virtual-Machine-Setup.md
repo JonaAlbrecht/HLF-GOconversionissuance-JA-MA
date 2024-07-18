@@ -55,9 +55,12 @@ Since we will need this as well, also add this line to .bashrc:
 
 # Creating the other VMs
 
+This step doesnt require executing since ultimately no multi-host deployment occurred and all of the testing occurred on a single machine. If we wanted to execute multi-host deployment we would have to exchange every peer and orderer endpoint address that currently reads e.g. localhost:7051 etc. with the IP address of the virtual machine e.g. 189.123.123.90 and then connect the machines using docker swarm. In addition, we would probably have to navigate to the etc/hosts file of all docker containers, however, this was never fully implemented.   
+
 To save time, we will create the other VMs by using just cloning the boot disk as the current VM, that way all the steps up to now will be copied. In a production environment, this wouldnt be advisable. It would be worse, however, if we created all cryptomaterials for all organisations on a single machine and then cloned the disk.
 
 1. In Google Cloud /Compute Engine navigate to the section called disks (Laufwerke). Click the 3 little dots, click on clone disk, name it VM2.
 2. In the VM instances section, click on create new VM instance and mirror setup for VM1. Under Bootdisk click on 'change' , navigate to existing disks and select disk of VM2 ![alt text](image-2.png).
 3. Under firewall settings make sure to enable HTTP and HTTPS server as well as adding the custom firewall setting.
 4. Repeat this for VM3, VM4 and VM5
+5. We would have to exchange every peer and orderer endpoint address that currently reads localhost:7051 etc. with the 
